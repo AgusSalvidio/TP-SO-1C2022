@@ -1,0 +1,7 @@
+#ifndef KISS_OPERATION_DESERIALIZATION_H
+#define KISS_OPERATION_DESERIALIZATION_H
+
+#include "serialization_interface.h"
+
+
+#endif //KISS_OPERATION_DESERIALIZATION_H
