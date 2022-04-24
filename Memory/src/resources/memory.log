@@ -1,0 +1,5 @@
+[INFO] 17:57:46:455 Memory/(10790:10790): Logger creado
+[INFO] 17:57:46:459 Memory/(10790:10790): Config creada
+[INFO] 17:57:46:459 Memory/(10790:10790): Se guardo el valor 5 en la direccion fisica 0 para el PID 1
+[INFO] 17:57:46:460 Memory/(10790:10790): Se obtuvo el valor 5 en la direccion fisica 0 para el PID 1
+[INFO] 17:57:46:460 Memory/(10790:10790): VALOR= 5
