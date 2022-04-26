@@ -6,8 +6,10 @@
 #include "../../Utils/include/general_logs.h"
 #include <console_logs_manager.h>
 
-
-int main(void){
+int main(int argc, char** argv){
+    if(argc < 2) {
+        return EXIT_FAILURE;
+    }
 
     initialize_configuration_manager();
     initialize_console_logs_manager();

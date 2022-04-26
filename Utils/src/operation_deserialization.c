@@ -47,8 +47,8 @@ t_request* deserialize(void* serialized_request){
 t_request* deserialize_console_message(void* serialized_structure) {
 
     uint32_t process_size;
-    void* instructions;
     uint32_t instructions_length;
+    void* instructions;
     uint32_t offset = 0;
 
     memcpy(&process_size, serialized_structure + offset, sizeof(uint32_t));
@@ -57,7 +57,7 @@ t_request* deserialize_console_message(void* serialized_structure) {
     offset += sizeof(uint32_t);
 
     uint32_t instructions_length_including_with_trailing_null = instructions_length + 2;
-    instructions_length = calloc(instructions_length_including_with_trailing_null, sizeof(char));
+    instructions = calloc(instructions_length_including_with_trailing_null, sizeof(char));
     memcpy(instructions, serialized_structure + offset, instructions_length);
 
     t_console_message * console_message = safe_malloc(sizeof(t_console_message));

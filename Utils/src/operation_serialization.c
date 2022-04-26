@@ -22,7 +22,6 @@ t_serialization_information* serialize_console_message(void* structure) {
 
     uint32_t operation = CONSOLE_MESSAGE;
     uint32_t instructions_length = strlen(console_message -> instructions);
-
     uint32_t offset = 0;
 
     memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
@@ -34,7 +33,6 @@ t_serialization_information* serialize_console_message(void* structure) {
     memcpy(serialized_request + offset, &instructions_length, sizeof(uint32_t));
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, console_message -> instructions, instructions_length);
-    offset += instructions_length;
 
     t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
     serialization_information -> serialized_request = serialized_request;
