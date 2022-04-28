@@ -9,9 +9,27 @@
 
 t_list* printable_objects;
 
+char* console_message_as_string(t_console_message * console_message){
+
+    return string_from_format("Operación: CONSOLE_MESSAGE\nArgumentos: Process_size: %d, Instructions: {%s}",
+                              console_message -> process_size, console_message -> instructions);
+}
+
+void initialize_and_load_console_message_pretty_print(){
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = CONSOLE_MESSAGE;
+    printable_object -> code_as_string = "CONSOLE_MESSAGE";
+    printable_object -> print_function = (char *(*)(void *)) console_message_as_string;
+
+    list_add(printable_objects, (void*) printable_object);
+}
+
 void initialize_pretty_printer(){
 
     printable_objects = list_create();
+
+    initialize_and_load_console_message_pretty_print();
+
     log_succesful_initialize_pretty_printer();
 }
 

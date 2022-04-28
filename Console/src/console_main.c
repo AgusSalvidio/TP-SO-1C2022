@@ -5,6 +5,7 @@
 #include "../../Utils/include/serializable_objects.h"
 #include "../../Utils/include/general_logs.h"
 #include <console_logs_manager.h>
+#include "console_args_parser.h"
 
 int main(int argc, char** argv){
     if(argc < 2) {
@@ -19,6 +20,8 @@ int main(int argc, char** argv){
     initialize_signal_handler();
 
     log_succesful_start_up();
+    //TODO: invocacion logica principal
+    parse_program_args(argv);
 
     free_system();
     return EXIT_SUCCESS;
