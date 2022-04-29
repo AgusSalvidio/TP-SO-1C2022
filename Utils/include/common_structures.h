@@ -9,10 +9,11 @@
 
 #define ever (;;)
 
-
+/* error: empty enum is invalid
 enum Operation {
 
 };
+*/
 
 void initialize_signal_handler();
 void handle_signal(int signal_number, void (*handler_function) ());
