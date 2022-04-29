@@ -30,8 +30,8 @@ typedef struct {
 }t_pcb;
 
 typedef enum {
-    FIFO = -1;
-    SRT = 1;
+    FIFO = -1,
+    SRT = 1,
 };
 
 //LISTAS
