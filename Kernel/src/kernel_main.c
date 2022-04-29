@@ -14,24 +14,24 @@ typedef struct {
     char* puerto_cpu_interrupt;
     char* puerto_escucha;
     char* algoritmo_planificacion;
-    int estimacion_inicial;
+    uint32_t estimacion_inicial;
     double alfa;
-    int grado_multiprogramacion;
-    int tiempo_maximo_bloqueado;
+    uint32_t grado_multiprogramacion;
+    uint32_t tiempo_maximo_bloqueado;
 }t_kernel_config;
 
 typedef struct {
-    int id;
-    int tamano;
+    uint32_t id;
+    uint32_t tamano;
     t_list* instrucciones;
-    int program_counter;
+    uint32_t program_counter;
     // tabla_paginas
     double estimacion_rafaga;
 }t_pcb;
 
 typedef enum {
     FIFO = -1,
-    SRT = 1,
+    SRT = 1
 };
 
 //LISTAS
