@@ -5,7 +5,7 @@ int main(void){
     initMemory();
     /* TEST DE FUNCIONAMIENTO DE NUEVOS METODOS
     */
-     saveValueInMemory(0,5,1);
+    saveValueInMemory(0,5,1);
     saveValueInMemory(4,6,1);
     saveValueInMemory(8,7,1);
     readValueInMemory(4,1);
@@ -23,7 +23,7 @@ int main(void){
 
 void initMemory(){
     uint32_t* memoria = atoi(config_get_string_value(CONFIG,"TAM_MEMORIA"));
-    BLOQUE_MEMORIA = malloc((uint32_t)memoria);
+    BLOQUE_MEMORIA = malloc(memoria);
 }
 
 void initGlobalVariables(){
@@ -37,13 +37,13 @@ void initGlobalVariables(){
 void saveValueInMemory(uint32_t* direccionFisica, uint32_t* valor,uint32_t* pid){
     memcpy(BLOQUE_MEMORIA+ (uint32_t)direccionFisica, &valor, sizeof(uint32_t));
 
-    log_info(LOGGER,"Se guardo el valor %d en la direccion fisica %d para el PID %d",(uint32_t)valor,(uint32_t)direccionFisica,(uint32_t)pid);
+    log_info(LOGGER,"Se guardo el valor %d en la direccion fisica %d para el PID %d",valor,direccionFisica,pid);
 }
 
 uint32_t* readValueInMemory(uint32_t* direccionFisica,uint32_t* pid){
     uint32_t* valor;
     memcpy(&valor,BLOQUE_MEMORIA +(uint32_t)direccionFisica,sizeof(uint32_t));
-    log_info(LOGGER,"Se obtuvo el valor %d en la direccion fisica %d para el PID %d",(uint32_t)valor,(uint32_t)direccionFisica,(uint32_t)pid);
+    log_info(LOGGER,"Se obtuvo el valor %d en la direccion fisica %d para el PID %d",valor,direccionFisica,pid);
     return valor;
 }
 
@@ -53,7 +53,7 @@ void createFileSwap(uint32_t* pid){
     if(ARCHIVO == NULL){
         log_info(LOGGER,"No se pudo crear el archivo %s",path);
     }
-    log_info(LOGGER,"Se creo el archivo %d.swap", (uint32_t)pid);
+    log_info(LOGGER,"Se creo el archivo %d.swap", pid);
     fclose(ARCHIVO);
     free(path);
 
@@ -61,7 +61,7 @@ void createFileSwap(uint32_t* pid){
 char* generatePathFile(uint32_t* pid){
     char* path = string_new();
     string_append(&path, PATH_SWAP_BASE);
-    string_append_with_format(&path,"/%d.swap",(uint32_t)pid);
+    string_append_with_format(&path,"/%d.swap",pid);
     return path;
 }
 
@@ -73,12 +73,12 @@ void saveContentInFile(uint32_t* direccionFisica,uint32_t* tamanio,uint32_t* pid
         log_info(LOGGER,"No se pudo abrir el archivo %s",path);
     }else{
         //inicio de la memoria secundaria con mmap
-        BLOQUE_MEMORIA_SECUNDARIA = mmap(NULL, (uint32_t)tamanio,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,ARCHIVO, 0);
+        BLOQUE_MEMORIA_SECUNDARIA = mmap(NULL, tamanio,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,ARCHIVO, 0);
         ftruncate(ARCHIVO, tamanio);
         //memset(BLOQUE_MEMORIA_SECUNDARIA, ' ', TAMANIO_SWAP);
         //msync(BLOQUE_MEMORIA_SECUNDARIA, TAMANIO_MEMORIA_SECUNDARIA, MS_SYNC); //sincronizar
-        memcpy(BLOQUE_MEMORIA_SECUNDARIA,BLOQUE_MEMORIA + (uint32_t)direccionFisica,(uint32_t)tamanio);
-        msync(BLOQUE_MEMORIA_SECUNDARIA, (uint32_t)tamanio, MS_SYNC);
+        memcpy(BLOQUE_MEMORIA_SECUNDARIA,BLOQUE_MEMORIA + (uint32_t)direccionFisica,tamanio);
+        msync(BLOQUE_MEMORIA_SECUNDARIA, tamanio, MS_SYNC);
         close(ARCHIVO);
 
     }
