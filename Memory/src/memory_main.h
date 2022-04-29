@@ -25,21 +25,21 @@ void* BLOQUE_MEMORIA_SECUNDARIA;
 //VARIABLES GLOBALES
 
 //FUNCION INICIAL
-t_log* iniciarLogger(void);
-t_config* iniciarConfig(void);
-void iniciarVariablesGlobales(void);
+t_log* initLogger(void);
+t_config* initConfig(void);
+void initGlobalVariables(void);
 //FUNCION INICIAL
 
 //INICIO, LECTURA Y ESCRITURA EN BLOQUE DE MEMORIA
-void reservarMemoria(void);
-void guardarValorEnMemoria(uint32_t direccionFisica, uint32_t valor,uint32_t pid);
-uint32_t leerValorEnMemoria(uint32_t direccionFisica,uint32_t pid);
+void initMemory(void);
+void saveValueInMemory(uint32_t* direccionFisica, uint32_t* valor,uint32_t* pid);
+uint32_t* readValueInMemory(uint32_t* direccionFisica,uint32_t* pid);
 //INICIO, LECTURA Y ESCRITURA EN BLOQUE DE MEMORIA
 
 //MANEJO DE ARCHIVOS SWAP
-void crearArchivoSwap(uint32_t pid);
-char* generarPathArchivo(uint32_t pid);
-void guardarContenidoEnArchivo(uint32_t direccionFisica,uint32_t tamanio,uint32_t pid);
-void cargarArchivoEnMemoria(uint32_t pid,uint32_t direccionFisica,uint32_t tamanio);
+void createFileSwap(uint32_t* pid);
+char* generatePathFile(uint32_t* pid);
+void saveContentInFile(uint32_t* direccionFisica,uint32_t* tamanio,uint32_t* pid);
+void loadFileIntoMemory(uint32_t* pid,uint32_t* direccionFisica,uint32_t* tamanio);
 //MANEJO DE ARCHIVOS SWAP
 #endif //MEMORY_MEMORY_MAIN_H
