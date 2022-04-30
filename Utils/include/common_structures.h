@@ -9,9 +9,14 @@
 
 #define ever (;;)
 
+typedef struct Handshake {
+    uint32_t page_size;
+    uint32_t entries_per_page;
+} t_handshake;
+
 
 enum Operation {
-
+    HANDSHAKE
 };
 
 void initialize_signal_handler();

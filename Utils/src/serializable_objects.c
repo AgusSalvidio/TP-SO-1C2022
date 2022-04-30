@@ -11,15 +11,29 @@
 
 t_list* all_serializables;
 
+
+void initialize_and_load_serializable_handshake(){
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = HANDSHAKE;
+    serializable_object -> serialize_function = serialize_handshake;
+    serializable_object -> deserialize_function = deserialize_handshake;
+
+    list_add(all_serializables, (void*) serializable_object);
+}
+
 void initialize_serializable_objects(){
 
     initialize_queue_code_name_associations();
 
     all_serializables = list_create();
 
-    //initialize all serializable objects and add to all_serializables
+    initialize_and_load_serializable_handshake();
 
     log_succesful_initialize_serializable_objects();
+}
+
+t_serializable_object* serializable_handshake(){
+    return serializable_object_with_code(HANDSHAKE);
 }
 
 t_serializable_object* serializable_object_with_code(uint32_t operation_code){

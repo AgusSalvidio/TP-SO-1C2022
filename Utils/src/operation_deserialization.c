@@ -44,3 +44,26 @@ t_request* deserialize(void* serialized_request){
     return request;
 }
 
+t_request* deserialize_handshake(void* serialized_structure) {
+
+    uint32_t page_size;
+    uint32_t entries_per_page;
+
+    uint32_t offset = 0;
+
+    memcpy(&page_size, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&entries_per_page, serialized_structure + offset, sizeof(uint32_t));
+
+    t_handshake * handshake = safe_malloc(sizeof(t_handshake));
+    handshake -> page_size = page_size;
+    handshake -> entries_per_page = entries_per_page;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = HANDSHAKE;
+    request -> structure = (void*) handshake;
+    request -> sanitizer_function = free;
+
+    consider_as_garbage(handshake, free);
+    return request;
+}
