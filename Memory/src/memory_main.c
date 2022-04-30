@@ -1,109 +1,108 @@
 #include "memory_main.h"
-
 int main(void){
-    initGlobalVariables();
-    initMemory();
+    init_global_variables();
+    init_memory();
     /* TEST DE FUNCIONAMIENTO DE NUEVOS METODOS
     */
-    saveValueInMemory(0,5,1);
-    saveValueInMemory(4,6,1);
-    saveValueInMemory(8,7,1);
-    readValueInMemory(4,1);
-    readValueInMemory(8,1);
-    createFileSwap(1);
-    saveContentInFile(0, 12,1);
-    loadFileIntoMemory(1,12,12);
-    readValueInMemory(12,1);
-    readValueInMemory(16,1);
-    readValueInMemory(20,1);
+    save_value_in_memory(0,5,1);
+    save_value_in_memory(4,6,1);
+    save_value_in_memory(8,7,1);
+    read_value_in_memory(4,1);
+    read_value_in_memory(8,1);
+    create_swap_file(1);
+    save_content_in_swap_file(0, 12,1);
+    load_file_into_memory(1,12,12);
+    read_value_in_memory(12,1);
+    read_value_in_memory(16,1);
+    read_value_in_memory(20,1);
 
     return EXIT_SUCCESS;
 }
 
 
-void initMemory(){
-    uint32_t* memoria = atoi(config_get_string_value(CONFIG,"TAM_MEMORIA"));
-    BLOQUE_MEMORIA = malloc(memoria);
+void init_memory(){
+    uint32_t size = atoi(config_get_string_value(CONFIG,"TAM_MEMORIA"));
+    MEMORY_BLOCK = malloc(size);
 }
 
-void initGlobalVariables(){
-    LOGGER = initLogger();
-    log_info(LOGGER,"Logger creado");
-    CONFIG = initConfig();
-    log_info(LOGGER,"Config creada");
+void init_global_variables(){
+    LOGGER = init_logger();
+    log_info(LOGGER,"Logger created");
+    CONFIG = init_config();
+    log_info(LOGGER,"Config created");
     PATH_SWAP_BASE = config_get_string_value(CONFIG,"PATH_SWAP");
 }
 
-void saveValueInMemory(uint32_t* direccionFisica, uint32_t* valor,uint32_t* pid){
-    memcpy(BLOQUE_MEMORIA+ (uint32_t)direccionFisica, &valor, sizeof(uint32_t));
+void save_value_in_memory(uint32_t direction, uint32_t value,uint32_t pid){
+    memcpy(MEMORY_BLOCK+ direction, &value, sizeof(uint32_t));
 
-    log_info(LOGGER,"Se guardo el valor %d en la direccion fisica %d para el PID %d",valor,direccionFisica,pid);
+    log_info(LOGGER,"The value %d was saved at direction %d for PID %d",value,direction,pid);
 }
 
-uint32_t* readValueInMemory(uint32_t* direccionFisica,uint32_t* pid){
-    uint32_t* valor;
-    memcpy(&valor,BLOQUE_MEMORIA +(uint32_t)direccionFisica,sizeof(uint32_t));
-    log_info(LOGGER,"Se obtuvo el valor %d en la direccion fisica %d para el PID %d",valor,direccionFisica,pid);
-    return valor;
+uint32_t read_value_in_memory(uint32_t direction,uint32_t pid){
+    uint32_t value;
+    memcpy(&value,MEMORY_BLOCK +direction,sizeof(uint32_t));
+    log_info(LOGGER,"The value %d obtained in direction %d for PID %d",value,direction,pid);
+    return value;
 }
 
-void createFileSwap(uint32_t* pid){
-    char* path = generatePathFile(pid);
-    ARCHIVO = fopen(path,"w+");
-    if(ARCHIVO == NULL){
-        log_info(LOGGER,"No se pudo crear el archivo %s",path);
+t_log* init_logger(){
+    return log_create("../src/resources/memory.log", "Memory", true, LOG_LEVEL_INFO);
+}
+
+
+t_config* init_config() //cambiar ruta a ubicacion del clone del repo
+{
+    return config_create("../src/resources/memory.config");
+}
+
+void create_swap_file(uint32_t pid){
+    char* path = generate_path_file(pid);
+    SWAP_FILE = fopen(path,"w+");
+    if(SWAP_FILE == NULL){
+        log_info(LOGGER,"could not create  SWAP_FILE %s",path);
     }
-    log_info(LOGGER,"Se creo el archivo %d.swap", pid);
-    fclose(ARCHIVO);
+    log_info(LOGGER,"SWAP_FILE created: %d.swap", pid);
+    fclose(SWAP_FILE);
     free(path);
 
 }
-char* generatePathFile(uint32_t* pid){
+char* generate_path_file(uint32_t pid){
     char* path = string_new();
     string_append(&path, PATH_SWAP_BASE);
     string_append_with_format(&path,"/%d.swap",pid);
     return path;
 }
 
-void saveContentInFile(uint32_t* direccionFisica,uint32_t* tamanio,uint32_t* pid){
-    //PRECONDICION: EL archivo para el pid ya debe existir
-    char* path = generatePathFile(pid);
-    ARCHIVO = open(path,O_CREAT|O_RDWR, 07777);
-    if(ARCHIVO == -1){
-        log_info(LOGGER,"No se pudo abrir el archivo %s",path);
+void save_content_in_swap_file(uint32_t direction,uint32_t size,uint32_t pid){
+    //PRECONDICION: EL SWAP_FILE para el pid ya debe existir
+    char* path = generate_path_file(pid);
+    SWAP_FILE = open(path,O_CREAT|O_RDWR, 07777);
+    if(SWAP_FILE == -1){
+        log_info(LOGGER,"No se pudo abrir el SWAP_FILE %s",path);
     }else{
-        //inicio de la memoria secundaria con mmap
-        BLOQUE_MEMORIA_SECUNDARIA = mmap(NULL, tamanio,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,ARCHIVO, 0);
-        ftruncate(ARCHIVO, tamanio);
-        //memset(BLOQUE_MEMORIA_SECUNDARIA, ' ', TAMANIO_SWAP);
-        //msync(BLOQUE_MEMORIA_SECUNDARIA, TAMANIO_MEMORIA_SECUNDARIA, MS_SYNC); //sincronizar
-        memcpy(BLOQUE_MEMORIA_SECUNDARIA,BLOQUE_MEMORIA + (uint32_t)direccionFisica,tamanio);
-        msync(BLOQUE_MEMORIA_SECUNDARIA, tamanio, MS_SYNC);
-        close(ARCHIVO);
+        //inicio de la memoria SECONDARY con mmap
+        MEMORY_BLOCK_SECONDARY = mmap(NULL, size,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,SWAP_FILE, 0);
+        ftruncate(SWAP_FILE, size);
+        //memset(MEMORY_BLOCK_SECONDARY, ' ', size_SWAP);
+        //msync(MEMORY_BLOCK_SECONDARY, size_MEMORIA_SECONDARY, MS_SYNC); //sincronizar
+        memcpy(MEMORY_BLOCK_SECONDARY,MEMORY_BLOCK + direction,size);
+        msync(MEMORY_BLOCK_SECONDARY, size, MS_SYNC);
+        close(SWAP_FILE);
 
     }
 }
 
-void loadFileIntoMemory(uint32_t* pid,uint32_t* direccionFisica,uint32_t* tamanio){
-    char* path = generatePathFile(pid);
-    ARCHIVO = open(path,O_CREAT|O_RDWR, 07777);
-    if(ARCHIVO == -1){
-        log_info(LOGGER,"No se pudo abrir el archivo %s",path);
+void load_file_into_memory(uint32_t pid,uint32_t direction,uint32_t size){
+    char* path = generate_path_file(pid);
+    SWAP_FILE = open(path,O_CREAT|O_RDWR, 07777);
+    if(SWAP_FILE == -1){
+        log_info(LOGGER,"Could not open SWAP_FILE %s",path);
     }else{
-        BLOQUE_MEMORIA_SECUNDARIA = mmap(NULL, (uint32_t)tamanio,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,ARCHIVO, 0);
-        ftruncate(ARCHIVO, (uint32_t)tamanio);
-        memcpy(BLOQUE_MEMORIA + (uint32_t)direccionFisica,BLOQUE_MEMORIA_SECUNDARIA,(uint32_t)tamanio);
-        msync(BLOQUE_MEMORIA_SECUNDARIA, (uint32_t)tamanio, MS_SYNC);
-        close(ARCHIVO);
+        MEMORY_BLOCK_SECONDARY = mmap(NULL, size,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,SWAP_FILE, 0);
+        ftruncate(SWAP_FILE, size);
+        memcpy(MEMORY_BLOCK + direction,MEMORY_BLOCK_SECONDARY,size);
+        msync(MEMORY_BLOCK_SECONDARY, size, MS_SYNC);
+        close(SWAP_FILE);
     }
-}
-
-t_log* initLogger(){
-    return log_create("../src/resources/memory.log", "Memory", true, LOG_LEVEL_INFO);
-}
-
-
-t_config* initConfig() //cambiar ruta a ubicacion del clone del repo
-{
-    return config_create("../src/resources/memory.config");
 }
