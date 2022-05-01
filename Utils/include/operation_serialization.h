@@ -9,4 +9,7 @@ t_serialization_information* serialize_sem_post(void* structure);
 t_serialization_information* serialize_sem_destroy(void* structure);
 t_serialization_information* serialize_call_io(void* structure);
 
+
+t_serialization_information* serialize_handshake(void* structure);
+
 #endif //KISS_OPERATION_SERIALIZATION_H
