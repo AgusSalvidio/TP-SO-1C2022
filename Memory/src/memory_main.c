@@ -49,7 +49,7 @@ void create_swap_file(uint32_t pid){
     if(SWAP_FILE == NULL){
         log_info(LOGGER,"no se pudo abrir el archivo de swap %s",path);
     }
-    log_info(LOGGER,"SWAP_FILE created: %d.swap", pid);
+    log_info(LOGGER,"Archivo swap creado: %d.swap", pid);
     fclose(SWAP_FILE);
     free(path);
 
