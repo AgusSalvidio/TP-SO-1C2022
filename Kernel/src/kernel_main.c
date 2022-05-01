@@ -42,6 +42,9 @@ typedef enum {
     SRT = 1
 };
 
+t_kernel_config CONFIG_KERNEL;
+t_log* LOGGER;
+
 //LISTAS
 t_list* LISTA_NEW;
 t_list* LISTA_READY;
@@ -62,12 +65,38 @@ pthread_mutex_t mutex_lista_exit;
 
 //HILOS
 pthread_t planificador_corto_plazo;
-pthread_t planificador_largo_plazo;
 pthread_t planificador_mediano_plazo;
+pthread_t planificador_largo_plazo;
+
+//FUNCIONES
+void iniciar_planificador_corto_plazo();
+void iniciar_planificador_mediano_plazo();
+void iniciar_planificador_largo_plazo();
+void algoritmo_planificador_corto_plazo();
+void algoritmo_planificador_mediano_plazo();
+void algoritmo_planificador_largo_plazo();
 
 int main(void){
 
     return EXIT_SUCCESS;
 
+}
+
+void iniciar_planificador_corto_plazo() {
+    pthread_create(&planificador_corto_plazo, NULL, (void*)algoritmo_planificador_corto_plazo, NULL);
+    log_info(LOGGER, "Planificador de corto plazo creado correctamente utilizando el algoritmo '%s'.\n", CONFIG_KERNEL.algoritmo_planificacion);
+    pthread_detach(planificador_corto_plazo);
+}
+
+void iniciar_planificador_mediano_plazo() {
+    pthread_create(&planificador_mediano_plazo, NULL, (void*)algoritmo_planificador_mediano_plazo, NULL);
+    log_info(LOGGER, "Planificador de mediano plazo creado correctamente.\n");
+    pthread_detach(planificador_mediano_plazo);
+}
+
+void iniciar_planificador_largo_plazo() {
+    pthread_create(&planificador_largo_plazo, NULL, (void*)algoritmo_planificador_largo_plazo, NULL);
+    log_info(LOGGER, "Planificador de largo plazo creado correctamente.\n");
+    pthread_detach(planificador_largo_plazo);
 }
 
