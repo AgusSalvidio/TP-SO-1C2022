@@ -1,0 +1,19 @@
+[INFO] 20:38:16:308 Memory/(4121:4121): Logger creado
+[INFO] 20:38:16:309 Memory/(4121:4121): Config creada
+[INFO] 20:38:16:309 Memory/(4121:4121): Se guardo el valor 5 en la direccion fisica 0 para el PID 1
+[INFO] 20:38:16:310 Memory/(4121:4121): Se guardo el valor 6 en la direccion fisica 4 para el PID 1
+[INFO] 20:38:16:310 Memory/(4121:4121): Se guardo el valor 6 en la direccion fisica 4 para el PID 1
+[INFO] 20:38:16:310 Memory/(4121:4121): Se guardo el valor 7 en la direccion fisica 8 para el PID 1
+[INFO] 20:38:16:310 Memory/(4121:4121): Se obtuvo el valor 5 en la direccion fisica 0 para el PID 1
+[INFO] 20:38:16:310 Memory/(4121:4121): VALOR= 5
+[INFO] 20:38:16:311 Memory/(4121:4121): Se obtuvo el valor 6 en la direccion fisica 4 para el PID 1
+[INFO] 20:38:16:311 Memory/(4121:4121): VALOR= 6
+[INFO] 20:38:16:312 Memory/(4121:4121): Se obtuvo el valor 7 en la direccion fisica 8 para el PID 1
+[INFO] 20:38:16:313 Memory/(4121:4121): VALOR= 7
+[INFO] 20:38:16:313 Memory/(4121:4121): Se creo el archivo 1.swap
+[INFO] 20:38:16:315 Memory/(4121:4121): Se obtuvo el valor 5 en la direccion fisica 12 para el PID 1
+[INFO] 20:38:16:315 Memory/(4121:4121): VALOR= 5
+[INFO] 20:38:16:315 Memory/(4121:4121): Se obtuvo el valor 6 en la direccion fisica 16 para el PID 1
+[INFO] 20:38:16:315 Memory/(4121:4121): VALOR= 6
+[INFO] 20:38:16:315 Memory/(4121:4121): Se obtuvo el valor 7 en la direccion fisica 20 para el PID 1
+[INFO] 20:38:16:315 Memory/(4121:4121): VALOR= 7
