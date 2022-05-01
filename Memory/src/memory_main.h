@@ -15,12 +15,12 @@
 #include<fcntl.h>
 #include<unistd.h>
 //VARIABLES GLOBALES
-void* MEMORY_BLOCK;
-t_log* LOGGER;
-t_config* CONFIG;
-char* PATH_SWAP_BASE;
-FILE* SWAP_FILE;
-void* MEMORY_BLOCK_SECONDARY;
+extern void* MEMORY_BLOCK;
+extern t_log* LOGGER;
+extern t_config* CONFIG;
+extern char* PATH_SWAP_BASE;
+extern FILE* SWAP_FILE;
+extern void* MEMORY_BLOCK_SECONDARY;
 //VARIABLES GLOBALES
 
 
@@ -31,12 +31,12 @@ void init_global_variables(void);
 
 
 void init_memory(void);
-void save_value_in_memory(uint32_t direction, uint32_t value,uint32_t pid);
-uint32_t read_value_in_memory(uint32_t direction,uint32_t pid);
+void save_value_in_memory(uint32_t address, uint32_t value,uint32_t pid);
+uint32_t read_value_in_memory(uint32_t address,uint32_t pid);
 
 void create_swap_file(uint32_t pid);
 char* generate_path_file(uint32_t pid);
-void save_content_in_swap_file(uint32_t direction,uint32_t size,uint32_t pid);
-void load_file_into_memory(uint32_t pid,uint32_t direction,uint32_t size);
+void save_content_in_swap_file(uint32_t address,uint32_t size,uint32_t pid);
+void load_file_into_memory(uint32_t pid,uint32_t address,uint32_t size);
 
 #endif //MEMORY_MEMORY_MAIN_H
