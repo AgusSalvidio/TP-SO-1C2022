@@ -1,4 +1,12 @@
 #include <stdlib.h>
+#include <semaphore.h>
+#include <pthread.h>
+#include <stdint.h>
+
+#include <commons/collections/list.h>
+#include <commons/log.h>
+#include <commons/config.h>
+#include <commons/string.h>
 
 int SERVIDOR_KERNEL;
 int SERVIDOR_MEMORIA;
