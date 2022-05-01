@@ -4,6 +4,7 @@
 #include "../../Utils/include/pretty_printer.h"
 #include "../../Utils/include/socket.h"
 #include "console_configuration.h"
+#include "../../Utils/include/garbage_collector.h"
 
 void connect_and_send_to_kernel(t_console_message * console_message) {
 

@@ -4,11 +4,12 @@
 #include "../../Utils/include/garbage_collector.h"
 #include "../../Utils/include/serializable_objects.h"
 #include "../../Utils/include/general_logs.h"
-#include <console_logs_manager.h>
+#include "console_logs_manager.h"
 #include "console_args_parser.h"
+#include "console_kernel_connection.h"
 
 int main(int argc, char** argv){
-    if(argc < 2) {
+    if(argc < 3) {
         return EXIT_FAILURE;
     }
 
@@ -21,8 +22,10 @@ int main(int argc, char** argv){
 
     log_succesful_start_up();
     //TODO: invocacion logica principal
-    parse_program_args(argv);
+    t_console_message* console_message = parse_program_args(argv);
 
+    connect_and_send_to_kernel(console_message);
+    //
     free_system();
     return EXIT_SUCCESS;
 
