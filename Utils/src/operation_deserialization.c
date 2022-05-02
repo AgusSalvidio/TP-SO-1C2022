@@ -51,7 +51,7 @@ t_request *deserialize_read(void *serialized_structure) {
     memcpy(&logical_adress, serialized_structure, sizeof(uint32_t));
 
     t_read* read_to_deserialize = safe_malloc(sizeof(t_read));
-    read_to_deserialize -> logical_adress = logical_adress;
+    read_to_deserialize -> logical_address = logical_adress;
 
     t_request* request = safe_malloc(sizeof(t_request));
     request -> operation = operation;
@@ -60,7 +60,6 @@ t_request *deserialize_read(void *serialized_structure) {
 
     return request;
 }
-
 t_request* deserialize_write(void* serialized_structure) {
 
     uint32_t logical_adress;
@@ -73,7 +72,7 @@ t_request* deserialize_write(void* serialized_structure) {
     memcpy(&value, serialized_structure + offset, sizeof(uint32_t));
 
     t_write* write = safe_malloc(sizeof(t_write));
-    write -> logical_adress = logical_adress;
+    write -> logical_address = logical_adress;
     write -> value = value;
 
     t_request* request = safe_malloc(sizeof(t_request));
@@ -84,7 +83,6 @@ t_request* deserialize_write(void* serialized_structure) {
     consider_as_garbage(write, free);
     return request;
 }
-
 t_request* deserialize_copy(void* serialized_structure) {
 
     uint32_t destiny_logical_adress;
@@ -97,8 +95,8 @@ t_request* deserialize_copy(void* serialized_structure) {
     memcpy(&origin_logical_adress, serialized_structure + offset, sizeof(uint32_t));
 
     t_copy* copy = safe_malloc(sizeof(t_copy));
-    copy -> destiny_logical_adress = destiny_logical_adress;
-    copy -> origin_logical_adress = origin_logical_adress;
+    copy -> destiny_logical_address = destiny_logical_adress;
+    copy -> origin_logical_address = origin_logical_adress;
 
     t_request* request = safe_malloc(sizeof(t_request));
     request -> operation = COPY;

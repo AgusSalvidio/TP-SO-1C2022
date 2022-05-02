@@ -10,13 +10,19 @@ void initialize_cpu_logs_manager(){
     create_process_execution_logger();
 }
 
+void log_read_content(uint32_t content){
+
+    char* message = string_from_format("El contenido leido es: %d.\n", content);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
 void log_cpu_query_performers_loaded_succesfully(){
 
     char* message = string_from_format("Los query performers fueron cargados exitosamente.\n");
     log_succesful_message(process_execution_logger(), message);
     free(message);
 }
-
 void log_query_performer_not_found_error_from_cpu(uint32_t operation){
 
     char* message = string_from_format("No se ha encontrado un query performer que maneje operaciones de código %u\n", operation);

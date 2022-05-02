@@ -9,23 +9,23 @@
 
 #define ever (;;)
 
-typedef struct handshake{
+typedef struct Handshake{
     uint32_t page_size;
     uint32_t entries_per_page;
 }t_handshake;
 
 typedef struct Read{
-    uint32_t logical_adress;
+    uint32_t logical_address;
 }t_read;
 
 typedef struct Write{
-    uint32_t logical_adress;
+    uint32_t logical_address;
     uint32_t value;
 }t_write;
 
 typedef struct Copy{
-    uint32_t destiny_logical_adress;
-    uint32_t origin_logical_adress;
+    uint32_t destiny_logical_address;
+    uint32_t origin_logical_address;
 }t_copy;
 
 enum Operation {

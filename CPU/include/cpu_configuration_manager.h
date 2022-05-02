@@ -11,7 +11,7 @@ char* get_memory_ip();
 char* get_memory_port();
 char* get_dispatch_port();
 char* get_interrupt_port();
-void free_cpu_configuration_manager()
+void free_cpu_configuration_manager();
 
 
 #endif //KISS_CPU_CONFIGURATION_MANGER_H

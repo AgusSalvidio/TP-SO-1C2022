@@ -21,7 +21,8 @@ void connection_handler(int server_socket_fd){
             t_serialization_information* serialization_information = receive_information -> serialization_information;
             t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
             //Loguear y mostrar por consola mensaje recibido
-            log_request_received(process_execution_logger(), deserialized_request);
+            //log_request_received(process_execution_logger(), deserialized_request);
+            log_request_received_basic();
 
 
             t_query_performer* query_performer = query_performer_with_code(deserialized_request -> operation);
