@@ -6,6 +6,9 @@
 void initialize_serializable_objects();
 
 t_serializable_object* serializable_object_with_code(uint32_t operation_code);
+t_serializable_object* serializable_read();
+t_serializable_object* serializable_write();
+t_serializable_object* serializable_copy();
 
 void free_serializable_objects();
 
