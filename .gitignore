@@ -56,3 +56,5 @@ dkms.conf
 target/
 logs/
 /cmake-build-debug/
+Memory_Testing_Console/
+Kernel_Testing_Console/
