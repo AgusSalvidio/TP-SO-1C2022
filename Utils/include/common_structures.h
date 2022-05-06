@@ -11,17 +11,17 @@
 
 
 enum Operation {
-    CONSOLE_MESSAGE
+    CONSOLE_MESSAGE, INSTRUCTION
 };
 
 typedef struct Console_message {
     uint32_t process_size;
-    void* instructions;
+    t_list * instructions;
 } t_console_message;
 
 typedef struct Instruction {
     uint32_t type;
-    void* operands;
+    t_list * operands;
 } t_instruction;
 
 void initialize_signal_handler();

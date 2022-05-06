@@ -9,6 +9,28 @@
 
 t_list* printable_objects;
 
+char* instruction_as_string(t_instruction * instruction){
+
+    char* operands_as_string = string_new();
+    for (int i = 0; i < list_size(instruction->operands); ++i) {
+        uint32_t operand = (uint32_t) list_get(instruction->operands, i);
+        string_append(&operands_as_string, string_itoa(operand));
+        string_append(&operands_as_string, ", ");
+    }
+
+    return string_from_format("Operación: INSTRUCTION\nArgumentos: Type: %d, Operands: [%s]",
+                              instruction -> type, operands_as_string);
+}
+
+void initialize_and_load_instruction_pretty_print(){
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = INSTRUCTION;
+    printable_object -> code_as_string = "INSTRUCTION";
+    printable_object -> print_function = (char *(*)(void *)) instruction_as_string;
+
+    list_add(printable_objects, (void*) printable_object);
+}
+
 char* console_message_as_string(t_console_message * console_message){
 
     return string_from_format("Operación: CONSOLE_MESSAGE\nArgumentos: Process_size: %d, Instructions: {%s}",
@@ -29,6 +51,7 @@ void initialize_pretty_printer(){
     printable_objects = list_create();
 
     initialize_and_load_console_message_pretty_print();
+    initialize_and_load_instruction_pretty_print();
 
     log_succesful_initialize_pretty_printer();
 }

@@ -12,6 +12,15 @@
 
 t_list* all_serializables;
 
+void initialize_and_load_serializable_instruction() {
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = INSTRUCTION;
+    serializable_object -> serialize_function = serialize_instruction;
+    serializable_object -> deserialize_function = deserialize_instruction;
+
+    list_add(all_serializables, (void*) serializable_object);
+}
+
 void initialize_and_load_serializable_console_message() {
     t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
     serializable_object -> code = CONSOLE_MESSAGE;
@@ -28,6 +37,7 @@ void initialize_serializable_objects(){
     all_serializables = list_create();
 
     //initialize all serializable objects and add to all_serializables
+    initialize_and_load_serializable_instruction();
     initialize_and_load_serializable_console_message();
 
     log_succesful_initialize_serializable_objects();

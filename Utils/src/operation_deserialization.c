@@ -72,3 +72,35 @@ t_request* deserialize_console_message(void* serialized_structure) {
     consider_as_garbage(console_message, free);
     return request;
 }
+
+t_request* deserialize_instruction(void* serialized_structure) {
+
+    uint32_t type;
+    uint32_t operands_size;
+    t_list* operands = list_create();
+    uint32_t offset = 0;
+    uint32_t operand_value;
+
+    memcpy(&type, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&operands_size, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+
+    for (int i = 0; i < operands_size; ++i) {
+        memcpy(&operand_value, serialized_structure + offset, sizeof(uint32_t));
+        offset += sizeof(uint32_t);
+        list_add(operands, operand_value);
+    }
+
+    t_instruction * instruction = safe_malloc(sizeof(t_instruction));
+    instruction -> type = type;
+    instruction -> operands = operands;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = INSTRUCTION;
+    request -> structure = (void*) instruction;
+    request -> sanitizer_function = free;
+
+    consider_as_garbage(instruction, free);
+    return request;
+}
