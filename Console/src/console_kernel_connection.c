@@ -13,7 +13,9 @@ void connect_and_send_to_kernel(t_console_message * console_message) {
     request->structure = console_message;
     request->sanitizer_function = free;
 
-    log_info(process_execution_logger(), pretty_print_of(request->operation, request->structure));
+    char *message = pretty_print_of(request->operation, request->structure);
+    log_info(process_execution_logger(), message);
+    free(message);
 
     t_connection_information *connection_information = connect_to(get_kernel_ip(), get_kernel_port());
 

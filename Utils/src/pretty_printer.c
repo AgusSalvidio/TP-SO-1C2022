@@ -54,7 +54,6 @@ void initialize_and_load_console_message_pretty_print(){
     printable_object -> code = CONSOLE_MESSAGE;
     printable_object -> code_as_string = "CONSOLE_MESSAGE";
     printable_object -> print_function = (char *(*)(void *)) console_message_as_string;
-
     list_add(printable_objects, (void*) printable_object);
 }
 
