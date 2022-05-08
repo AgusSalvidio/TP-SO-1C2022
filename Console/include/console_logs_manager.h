@@ -1,0 +1,8 @@
+#ifndef TP_2022_1C_LA_SCALONETA_CONSOLE_LOGS_MANAGER_H
+#define TP_2022_1C_LA_SCALONETA_CONSOLE_LOGS_MANAGER_H
+
+void initialize_console_logs_manager();
+
+void free_console_logs_manager();
+
+#endif //TP_2022_1C_LA_SCALONETA_CONSOLE_LOGS_MANAGER_H
