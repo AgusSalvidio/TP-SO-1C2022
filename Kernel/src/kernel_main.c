@@ -1,102 +1,38 @@
 #include <stdlib.h>
-#include <semaphore.h>
-#include <pthread.h>
-#include <stdint.h>
+#include "../include/planification.h"
+#include "../include/structs.h"
 
-#include <commons/collections/list.h>
-#include <commons/log.h>
-#include <commons/config.h>
-#include <commons/string.h>
+void init_kernel(char* pathConfig){
+    LISTA_NEW = list_create();
+    LISTA_READY = list_create();
+    LISTA_EXEC = list_create();
+    LISTA_BLOCKED = list_create();
+    LISTA_BLOCKED_SUSPENDED = list_create();
+    LISTA_READY_SUSPENDED = list_create();
 
-int SERVIDOR_KERNEL;
-int SERVIDOR_MEMORIA;
-int SERVIDOR_CONSOLA;
-t_config* CONFIG;
+    pthread_mutex_init(&mutex_lista_new, NULL);
+    pthread_mutex_init(&mutex_lista_ready, NULL);
 
-//ESTRUCTURAS
-typedef struct {
-    char* ip_memoria;
-    char* puerto_memoria;
-    char* op_cpu;
-    char* puerto_cpu_dispatch;
-    char* puerto_cpu_interrupt;
-    char* puerto_escucha;
-    char* algoritmo_planificacion;
-    uint32_t estimacion_inicial;
-    double alfa;
-    uint32_t grado_multiprogramacion;
-    uint32_t tiempo_maximo_bloqueado;
-}t_kernel_config;
+    pthread_mutex_init(&mutex_lista_exec, NULL);
+    pthread_mutex_init(&mutex_lista_blocked, NULL);
+    pthread_mutex_init(&mutex_lista_blocked_suspended, NULL);
+    pthread_mutex_init(&mutex_lista_ready_suspended, NULL);
+    pthread_mutex_init(&mutex_lista_exit, NULL);
 
-typedef struct {
-    uint32_t id;
-    uint32_t tamano;
-    t_list* instrucciones;
-    uint32_t program_counter;
-    // tabla_paginas
-    double estimacion_rafaga;
-}t_pcb;
+    iniciar_planificador_corto_plazo();
+    iniciar_planificador_mediano_plazo();
+    iniciar_planificador_largo_plazo();
+}
 
-typedef enum {
-    FIFO = -1,
-    SRT = 1
-};
+void cerrar_kernel() {
+    log_destroy(LOGGER);
+    config_destroy(CONFIG);
 
-t_kernel_config CONFIG_KERNEL;
-t_log* LOGGER;
-
-//LISTAS
-t_list* LISTA_NEW;
-t_list* LISTA_READY;
-t_list* LISTA_EXEC;
-t_list* LISTA_BLOCKED;
-t_list* LISTA_BLOCKED_SUSPENDED;
-t_list* LISTA_READY_SUSPENDED;
-t_list* LISTA_READY_EXIT;
-
-//MUTEXES
-pthread_mutex_t mutex_lista_new;
-pthread_mutex_t mutex_lista_ready;
-pthread_mutex_t mutex_lista_exec;
-pthread_mutex_t mutex_lista_blocked;
-pthread_mutex_t mutex_lista_blocked_suspended;
-pthread_mutex_t mutex_lista_ready_suspended;
-pthread_mutex_t mutex_lista_exit;
-
-//HILOS
-pthread_t planificador_corto_plazo;
-pthread_t planificador_mediano_plazo;
-pthread_t planificador_largo_plazo;
-
-//FUNCIONES
-void iniciar_planificador_corto_plazo();
-void iniciar_planificador_mediano_plazo();
-void iniciar_planificador_largo_plazo();
-void algoritmo_planificador_corto_plazo();
-void algoritmo_planificador_mediano_plazo();
-void algoritmo_planificador_largo_plazo();
+    exit(1);
+}
 
 int main(void){
+    // init_kernel();
 
     return EXIT_SUCCESS;
-
 }
-
-void iniciar_planificador_corto_plazo() {
-    pthread_create(&planificador_corto_plazo, NULL, (void*)algoritmo_planificador_corto_plazo, NULL);
-    log_info(LOGGER, "Planificador de corto plazo creado correctamente utilizando el algoritmo '%s'.\n", CONFIG_KERNEL.algoritmo_planificacion);
-    pthread_detach(planificador_corto_plazo);
-}
-
-void iniciar_planificador_mediano_plazo() {
-    pthread_create(&planificador_mediano_plazo, NULL, (void*)algoritmo_planificador_mediano_plazo, NULL);
-    log_info(LOGGER, "Planificador de mediano plazo creado correctamente.\n");
-    pthread_detach(planificador_mediano_plazo);
-}
-
-void iniciar_planificador_largo_plazo() {
-    pthread_create(&planificador_largo_plazo, NULL, (void*)algoritmo_planificador_largo_plazo, NULL);
-    log_info(LOGGER, "Planificador de largo plazo creado correctamente.\n");
-    pthread_detach(planificador_largo_plazo);
-}
-
