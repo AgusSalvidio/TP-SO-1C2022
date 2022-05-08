@@ -1,0 +1,6 @@
+#ifndef KISS_KERNEL_SANITIZER_H
+#define KISS_KERNEL_SANITIZER_H
+
+void free_system();
+
+#endif //KISS_KERNEL_SANITIZER_H
