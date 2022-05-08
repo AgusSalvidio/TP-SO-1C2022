@@ -9,17 +9,22 @@
 
 t_list* printable_objects;
 
-char* instruction_as_string(t_instruction * instruction){
-
+char *instruction_structure_as_string(t_instruction *instruction) {
     char* operands_as_string = string_new();
     for (int i = 0; i < list_size(instruction->operands); ++i) {
         uint32_t operand = (uint32_t) list_get(instruction->operands, i);
         string_append(&operands_as_string, string_itoa(operand));
         string_append(&operands_as_string, ", ");
     }
+    return string_from_format("Type: %d, Operands: [%s]", instruction -> type, operands_as_string);
+}
 
-    return string_from_format("Operación: INSTRUCTION\nArgumentos: Type: %d, Operands: [%s]",
-                              instruction -> type, operands_as_string);
+char* instruction_as_string(t_instruction * instruction){
+
+    char *operands_as_string = instruction_structure_as_string(instruction);
+
+    return string_from_format("Operación: INSTRUCTION\nArgumentos: %s",
+                              operands_as_string);
 }
 
 void initialize_and_load_instruction_pretty_print(){
@@ -33,8 +38,15 @@ void initialize_and_load_instruction_pretty_print(){
 
 char* console_message_as_string(t_console_message * console_message){
 
-    return string_from_format("Operación: CONSOLE_MESSAGE\nArgumentos: Process_size: %d, Instructions: {%s}",
-                              console_message -> process_size, console_message -> instructions);
+    char* instructions_as_string = string_new();
+    for (int i = 0; i < list_size(console_message->instructions); ++i) {
+        t_instruction * instruction = list_get(console_message->instructions, i);
+        string_append(&instructions_as_string, instruction_structure_as_string(instruction));
+        string_append(&instructions_as_string, ", ");
+    }
+
+    return string_from_format("Operación: CONSOLE_MESSAGE\nArgumentos: Process_size: %d, Instructions: [%s]",
+                              console_message -> process_size, instructions_as_string);
 }
 
 void initialize_and_load_console_message_pretty_print(){
@@ -42,7 +54,6 @@ void initialize_and_load_console_message_pretty_print(){
     printable_object -> code = CONSOLE_MESSAGE;
     printable_object -> code_as_string = "CONSOLE_MESSAGE";
     printable_object -> print_function = (char *(*)(void *)) console_message_as_string;
-
     list_add(printable_objects, (void*) printable_object);
 }
 

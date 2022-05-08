@@ -5,9 +5,11 @@
 #include "../../Utils/include/configuration_manager.h"
 #include "../../Utils/include/general_logs.h"
 #include "console_logs_manager.h"
+#include "console_instruction_handler.h"
 
 void free_system() {
 
+    free_instruction_creator();
     free_pretty_printer();
     free_serializable_objects();
     free_garbage_collector();
