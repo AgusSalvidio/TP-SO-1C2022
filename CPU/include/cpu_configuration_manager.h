@@ -6,7 +6,7 @@
 void initialize_cpu_configuration_manager();
 uint32_t get_tlb_entries();
 char* get_tlb_replacement();
-uint32_t get_noop_time_out();
+uint32_t get_noop_delay();
 char* get_memory_ip();
 char* get_memory_port();
 char* get_dispatch_port();

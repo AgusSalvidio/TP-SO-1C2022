@@ -12,6 +12,7 @@
 
 int main(void){
 
+    //TODO: Sacar testing_consoles de CMakeFile antes de pushear a main
     initialize_signal_handler();
     initialize_cpu_configuration_manager();
     //initialize_cpu_file_management();

@@ -29,7 +29,7 @@ typedef struct Copy{
 }t_copy;
 
 enum Operation {
-    HANDSHAKE, READ, WRITE, COPY
+    HANDSHAKE, READ, WRITE, COPY, NO_OP, IO, EXIT
 };
 
 void initialize_signal_handler();
