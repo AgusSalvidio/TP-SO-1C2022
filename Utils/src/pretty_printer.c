@@ -57,12 +57,21 @@ void initialize_and_load_console_message_pretty_print(){
     list_add(printable_objects, (void*) printable_object);
 }
 
+void initialize_and_load_read() {
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = READ;
+    printable_object -> code_as_string = "READ";
+    printable_object -> print_function = (char *(*)(void *)) read_page_as_string;
+
+    list_add(printable_objects, (void*) printable_object);
+}
 void initialize_pretty_printer(){
 
     printable_objects = list_create();
 
     initialize_and_load_console_message_pretty_print();
     initialize_and_load_instruction_pretty_print();
+    initialize_and_load_read();
 
     log_succesful_initialize_pretty_printer();
 }

@@ -9,9 +9,32 @@
 
 #define ever (;;)
 
+typedef struct Handshake {
+    uint32_t page_size;
+    uint32_t entries_per_page;
+} t_handshake;
+
+typedef struct Request_Response {
+    char* type_description;
+    char* content;
+} t_request_response;
+
+typedef struct Read{
+    uint32_t logical_address;
+}t_read;
+
+typedef struct Write{
+    uint32_t logical_address;
+    uint32_t value;
+}t_write;
+
+typedef struct Copy{
+    uint32_t destiny_logical_address;
+    uint32_t origin_logical_address;
+}t_copy;
 
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION
+    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
 };
 
 enum Instruction_Code {

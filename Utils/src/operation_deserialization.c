@@ -1,4 +1,4 @@
-#include "../include/operation_deserialization.h"
+//#include "../include/operation_deserialization.h"
 #include <common_structures.h>
 #include <string.h>
 #include <serialization_interface.h>
@@ -115,5 +115,129 @@ t_request *deserialize_instruction(void *serialized_structure) {
     request->sanitizer_function = free;
 
     consider_as_garbage(instruction, free);
+   return request;
+}
+
+t_request* deserialize_handshake(void* serialized_structure) {
+
+    uint32_t page_size;
+    uint32_t entries_per_page;
+
+    uint32_t offset = 0;
+
+    memcpy(&page_size, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&entries_per_page, serialized_structure + offset, sizeof(uint32_t));
+
+    t_handshake * handshake = safe_malloc(sizeof(t_handshake));
+    handshake -> page_size = page_size;
+    handshake -> entries_per_page = entries_per_page;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = HANDSHAKE;
+    request -> structure = (void*) handshake;
+    request -> sanitizer_function = free;
+
+    consider_as_garbage(handshake, free);
+    return request;
+}
+
+t_request* deserialize_request_response(void* serialized_structure){
+
+    char* type_description;
+    uint32_t type_description_lenght;
+
+    char* content;
+    uint32_t content_lenght;
+
+
+    uint32_t offset = 0;
+
+    memcpy(&type_description_lenght, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+
+    uint32_t type_description_length_with_trailing_null = type_description_lenght + 2;
+    type_description = calloc(type_description_length_with_trailing_null, sizeof(char));
+    memcpy(type_description, serialized_structure + offset, type_description_lenght);
+    offset += strlen(type_description);
+
+    memcpy(&content_lenght, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    uint32_t content_length_with_trailing_null = content_lenght + 2;
+    content = calloc(content_length_with_trailing_null, sizeof(char));
+    memcpy(content, serialized_structure + offset, content_lenght);
+
+    t_request_response * request_response = safe_malloc(sizeof(t_request_response));
+    request_response -> type_description = type_description;
+    request_response -> content = content;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = REQUEST_RESPONSE;
+    request -> structure = (void*) request_response;
+    request -> sanitizer_function = free;
+
+    consider_as_garbage(request_response, free);
+    return request;
+}
+t_request *deserialize_read(void *serialized_structure) {
+    uint32_t operation = READ;
+    uint32_t logical_adress;
+
+    memcpy(&logical_adress, serialized_structure, sizeof(uint32_t));
+
+    t_read* read_to_deserialize = safe_malloc(sizeof(t_read));
+    read_to_deserialize -> logical_address = logical_adress;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = operation;
+    request -> structure = (void*) read_to_deserialize;
+    request -> sanitizer_function = free;
+
+    return request;
+}
+t_request* deserialize_write(void* serialized_structure) {
+
+    uint32_t logical_adress;
+    uint32_t value;
+
+    uint32_t offset = 0;
+
+    memcpy(&logical_adress, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&value, serialized_structure + offset, sizeof(uint32_t));
+
+    t_write* write = safe_malloc(sizeof(t_write));
+    write -> logical_address = logical_adress;
+    write -> value = value;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = WRITE;
+    request -> structure = (void*) write;
+    request -> sanitizer_function = free;
+
+    consider_as_garbage(write, free);
+    return request;
+}
+t_request* deserialize_copy(void* serialized_structure) {
+
+    uint32_t destiny_logical_adress;
+    uint32_t origin_logical_adress;
+
+    uint32_t offset = 0;
+
+    memcpy(&destiny_logical_adress, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&origin_logical_adress, serialized_structure + offset, sizeof(uint32_t));
+
+    t_copy* copy = safe_malloc(sizeof(t_copy));
+    copy -> destiny_logical_address = destiny_logical_adress;
+    copy -> origin_logical_address = origin_logical_adress;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = COPY;
+    request -> structure = (void*) copy;
+    request -> sanitizer_function = free;
+
+    consider_as_garbage(copy, free);
     return request;
 }

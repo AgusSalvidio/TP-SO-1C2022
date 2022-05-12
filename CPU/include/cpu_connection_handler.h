@@ -1,0 +1,6 @@
+#ifndef KISS_CPU_CONNECTION_HANDLER_H
+#define KISS_CPU_CONNECTION_HANDLER_H
+
+void execute_main_thread();
+
+#endif //KISS_CPU_CONNECTION_HANDLER_H
