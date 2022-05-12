@@ -8,8 +8,25 @@
 #include <t_list_extension.h>
 #include <queue_code_name_associations.h>
 #include <general_logs.h>
+#include <request_bytes_calculator.h>
 
 t_list* all_serializables;
+
+void initialize_and_load_serializable_instruction() {
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = INSTRUCTION;
+    serializable_object -> serialize_function = serialize_instruction;
+    serializable_object -> deserialize_function = deserialize_instruction;
+    list_add(all_serializables, (void*) serializable_object);
+}
+
+void initialize_and_load_serializable_console_message() {
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = CONSOLE_MESSAGE;
+    serializable_object -> serialize_function = serialize_console_message;
+    serializable_object -> deserialize_function = deserialize_console_message;
+    list_add(all_serializables, (void*) serializable_object);
+}
 
 void initialize_and_load_serializable_handshake(){
     t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
@@ -42,7 +59,7 @@ void initialize_and_load_serializable_request_response(){
     serializable_object -> code = REQUEST_RESPONSE;
     serializable_object -> serialize_function = serialize_request_response;
     serializable_object -> deserialize_function = deserialize_request_response;
-   list_add(all_serializables, (void*) serializable_object);
+    list_add(all_serializables, (void*) serializable_object);
 }
   
 void initialize_and_load_serializable_copy(){
@@ -50,7 +67,6 @@ void initialize_and_load_serializable_copy(){
     serializable_object -> code = COPY;
     serializable_object -> serialize_function = serialize_copy;
     serializable_object -> deserialize_function = deserialize_copy;
-
     list_add(all_serializables, (void*) serializable_object);
 }
 
@@ -60,12 +76,14 @@ void initialize_serializable_objects(){
 
     all_serializables = list_create();
 
+    //initialize all serializable objects and add to all_serializables
+    initialize_and_load_serializable_instruction();
+    initialize_and_load_serializable_console_message();
     initialize_and_load_serializable_handshake();
     initialize_and_load_serializable_request_response();
     initialize_and_load_serializable_read();
     initialize_and_load_serializable_write();
     initialize_and_load_serializable_copy();
-
 
     log_succesful_initialize_serializable_objects();
 }
@@ -101,3 +119,4 @@ void free_serializable_objects(){
     free_queue_code_name_associations();
     list_destroy_and_destroy_elements(all_serializables, free);
 }
+

@@ -34,8 +34,22 @@ typedef struct Copy{
 }t_copy;
 
 enum Operation {
-    HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
+    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
 };
+
+enum Instruction_Code {
+    NO_OP, IO, WRITE, READ, COPY, EXIT
+};
+
+typedef struct Console_message {
+    uint32_t process_size;
+    t_list * instructions;
+} t_console_message;
+
+typedef struct Instruction {
+    uint32_t type;
+    t_list * operands;
+} t_instruction;
 
 void initialize_signal_handler();
 void handle_signal(int signal_number, void (*handler_function) ());
