@@ -61,7 +61,7 @@ void initialize_and_load_read() {
     t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
     printable_object -> code = READ;
     printable_object -> code_as_string = "READ";
-    printable_object -> print_function = (char *(*)(void *)) read_page_as_string;
+   // printable_object -> print_function = (char *(*)(void *)) read_page_as_string;
 
     list_add(printable_objects, (void*) printable_object);
 }

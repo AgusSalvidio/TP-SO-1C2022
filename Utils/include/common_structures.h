@@ -37,10 +37,6 @@ enum Operation {
     CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
 };
 
-enum Instruction_Code {
-    NO_OP, IO, WRITE, READ, COPY, EXIT
-};
-
 typedef struct Console_message {
     uint32_t process_size;
     t_list * instructions;
