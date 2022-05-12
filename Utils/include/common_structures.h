@@ -19,9 +19,22 @@ typedef struct Request_Response {
     char* content;
 } t_request_response;
 
+typedef struct Read{
+    uint32_t logical_address;
+}t_read;
+
+typedef struct Write{
+    uint32_t logical_address;
+    uint32_t value;
+}t_write;
+
+typedef struct Copy{
+    uint32_t destiny_logical_address;
+    uint32_t origin_logical_address;
+}t_copy;
 
 enum Operation {
-    HANDSHAKE,REQUEST_RESPONSE
+    HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
 };
 
 void initialize_signal_handler();
