@@ -9,9 +9,26 @@
 
 t_list* printable_objects;
 
+char* read_page_as_string(t_read * read) {
+    return string_from_format("Operación: READ\nSe lee %d",
+                              read -> logical_address);
+}
+
+void initialize_and_load_read() {
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = READ;
+    printable_object -> code_as_string = "READ";
+    printable_object -> print_function = (char *(*)(void *)) read_page_as_string;
+
+    list_add(printable_objects, (void*) printable_object);
+}
+
 void initialize_pretty_printer(){
 
     printable_objects = list_create();
+
+    initialize_and_load_read();
+
     log_succesful_initialize_pretty_printer();
 }
 

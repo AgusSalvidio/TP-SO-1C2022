@@ -11,6 +11,9 @@ Utils:
 Memory: Utils
 	$(MAKE) -C $@
 
+CPU: Utils
+    $(MAKE) -C $@
+
 clean:
 	$(MAKE) -C $(SHARED_MODULE) clean
 	$(foreach module, $(MODULES), $(MAKE) -C $(module) clean &&) true
