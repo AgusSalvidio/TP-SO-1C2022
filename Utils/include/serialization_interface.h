@@ -31,6 +31,7 @@ t_serialization_information* serialize(t_request* request);
 t_request* deserialize(void* serialized_request);
 t_request* deserialize_with_deserialization_information(t_deserialization_information* deserialization_information);
 t_request* deserialize_handshake(void* structure);
+t_request* deserialize_request_response(void* serialized_structure);
 
 void free_request(t_request* request);
 void free_serialization_information(t_serialization_information* serialization_information);
