@@ -31,6 +31,10 @@ t_serialization_information* serialize(t_request* request);
 t_request* deserialize(void* serialized_request);
 t_request* deserialize_with_deserialization_information(t_deserialization_information* deserialization_information);
 
+
+
+t_request* deserialize_handshake(void* structure);
+t_request* deserialize_request_response(void* serialized_structure);
 t_request* deserialize_read(void *serialized_structure);
 t_request* deserialize_write(void* serialized_structure);
 t_request* deserialize_copy(void* serialized_structure);

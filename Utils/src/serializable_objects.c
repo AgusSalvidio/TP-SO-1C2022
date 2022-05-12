@@ -11,6 +11,14 @@
 
 t_list* all_serializables;
 
+void initialize_and_load_serializable_handshake(){
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = HANDSHAKE;
+    serializable_object -> serialize_function = serialize_handshake;
+    serializable_object -> deserialize_function = deserialize_handshake;
+  
+    list_add(all_serializables, (void*) serializable_object);
+}
 void initialize_and_load_serializable_read(){
     t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
     serializable_object -> code = READ;
@@ -25,10 +33,18 @@ void initialize_and_load_serializable_write(){
     serializable_object -> code = WRITE;
     serializable_object -> serialize_function = serialize_write;
     serializable_object -> deserialize_function = deserialize_write;
-
     list_add(all_serializables, (void*) serializable_object);
 }
 
+
+void initialize_and_load_serializable_request_response(){
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = REQUEST_RESPONSE;
+    serializable_object -> serialize_function = serialize_request_response;
+    serializable_object -> deserialize_function = deserialize_request_response;
+   list_add(all_serializables, (void*) serializable_object);
+}
+  
 void initialize_and_load_serializable_copy(){
     t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
     serializable_object -> code = COPY;
@@ -44,13 +60,23 @@ void initialize_serializable_objects(){
 
     all_serializables = list_create();
 
+    initialize_and_load_serializable_handshake();
+    initialize_and_load_serializable_request_response();
     initialize_and_load_serializable_read();
     initialize_and_load_serializable_write();
     initialize_and_load_serializable_copy();
 
+
     log_succesful_initialize_serializable_objects();
 }
 
+
+t_serializable_object* serializable_handshake(){
+    return serializable_object_with_code(HANDSHAKE);
+}
+t_serializable_object* serializable_request_response(){
+    return serializable_object_with_code(REQUEST_RESPONSE);
+}  
 t_serializable_object* serializable_read(){
     return serializable_object_with_code(READ);
 }
@@ -60,6 +86,7 @@ t_serializable_object* serializable_write(){
 t_serializable_object* serializable_copy(){
     return serializable_object_with_code(COPY);
 }
+
 t_serializable_object* serializable_object_with_code(uint32_t operation_code){
 
     bool _is_for(void* serializable_object){

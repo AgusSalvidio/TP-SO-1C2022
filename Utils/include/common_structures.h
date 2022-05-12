@@ -9,11 +9,15 @@
 
 #define ever (;;)
 
-
-typedef struct Handshake{
+typedef struct Handshake {
     uint32_t page_size;
     uint32_t entries_per_page;
-}t_handshake;
+} t_handshake;
+
+typedef struct Request_Response {
+    char* type_description;
+    char* content;
+} t_request_response;
 
 typedef struct Read{
     uint32_t logical_address;
@@ -30,7 +34,7 @@ typedef struct Copy{
 }t_copy;
 
 enum Operation {
-    HANDSHAKE, READ, WRITE, COPY, NO_OP, IO, EXIT
+    HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
 };
 
 void initialize_signal_handler();
