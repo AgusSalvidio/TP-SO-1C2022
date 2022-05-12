@@ -28,16 +28,29 @@ void initialize_handshake_query_performer(){
     query_performer ->perform_function = handshake_query_performer;
     list_add(query_performers, query_performer);
 }
+void initialize_read_query_performer(){
+
+}
+void initialize_write_query_performer(){
+
+}
+void initialize_copy_query_performer(){
+
+}
 
 void initialize_memory_query_performers(){
 
     query_performers = list_create();
 
     initialize_handshake_query_performer();
+    initialize_read_query_performer();
+    initialize_write_query_performer();
+    initialize_copy_query_performer();
 
     log_memory_query_performers_loaded_succesfully();
 
 }
+
 t_query_performer *query_performer_handle(uint32_t operation) {
 
     bool _can_handle(void *query_performer) {
@@ -57,7 +70,6 @@ t_query_performer *query_performer_handle(uint32_t operation) {
 
     return query_performer_found;
 }
-
 t_query_performer *query_performer_with_code(uint32_t operation_code) {
 
     bool _equals_operation(void *query_performer) {

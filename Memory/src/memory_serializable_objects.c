@@ -10,6 +10,7 @@ void initialize_memory_serializable_objects(){
     initialize_serializable_objects();
     memory_operations_information = list_create();
     list_add(memory_operations_information,(void*) serializable_handshake());
+    list_add(memory_operations_information,(void*) serializable_request_response());
 
 }
 void free_memory_serializable_objects(){

@@ -14,9 +14,14 @@ typedef struct Handshake {
     uint32_t entries_per_page;
 } t_handshake;
 
+typedef struct Request_Response {
+    char* type_description;
+    char* content;
+} t_request_response;
+
 
 enum Operation {
-    HANDSHAKE
+    HANDSHAKE,REQUEST_RESPONSE
 };
 
 void initialize_signal_handler();

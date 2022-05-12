@@ -37,3 +37,37 @@ t_serialization_information* serialize_handshake(void* structure){
     serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
     return serialization_information;
 }
+t_serialization_information* serialize_request_response(void* structure){
+
+    t_request_response * request_response = (t_request_response *) structure;
+    uint32_t bytes_of_request_response = amount_of_bytes_of_request_response(structure);
+    uint32_t amount_of_bytes_of_request =
+            sizeof(uint32_t)                    // operation
+            + sizeof(uint32_t)                  // structure size
+            + bytes_of_request_response;   // structure
+
+    void* serialized_request = safe_malloc(amount_of_bytes_of_request);
+
+    uint32_t operation = REQUEST_RESPONSE;
+    uint32_t offset = 0;
+    uint32_t type_description_lenght = strlen(request_response -> type_description);
+    uint32_t content_lenght = strlen(request_response -> content);
+
+
+    memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &bytes_of_request_response, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &type_description_lenght, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(request_response -> type_description), type_description_lenght);
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &content_lenght, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(request_response -> content), content_lenght);
+
+    t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
+    serialization_information -> serialized_request = serialized_request;
+    serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
+    return serialization_information;
+}
