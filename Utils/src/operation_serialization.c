@@ -51,8 +51,6 @@ t_serialization_information* serialize_console_message(void* structure) {
         serialize_instruction_structure(serialized_request, &offset, instruction);
     }
 
-    memcpy(serialized_request + offset, console_message -> instructions, instructions_size);
-
     t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
     serialization_information -> serialized_request = serialized_request;
     serialization_information -> amount_of_bytes = amount_of_bytes_of_request;

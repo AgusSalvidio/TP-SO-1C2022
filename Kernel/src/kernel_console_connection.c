@@ -8,6 +8,7 @@
 #include "../../Utils/include/general_logs.h"
 #include "../../Utils/include/garbage_collector.h"
 #include "kernel_console_message_handler.h"
+#include "../../Utils/include/logger.h"
 
 void* connection_controller(void* socket_fd){
 
@@ -19,7 +20,7 @@ void* connection_controller(void* socket_fd){
 
         t_serialization_information* serialization_information = receive_information -> serialization_information;
         t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
-
+        log_request_received(process_execution_logger(), deserialized_request);
         handle_console_message(deserialized_request -> structure);
         send_ack_message(1, client_socket_fd);
 

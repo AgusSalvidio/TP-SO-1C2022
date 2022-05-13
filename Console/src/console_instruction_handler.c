@@ -17,6 +17,7 @@ t_instruction *create_no_op_instruction (char** instruction_array) {
             list_add(operands, atoi(instruction_array[i]));
         }
         instruction -> operands = operands;
+        return instruction;
     } else {
         log_invalid_number_of_params(instruction_array[0], 1, string_array_size(instruction_array) - 1);
         free_system();
@@ -32,6 +33,7 @@ t_instruction *create_io_instruction (char** instruction_array) {
             list_add(operands, atoi(instruction_array[i]));
         }
         instruction -> operands = operands;
+        return instruction;
     } else {
         log_invalid_number_of_params(instruction_array[0], 1, string_array_size(instruction_array) - 1);
         free_system();
@@ -47,6 +49,7 @@ t_instruction *create_write_instruction (char** instruction_array) {
             list_add(operands, atoi(instruction_array[i]));
         }
         instruction -> operands = operands;
+        return instruction;
     } else {
         log_invalid_number_of_params(instruction_array[0], 2, string_array_size(instruction_array) - 1);
         free_system();
@@ -62,6 +65,7 @@ t_instruction *create_read_instruction (char** instruction_array) {
             list_add(operands, atoi(instruction_array[i]));
         }
         instruction -> operands = operands;
+        return instruction;
     } else {
         log_invalid_number_of_params(instruction_array[0], 1, string_array_size(instruction_array) - 1);
         free_system();
@@ -77,6 +81,7 @@ t_instruction *create_copy_instruction (char** instruction_array) {
             list_add(operands, atoi(instruction_array[i]));
         }
         instruction -> operands = operands;
+        return instruction;
     } else {
         log_invalid_number_of_params(instruction_array[0], 2, string_array_size(instruction_array) - 1);
         free_system();
@@ -92,6 +97,7 @@ t_instruction *create_exit_instruction (char** instruction_array) {
             list_add(operands, atoi(instruction_array[i]));
         }
         instruction -> operands = operands;
+        return instruction;
     } else {
         log_invalid_number_of_params(instruction_array[0], 0, string_array_size(instruction_array));
         free_system();

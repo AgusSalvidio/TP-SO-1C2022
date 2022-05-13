@@ -5,8 +5,9 @@
 #include "../../Utils/include/serializable_objects.h"
 #include "../../Utils/include/general_logs.h"
 #include "../include/kernel_logs_manager.h"
+#include "kernel_console_connection.h"
 
-int main(void){
+int main(void) {
 
     initialize_configuration_manager();
     initialize_kernel_logs_manager();
@@ -17,6 +18,8 @@ int main(void){
 
     log_succesful_start_up();
     //TODO: invocacion logica principal
+
+    execute_connection_handler();
     //
     free_system();
     return EXIT_SUCCESS;

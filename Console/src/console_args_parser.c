@@ -26,16 +26,18 @@ t_console_message* parse_program_args(char **argv) {
     uint32_t file_size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    char* instructions = safe_malloc(file_size + 1);
-    consider_as_garbage(instructions, free);
+    char* instructions_str = safe_malloc(file_size + 1);
+    consider_as_garbage(instructions_str, free);
 
-    fread(instructions, file_size+1, 1, fp);
+    fread(instructions_str, file_size + 1, 1, fp);
     fclose(fp);
-    instructions[file_size] = '\0';
+    instructions_str[file_size] = '\0';
 
     t_console_message* console_message = safe_malloc(sizeof (t_console_message));
     consider_as_garbage(console_message, free);
     console_message -> process_size = atoi(argv[1]);
-    console_message -> instructions = parse_instructions(instructions);
+    console_message -> instructions = parse_instructions(instructions_str);
+    stop_considering_garbage(instructions_str);
+    free(instructions_str);
     return console_message;
 }
