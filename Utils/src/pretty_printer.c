@@ -13,10 +13,14 @@ char *instruction_structure_as_string(t_instruction *instruction) {
     char* operands_as_string = string_new();
     for (int i = 0; i < list_size(instruction->operands); ++i) {
         uint32_t operand = (uint32_t) list_get(instruction->operands, i);
-        string_append(&operands_as_string, string_itoa(operand));
+        char *operand_str = string_itoa(operand);
+        string_append(&operands_as_string, operand_str);
+        free(operand_str);
         string_append(&operands_as_string, ", ");
     }
-    return string_from_format("Type: %d, Operands: [%s]", instruction -> type, operands_as_string);
+    char *string = string_from_format("Type: %d, Operands: [%s]", instruction->type, operands_as_string);
+    free(operands_as_string);
+    return string;
 }
 
 char* instruction_as_string(t_instruction * instruction){
@@ -41,12 +45,16 @@ char* console_message_as_string(t_console_message * console_message){
     char* instructions_as_string = string_new();
     for (int i = 0; i < list_size(console_message->instructions); ++i) {
         t_instruction * instruction = list_get(console_message->instructions, i);
-        string_append(&instructions_as_string, instruction_structure_as_string(instruction));
+        char *struct_as_string = instruction_structure_as_string(instruction);
+        string_append(&instructions_as_string, struct_as_string);
+        free(struct_as_string);
         string_append(&instructions_as_string, ", ");
     }
 
-    return string_from_format("Operación: CONSOLE_MESSAGE\nArgumentos: Process_size: %d, Instructions: [%s]",
-                              console_message -> process_size, instructions_as_string);
+    char *string = string_from_format("Operación: CONSOLE_MESSAGE\nArgumentos: Process_size: %d, Instructions: [%s]",
+                                      console_message->process_size, instructions_as_string);
+    free(instructions_as_string);
+    return string;
 }
 
 void initialize_and_load_console_message_pretty_print(){
