@@ -47,6 +47,10 @@ typedef struct Instruction {
     t_list * operands;
 } t_instruction;
 
+typedef struct Pcb {
+    uint32_t pid;
+} t_pcb;
+
 void initialize_signal_handler();
 void handle_signal(int signal_number, void (*handler_function) ());
 

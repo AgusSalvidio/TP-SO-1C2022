@@ -6,6 +6,8 @@
 #include "../../Utils/include/general_logs.h"
 #include "../include/kernel_logs_manager.h"
 #include "kernel_console_connection.h"
+#include "kernel_scheduler_queues.h"
+#include "kernel_state_transitions.h"
 
 int main(void) {
 
@@ -15,6 +17,10 @@ int main(void) {
     initialize_garbage_collector();
     initialize_serializable_objects();
     initialize_signal_handler();
+
+    initialize_scheduler_queues();
+    initialize_state_transitions();
+    initialize_kernel_process_image();
 
     log_succesful_start_up();
     //TODO: invocacion logica principal
