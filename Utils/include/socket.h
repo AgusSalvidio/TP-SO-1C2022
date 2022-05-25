@@ -29,6 +29,8 @@ t_connection_information* connect_to(char* ip, char* port);
 
 void serialize_and_send_structure(t_request* request, int socket_fd);
 
+t_request* receive_and_deserialize_structure(int socket_fd);
+
 void send_ack_message(uint32_t message_id, int socket_fd);
 
 int serialize_and_send_structure_and_wait_for_ack(t_request* request, int socket_fd, int timeout_in_seconds);

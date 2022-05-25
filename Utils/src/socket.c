@@ -256,6 +256,19 @@ void serialize_and_send_structure(t_request* request, int socket_fd){
     free_serialization_information(request_serialization_information);
 }
 
+t_request* receive_and_deserialize_structure(int socket_fd){
+
+    t_receive_information* receive_information = receive_structure(socket_fd);
+    t_serialization_information* serialization_information = receive_information -> serialization_information;
+    t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
+
+    free(serialization_information);
+    free(receive_information);
+
+    log_request_received_basic();
+    return deserialized_request;
+}
+
 void send_ack_message(uint32_t message_id, int socket_fd){
 
     void* serialized_ack = safe_malloc(sizeof(uint32_t));

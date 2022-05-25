@@ -3,7 +3,7 @@
 #include <cpu_logs_manager.h>
 #include <cpu_serializable_objects.h>
 #include <cpu_query_performer.h>
-#include <cpu_connection_handler.h>
+#include <cpu_memory_connection_handler.h>
 #include "../../Utils/include/garbage_collector.h"
 #include "../../Utils/include/common_structures.h"
 #include "../../Utils/include/pretty_printer.h"
@@ -22,7 +22,10 @@ int main(void){
 
     log_succesful_start_up();
 
-    execute_main_thread();
+    //send_handshake_to_memory();
+    //initialize_mmu();
+    //void initialize_cpu_dispatch_threads();
+    //void initialize_cpu_interrupt_threads();
 
 
     return EXIT_SUCCESS;

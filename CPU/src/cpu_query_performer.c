@@ -6,11 +6,11 @@
 #include "../../Utils/include/common_structures.h"
 
 t_list* query_performers;
-
+/*
 void* handshake_query_performer(t_request* request){
     t_handshake * handshake = ((t_handshake *) request->structure);
     return handle_handshake_request_procedure(handshake);
-}
+}*/
 void* read_query_performer(t_request* request){
     uint32_t content = ((t_read *) request->structure) -> logical_address;
     return handle_read_request_procedure(content);
@@ -35,14 +35,17 @@ void* exit_query_performer(t_request* request){
     //char* partition_swap_algorithm = ((t_copy *) request->structure);
     return handle_exit_request_procedure();
 }
+void* PCB_query_performer(){
+    return handle_PCB_request_procedure();
+}
 
-void initialize_handshake_query_performer(){
+/*void initialize_handshake_query_performer(){
 
     t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
     query_performer -> operation = HANDSHAKE;
     query_performer ->perform_function = handshake_query_performer;
     list_add(query_performers, query_performer);
-}
+}*/
 void initialize_read_query_performer(){
 
     t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
@@ -85,19 +88,27 @@ void initialize_exit_query_performer(){
     query_performer ->perform_function = exit_query_performer;
     list_add(query_performers, query_performer);
 }
+void initialize_PCB_query_performer(){
+
+    t_query_performer* query_performer = safe_malloc(sizeof(t_query_performer));
+    //query_performer -> opertarion = ;
+    query_performer -> perform_function = PCB_query_performer;
+    list_add(query_performers, query_performer);
+}
 
 
 void initialize_cpu_query_performers(){
 
     query_performers = list_create();
 
-    initialize_handshake_query_performer();
+    //initialize_handshake_query_performer();
     initialize_read_query_performer();
     initialize_write_query_performer();
     initialize_copy_query_performer();
     initialize_no_op_query_performer();
     initialize_IO_query_performer();
     initialize_exit_query_performer();
+    initialize_PCB_query_performer();
 
     log_cpu_query_performers_loaded_succesfully();
 }
