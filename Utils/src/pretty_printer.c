@@ -65,12 +65,43 @@ void initialize_and_load_console_message_pretty_print(){
     list_add(printable_objects, (void*) printable_object);
 }
 
+char* initialize_process_as_string(t_initialize_process *initialize_process){
+
+    return string_from_format("Operación: INITIALIZE_PROCESS\nPid: %d, Process_size: %d.",
+                              initialize_process->pid, initialize_process->process_size);
+}
+
+void initialize_and_load_initialize_process_pretty_print(){
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = INITIALIZE_PROCESS;
+    printable_object -> code_as_string = "INITIALIZE_PROCESS";
+    printable_object -> print_function = (char *(*)(void *)) initialize_process_as_string;
+    list_add(printable_objects, (void*) printable_object);
+}
+
+char* suspend_process_as_string(t_suspend_process *suspend_process){
+
+    return string_from_format("Operación: SUSPEND_PROCESS\nPid: %d.",
+                              suspend_process->pid);
+}
+
+void initialize_and_load_suspend_process_pretty_print(){
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = SUSPEND_PROCESS;
+    printable_object -> code_as_string = "SUSPEND_PROCESS";
+    printable_object -> print_function = (char *(*)(void *)) suspend_process_as_string;
+    list_add(printable_objects, (void*) printable_object);
+}
+
 void initialize_pretty_printer(){
 
     printable_objects = list_create();
 
     initialize_and_load_console_message_pretty_print();
     initialize_and_load_instruction_pretty_print();
+    initialize_and_load_initialize_process_pretty_print();
+    initialize_and_load_suspend_process_pretty_print();
+
 
     log_succesful_initialize_pretty_printer();
 }

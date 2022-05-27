@@ -4,6 +4,8 @@
 t_serialization_information* serialize_console_message(void* structure);
 t_serialization_information* serialize_instruction(void* structure);
 
+t_serialization_information* serialize_initialize_process(void* structure);
+t_serialization_information* serialize_suspend_process(void* structure);
 
 
 t_serialization_information* serialize_handshake(void* structure);

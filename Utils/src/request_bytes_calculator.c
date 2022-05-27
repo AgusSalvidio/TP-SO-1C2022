@@ -46,3 +46,12 @@ uint32_t amount_of_bytes_of_copy(){
     return sizeof(uint32_t) +       //destiny_logical_adress
            sizeof(uint32_t);       //origin_logical_adress
 }
+
+uint32_t amount_of_bytes_of_initialize_process(){
+    return sizeof(uint32_t) +       //pid
+           sizeof(uint32_t);       //process_size
+}
+
+uint32_t amount_of_bytes_of_suspend_process(){
+    return sizeof(uint32_t);       //pid
+}

@@ -241,3 +241,44 @@ t_request* deserialize_copy(void* serialized_structure) {
     consider_as_garbage(copy, free);
     return request;
 }
+
+t_request* deserialize_initialize_process(void* serialized_structure) {
+
+    uint32_t pid;
+    uint32_t process_size;
+
+    uint32_t offset = 0;
+
+    memcpy(&pid, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&process_size, serialized_structure + offset, sizeof(uint32_t));
+
+    t_initialize_process *initialize_process = safe_malloc(sizeof(t_initialize_process));
+    initialize_process -> pid = pid;
+    initialize_process -> process_size = process_size;
+
+    t_request *request = safe_malloc(sizeof(t_request));
+    request->operation = INITIALIZE_PROCESS;
+    request->structure = (void *) initialize_process;
+    request->sanitizer_function = free;
+
+    consider_as_garbage(initialize_process, free);
+    return request;
+}
+
+t_request* deserialize_suspend_process(void* serialized_structure) {
+
+    uint32_t pid;
+    memcpy(&pid, serialized_structure, sizeof(uint32_t));
+
+    t_initialize_process *suspend_process = safe_malloc(sizeof(t_initialize_process));
+    suspend_process -> pid = pid;
+
+    t_request *request = safe_malloc(sizeof(t_request));
+    request->operation = SUSPEND_PROCESS;
+    request->structure = (void *) suspend_process;
+    request->sanitizer_function = free;
+
+    consider_as_garbage(suspend_process, free);
+    return request;
+}
