@@ -9,11 +9,43 @@
 
 #define ever (;;)
 
-/* error: empty enum is invalid
-enum Operation {
+typedef struct Handshake {
+    uint32_t page_size;
+    uint32_t entries_per_page;
+} t_handshake;
 
+typedef struct Request_Response {
+    char* type_description;
+    char* content;
+} t_request_response;
+
+typedef struct Read{
+    uint32_t logical_address;
+}t_read;
+
+typedef struct Write{
+    uint32_t logical_address;
+    uint32_t value;
+}t_write;
+
+typedef struct Copy{
+    uint32_t destiny_logical_address;
+    uint32_t origin_logical_address;
+}t_copy;
+
+enum Operation {
+    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
 };
-*/
+
+typedef struct Console_message {
+    uint32_t process_size;
+    t_list * instructions;
+} t_console_message;
+
+typedef struct Instruction {
+    uint32_t type;
+    t_list * operands;
+} t_instruction;
 
 void initialize_signal_handler();
 void handle_signal(int signal_number, void (*handler_function) ());

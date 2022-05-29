@@ -1,0 +1,5 @@
+#ifndef KISS_KERNEL_CONSOLE_MESSAGE_HANDLER_H
+#define KISS_KERNEL_CONSOLE_MESSAGE_HANDLER_H
+
+void handle_console_message(void* console_message);
+#endif //KISS_KERNEL_CONSOLE_MESSAGE_HANDLER_H
