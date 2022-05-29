@@ -1,6 +1,7 @@
 include_directories(include)
 set(SOURCES
         src/kernel_main.c
+        src/planification.c
         src/kernel_configuration.c
         src/kernel_logs_manager.c
         src/kernel_sanitizer.c
