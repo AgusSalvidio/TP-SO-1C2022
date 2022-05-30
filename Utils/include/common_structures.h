@@ -43,7 +43,7 @@ typedef struct Process_Suspend {
 } t_suspend_process;
 
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION, HANDSHAKE, REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS, INTERRUPTION
+    CONSOLE_MESSAGE, INSTRUCTION, HANDSHAKE, REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS, INTERRUPTION, PCB
 };
 
 typedef struct Console_message {
@@ -55,6 +55,16 @@ typedef struct Instruction {
     uint32_t type;
     t_list *operands;
 } t_instruction;
+
+typedef struct Pcb{
+    uint32_t pid;
+    uint32_t process_size;
+    t_list* instructions;
+    uint32_t pc;
+    uint32_t page_table;
+    double next_burst;
+} t_pcb;
+
 
 void initialize_signal_handler();
 

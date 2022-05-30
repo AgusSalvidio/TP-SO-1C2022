@@ -14,5 +14,7 @@ t_serialization_information* serialize_read(void *structure);
 t_serialization_information* serialize_write(void* structure);
 t_serialization_information* serialize_copy(void* structure);
 
+t_serialization_information* serialize_pcb(void* structure);
+
 
 #endif //KISS_OPERATION_SERIALIZATION_H

@@ -10,6 +10,7 @@ uint32_t amount_of_bytes_of_write();
 uint32_t amount_of_bytes_of_copy();
 uint32_t amount_of_bytes_of_initialize_process();
 uint32_t amount_of_bytes_of_suspend_process();
+uint32_t amount_of_bytes_of_pcb();
 
 
 

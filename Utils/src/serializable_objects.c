@@ -86,6 +86,14 @@ void initialize_and_load_serializable_suspend_process(){
     list_add(all_serializables, (void*) serializable_object);
 }
 
+void initialize_and_load_serializable_pcb() {
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = PCB;
+    serializable_object -> serialize_function = serialize_pcb;
+    serializable_object -> deserialize_function = deserialize_pcb;
+    list_add(all_serializables, (void*) serializable_object);
+}
+
 void initialize_serializable_objects(){
 
     initialize_queue_code_name_associations();
@@ -102,6 +110,7 @@ void initialize_serializable_objects(){
     initialize_and_load_serializable_copy();
     initialize_and_load_serializable_initialize_process();
     initialize_and_load_serializable_suspend_process();
+    initialize_and_load_serializable_pcb();
 
     log_succesful_initialize_serializable_objects();
 }

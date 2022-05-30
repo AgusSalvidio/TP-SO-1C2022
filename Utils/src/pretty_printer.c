@@ -93,6 +93,30 @@ void initialize_and_load_suspend_process_pretty_print(){
     list_add(printable_objects, (void*) printable_object);
 }
 
+char* pcb_as_string(t_pcb *pcb) {
+    char* instructions_as_string = string_new();
+    for (int i = 0; i < list_size(pcb->instructions); ++i) {
+        t_instruction * instruction = list_get(pcb->instructions, i);
+        char *struct_as_string = instruction_structure_as_string(instruction);
+        string_append(&instructions_as_string, struct_as_string);
+        free(struct_as_string);
+        string_append(&instructions_as_string, ", ");
+    }
+
+    char *string = string_from_format("Operación: PCB\nArgumentos: Pid: %d, Process_size: %d, Instructions: [%s], Pc: %d, Page_table: %d, Next_burst: %f",
+                                      pcb->pid, pcb->process_size,instructions_as_string, pcb->pc, pcb->page_table, pcb->next_burst);
+    free(instructions_as_string);
+    return string;
+}
+
+void initialize_and_load_pcb_pretty_print(){
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = PCB;
+    printable_object -> code_as_string = "PCB";
+    printable_object -> print_function = (char *(*)(void *)) pcb_as_string;
+    list_add(printable_objects, (void*) printable_object);
+}
+
 void initialize_pretty_printer(){
 
     printable_objects = list_create();
@@ -101,7 +125,7 @@ void initialize_pretty_printer(){
     initialize_and_load_instruction_pretty_print();
     initialize_and_load_initialize_process_pretty_print();
     initialize_and_load_suspend_process_pretty_print();
-
+    initialize_and_load_pcb_pretty_print();
 
     log_succesful_initialize_pretty_printer();
 }

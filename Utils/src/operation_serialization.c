@@ -289,3 +289,45 @@ t_serialization_information* serialize_suspend_process(void* structure){
 
 }
 
+t_serialization_information* serialize_pcb(void* structure){
+
+    t_pcb *pcb = (t_pcb*) structure;
+    uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_pcb(structure);
+    uint32_t amount_of_bytes_of_request =
+            sizeof(uint32_t)                    // operation
+            + sizeof(uint32_t)                  // structure size
+            + amount_of_bytes_of_struct;   // structure
+
+    void* serialized_request = safe_malloc(amount_of_bytes_of_request);
+
+    uint32_t operation = PCB;
+    uint32_t instructions_size = list_size(pcb->instructions);
+    uint32_t offset = 0;
+
+    memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> pid), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> process_size), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &instructions_size, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    for (int i = 0; i < instructions_size; ++i) {
+        t_instruction *instruction = list_get(pcb->instructions, i);
+        serialize_instruction_structure(serialized_request, &offset, instruction);
+    }
+    memcpy(serialized_request + offset, &(pcb -> pc), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> page_table), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> next_burst), sizeof(double));
+
+    t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
+    serialization_information -> serialized_request = serialized_request;
+    serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
+    return serialization_information;
+
+}
+
