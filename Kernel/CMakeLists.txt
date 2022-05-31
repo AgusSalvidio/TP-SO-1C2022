@@ -9,7 +9,9 @@ set(SOURCES
         src/kernel_console_message_handler.c
         src/kernel_state_transitions.c
         src/kernel_process_image.c
-        src/kernel_scheduler_queues.c)
+        src/kernel_scheduler_queues.c
+        src/kernel_memory_connection.c
+        src/kernel_cpu_connection.c)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/target")
 add_executable(Kernel ${SOURCES})
