@@ -8,6 +8,7 @@
 #include "../../Utils/include/common_structures.h"
 #include "../../Utils/include/pretty_printer.h"
 #include "../../Utils/include/general_logs.h"
+#include <cpu_kernel_dispatch_connection_handler.h>
 
 
 int main(void){
@@ -24,8 +25,8 @@ int main(void){
 
     //send_handshake_to_memory();
     //initialize_mmu();
-    //void initialize_cpu_dispatch_threads();
-    //void initialize_cpu_interrupt_threads();
+    //initialize_cpu_dispatch_threads();
+    //initialize_cpu_interrupt_threads();
 
 
     return EXIT_SUCCESS;
