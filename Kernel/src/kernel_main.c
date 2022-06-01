@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "../include/planification.h"
-#include "../include/structs.h"
 #include "../../Utils/include/configuration_manager.h"
 #include "../../Utils/include/pretty_printer.h"
 #include "../../Utils/include/garbage_collector.h"

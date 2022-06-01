@@ -3,7 +3,6 @@
 //
 
 #include "../include/planification.h"
-#include "../include/structs.h"
 
 void iniciar_planificador_corto_plazo() {
     pthread_create(&planificador_corto_plazo, NULL, (void*)algoritmo_planificador_corto_plazo, NULL);
