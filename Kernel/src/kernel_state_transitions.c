@@ -96,7 +96,9 @@ void free_state_transitions() {
     list_destroy_and_destroy_elements(state_transitions, free);
 }
 
-t_state_transition *state_transition_for(t_process_image *process, uint32_t to_state) {
+t_state_transition *state_transition_for(t_pcb *pcb, uint32_t to_state) {
+
+    t_process_image *process = find_process_image_by_pid(pcb->pid);
 
     bool _is_for(t_state_transition *state_transition) {
         return

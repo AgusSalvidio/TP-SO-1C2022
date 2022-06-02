@@ -13,7 +13,7 @@ t_scheduler_queue * new_scheduler_queue_for(uint32_t state){
     t_scheduler_queue* scheduler_queue = safe_malloc(sizeof(t_scheduler_queue));
     scheduler_queue -> state = state;
     scheduler_queue -> mutex = mutex;
-    scheduler_queue -> contexts = list_create();
+    scheduler_queue -> pcb_list = list_create();
 
     return scheduler_queue;
 }
@@ -48,12 +48,12 @@ t_scheduler_queue *scheduler_queue_of(uint32_t state) {
     return scheduler_queue_found;
 }
 
-t_list *contexts_in(uint32_t state) {
-    return scheduler_queue_of(state) -> contexts;
+t_list *pcbs_in(uint32_t state) {
+    return scheduler_queue_of(state) -> pcb_list;
 }
 
-uint32_t amount_of_contexts_in(uint32_t state) {
-    return list_size(contexts_in(state));
+uint32_t amount_of_pcbs_in(uint32_t state) {
+    return list_size(pcbs_in(state));
 }
 
 void handling_concurrency_do(t_scheduler_queue *queue, void (*function)()) {
@@ -77,8 +77,8 @@ char *name_of_state(uint32_t to_state) {
             return "SUSPENDED_BLOCKED";
         case SUSPENDED_READY:
             return "SUSPENDED_READY";
-        case EXIT:
-            return "SUSPENDED_READY";
+        case Q_EXIT:
+            return "EXIT";
     }
 }
 
@@ -87,7 +87,7 @@ void move_to_execute() {
     t_pcb *pcb;
 
     void _remove(){
-        pcb = list_remove_first(scheduler_queue -> contexts);
+        pcb = list_remove_first(scheduler_queue -> pcb_list);
     }
 
     handling_concurrency_do(scheduler_queue, _remove);
@@ -103,7 +103,7 @@ void add_to_scheduler_queue(t_pcb* pcb, uint32_t to_state) {
     t_scheduler_queue * queue = scheduler_queue_of(to_state);
 
     void _add(){
-        list_add(queue -> contexts, pcb);
+        list_add(queue -> pcb_list, pcb);
     }
 
     handling_concurrency_do(queue, _add);
@@ -111,14 +111,14 @@ void add_to_scheduler_queue(t_pcb* pcb, uint32_t to_state) {
     image -> state = to_state;
 }
 
-void remove_from(t_list* contexts, t_pcb * pcb){
+void remove_from(t_list* pcb_list, t_pcb * pcb){
 
     bool _are_equals(t_pcb* pcb_to_compare){
         return pcb -> pid == pcb_to_compare -> pid;
     }
 
     t_pcb* pcb_found =
-            list_remove_by_condition(contexts, (bool (*)(void *)) _are_equals);
+            list_remove_by_condition(pcb_list, (bool (*)(void *)) _are_equals);
 
     if (!pcb_found) {
         log_pcb_not_found_error(pcb -> pid);
@@ -131,7 +131,7 @@ void remove_from_scheduler_queue(t_pcb * pcb) {
     t_scheduler_queue * queue = scheduler_queue_of(image -> state);
 
     void _remove(){
-        remove_from(queue -> contexts, pcb);
+        remove_from(queue -> pcb_list, pcb);
     }
 
     handling_concurrency_do(queue, _remove);
@@ -139,7 +139,7 @@ void remove_from_scheduler_queue(t_pcb * pcb) {
 
 void free_dispatcher_queue(t_scheduler_queue * scheduler_queue){
     safe_mutex_destroy(&scheduler_queue -> mutex);
-    list_destroy(scheduler_queue -> contexts);
+    list_destroy(scheduler_queue -> pcb_list);
     free(scheduler_queue);
 }
 
