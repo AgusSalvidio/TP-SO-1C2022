@@ -15,7 +15,6 @@ void schedule_context() {
 
 
     safe_mutex_lock(&mutex_process);
-
     t_pcb * pcb_found = list_first(scheduler_queue_of(NEW)->pcb_list);
     safe_mutex_unlock(&mutex_process);
 

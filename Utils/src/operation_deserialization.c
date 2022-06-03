@@ -266,21 +266,28 @@ t_request* deserialize_initialize_process(void* serialized_structure) {
     return request;
 }
 
-t_request* deserialize_suspend_process(void* serialized_structure) {
-
+t_request* deserialize_pid(uint32_t operation, void* serialized_structure) {
     uint32_t pid;
     memcpy(&pid, serialized_structure, sizeof(uint32_t));
 
-    t_initialize_process *suspend_process = safe_malloc(sizeof(t_initialize_process));
+    t_suspend_process *suspend_process = safe_malloc(sizeof(t_suspend_process));
     suspend_process -> pid = pid;
 
     t_request *request = safe_malloc(sizeof(t_request));
-    request->operation = SUSPEND_PROCESS;
+    request->operation = operation;
     request->structure = (void *) suspend_process;
     request->sanitizer_function = free;
 
     consider_as_garbage(suspend_process, free);
     return request;
+}
+
+t_request* deserialize_suspend_process(void* serialized_structure) {
+    return deserialize_pid(SUSPEND_PROCESS, serialized_structure);
+}
+
+t_request* deserialize_finalize_process(void* serialized_structure) {
+    return deserialize_pid(FINALIZE_PROCESS, serialized_structure);
 }
 
 t_request* deserialize_pcb(void* serialized_structure) {
