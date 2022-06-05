@@ -7,6 +7,9 @@ set(SOURCES
         src/kernel_sanitizer.c
         src/kernel_console_connection.c
         src/kernel_console_message_handler.c
+        src/kernel_state_transitions.c
+        src/kernel_process_image.c
+        src/kernel_scheduler_queues.c
         src/kernel_memory_connection.c
         src/kernel_cpu_connection.c)
 
