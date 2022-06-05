@@ -2,7 +2,10 @@
 #define KISS_KERNEL_CPU_CONNECTION_H
 
 #include <stdint.h>
+#include "../../Utils/include/common_structures.h"
 
-void connect_and_send_to_cpu(uint32_t operation, void *structure_to_send);
+t_pcb *connect_and_send_pcb_to_cpu(void *structure_to_send);
+
+void connect_and_send_interruption_to_cpu(void *structure_to_send);
 
 #endif //KISS_KERNEL_CPU_CONNECTION_H

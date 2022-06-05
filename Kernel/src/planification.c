@@ -36,8 +36,9 @@ void iniciar_planificador_largo_plazo() {
 }
 
 void free_planificacion_threads() {
-    //safe_thread_cancel(planificador_corto_plazo);
+    safe_thread_cancel(planificador_corto_plazo);
     //safe_thread_cancel(planificador_mediano_plazo);
+
     safe_thread_cancel(planificador_largo_plazo);
     safe_thread_cancel(connection_thread);
 

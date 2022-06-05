@@ -21,7 +21,6 @@ void new_to_ready_transition(t_pcb *pcb) {
 void ready_to_exec_transition(t_pcb *pcb) {
     move_to(pcb, EXEC);
     log_pcb_ready_to_exec_transition(pcb->pid);
-    //TODO
 }
 
 void blocked_to_ready_transition(t_pcb *pcb) {

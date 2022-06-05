@@ -14,7 +14,10 @@ set(SOURCES
         src/kernel_cpu_connection.c
         src/kernel_long_term_scheduler.c
         src/kernel_mid_term_scheduler.c
-        src/kernel_short_term_scheduler.c)
+        src/kernel_short_term_scheduler.c
+        src/kernel_scheduling_algorithm.c
+        src/kernel_fifo_algorithm.c
+        src/kernel_srt_algorithm.c src/kernel_event.c)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/target")
 add_executable(Kernel ${SOURCES})

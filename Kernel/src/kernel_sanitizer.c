@@ -8,10 +8,14 @@
 #include "kernel_scheduler_queues.h"
 #include "kernel_state_transitions.h"
 #include "planification.h"
+#include "kernel_long_term_scheduler.h"
+#include "kernel_short_term_scheduler.h"
 
 void free_system() {
 
     free_planificacion_threads();
+    free_long_term_scheduler();
+    free_short_term_scheduler();
     free_pretty_printer();
     free_serializable_objects();
     free_garbage_collector();
