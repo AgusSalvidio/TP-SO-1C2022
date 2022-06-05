@@ -40,10 +40,14 @@ typedef struct Process_Initialize {
 
 typedef struct Process_Suspend {
     uint32_t pid;
-} t_suspend_process;
+} t_suspend_process, t_finalize_process;
 
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION, HANDSHAKE, REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS, INTERRUPTION, PCB
+    CONSOLE_MESSAGE, INSTRUCTION, HANDSHAKE,
+    REQUEST_RESPONSE, READ, WRITE,
+    COPY, NO_OP, IO,
+    EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS,
+    FINALIZE_PROCESS, INTERRUPTION, PCB
 };
 
 typedef struct Console_message {

@@ -7,9 +7,11 @@
 #include "../include/kernel_logs_manager.h"
 #include "kernel_scheduler_queues.h"
 #include "kernel_state_transitions.h"
+#include "planification.h"
 
 void free_system() {
 
+    free_planificacion_threads();
     free_pretty_printer();
     free_serializable_objects();
     free_garbage_collector();

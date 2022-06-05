@@ -261,7 +261,7 @@ t_serialization_information* serialize_initialize_process(void* structure){
 
 }
 
-t_serialization_information* serialize_suspend_process(void* structure){
+t_serialization_information* serialize_pid(uint32_t operation, void* structure){
 
     t_suspend_process *suspend_process = (t_suspend_process*) structure;
     uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_suspend_process();
@@ -271,8 +271,6 @@ t_serialization_information* serialize_suspend_process(void* structure){
             + amount_of_bytes_of_struct;   // structure
 
     void* serialized_request = safe_malloc(amount_of_bytes_of_request);
-
-    uint32_t operation = SUSPEND_PROCESS;
 
     uint32_t offset = 0;
 
@@ -287,6 +285,14 @@ t_serialization_information* serialize_suspend_process(void* structure){
     serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
     return serialization_information;
 
+}
+
+t_serialization_information* serialize_suspend_process(void* structure) {
+    return serialize_pid(SUSPEND_PROCESS, structure);
+}
+
+t_serialization_information* serialize_finalize_process(void* structure) {
+    return serialize_pid(FINALIZE_PROCESS, structure);
 }
 
 t_serialization_information* serialize_pcb(void* structure){

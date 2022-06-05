@@ -4,12 +4,17 @@
 #include "../../Utils/include/common_structures.h"
 #include "kernel_sanitizer.h"
 #include "kernel_logs_manager.h"
+#include "kernel_memory_connection.h"
 
 t_list *state_transitions;
 
 void new_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_new_to_ready_transition(pcb->pid);
+    t_initialize_process *initialize_process = safe_malloc(sizeof(t_initialize_process));
+    initialize_process->pid = pcb ->pid;
+    initialize_process->process_size = pcb->process_size;
+    connect_and_send_to_memory(INITIALIZE_PROCESS, initialize_process);
     //TODO
 }
 
@@ -96,7 +101,9 @@ void free_state_transitions() {
     list_destroy_and_destroy_elements(state_transitions, free);
 }
 
-t_state_transition *state_transition_for(t_process_image *process, uint32_t to_state) {
+t_state_transition *state_transition_for(t_pcb *pcb, uint32_t to_state) {
+
+    t_process_image *process = find_process_image_by_pid(pcb->pid);
 
     bool _is_for(t_state_transition *state_transition) {
         return

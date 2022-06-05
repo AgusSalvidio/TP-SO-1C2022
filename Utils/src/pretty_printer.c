@@ -85,11 +85,25 @@ char* suspend_process_as_string(t_suspend_process *suspend_process){
                               suspend_process->pid);
 }
 
+char* finalize_process_as_string(t_finalize_process *finalize_process){
+
+    return string_from_format("Operación: FINALIZE_PROCESS\nPid: %d.",
+                              finalize_process->pid);
+}
+
 void initialize_and_load_suspend_process_pretty_print(){
     t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
     printable_object -> code = SUSPEND_PROCESS;
     printable_object -> code_as_string = "SUSPEND_PROCESS";
     printable_object -> print_function = (char *(*)(void *)) suspend_process_as_string;
+    list_add(printable_objects, (void*) printable_object);
+}
+
+void initialize_and_load_finalize_process_pretty_print(){
+    t_printable_object* printable_object = safe_malloc(sizeof(t_printable_object));
+    printable_object -> code = FINALIZE_PROCESS;
+    printable_object -> code_as_string = "FINALIZE_PROCESS";
+    printable_object -> print_function = (char *(*)(void *)) finalize_process_as_string;
     list_add(printable_objects, (void*) printable_object);
 }
 
@@ -125,6 +139,7 @@ void initialize_pretty_printer(){
     initialize_and_load_instruction_pretty_print();
     initialize_and_load_initialize_process_pretty_print();
     initialize_and_load_suspend_process_pretty_print();
+    initialize_and_load_finalize_process_pretty_print();
     initialize_and_load_pcb_pretty_print();
 
     log_succesful_initialize_pretty_printer();

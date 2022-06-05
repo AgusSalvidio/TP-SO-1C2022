@@ -10,7 +10,7 @@
 typedef struct Queue {
     uint32_t state;
     pthread_mutex_t mutex;
-    t_list *contexts;
+    t_list *pcb_list;
 } t_scheduler_queue;
 
 typedef enum Process_state {
@@ -24,9 +24,9 @@ void initialize_scheduler_queues();
 
 t_scheduler_queue *scheduler_queue_of(uint32_t state);
 
-t_list *contexts_in(uint32_t state);
+t_list *pcbs_in(uint32_t state);
 
-uint32_t amount_of_contexts_in(uint32_t state);
+uint32_t amount_of_pcbs_in(uint32_t state);
 
 void handling_concurrency_do(t_scheduler_queue *queue, void (*function)());
 

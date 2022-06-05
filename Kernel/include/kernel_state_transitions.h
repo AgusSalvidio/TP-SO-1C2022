@@ -13,7 +13,7 @@ typedef struct State_transition{
 
 void initialize_state_transitions();
 
-t_state_transition* state_transition_for(t_process_image* process, uint32_t to_state);
+t_state_transition* state_transition_for(t_pcb *pcb, uint32_t to_state);
 
 void free_state_transitions();
 
