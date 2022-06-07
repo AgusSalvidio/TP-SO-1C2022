@@ -62,6 +62,12 @@ void log_pcb_exec_to_blocked_transition(uint32_t pid) {
     free(message);
 }
 
+void log_pcb_exec_to_ready_transition(uint32_t pid) {
+    char *message = string_from_format("Proceso %d EXEC -> READY.", pid);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
 void log_pcb_exec_to_exit_transition(uint32_t pid) {
     char *message = string_from_format("Proceso %d EXEC -> EXIT.", pid);
     log_succesful_message(process_execution_logger(), message);

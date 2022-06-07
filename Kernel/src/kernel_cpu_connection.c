@@ -19,9 +19,7 @@ t_pcb * connect_and_send_pcb_to_cpu(void *structure_to_send) {
     log_info(process_execution_logger(), message);
     free(message);
 
-    t_connection_information *connection_information;
-    connection_information = connect_to(get_cpu_ip(), get_cpu_dispatch_port());
-
+    t_connection_information *connection_information = connect_to(get_cpu_ip(), get_cpu_dispatch_port());
 
     serialize_and_send_structure(request, connection_information->socket_fd);
 
@@ -41,12 +39,12 @@ t_pcb * connect_and_send_pcb_to_cpu(void *structure_to_send) {
     free(receive_information);
 
     stop_considering_garbage(request->structure);
-    free_request(request);
+    free(request);
     free_and_close_connection_information(connection_information);
     return pcb;
 }
 
-void connect_and_send_interruption_to_cpu(void *structure_to_send) {
+void connect_and_send_interruption_to_cpu() {
 
     t_request* request = safe_malloc(sizeof(t_request));
     request->operation = INTERRUPTION;

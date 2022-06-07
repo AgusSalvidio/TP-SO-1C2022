@@ -4,6 +4,7 @@
 #include "kernel_configuration.h"
 #include "kernel_scheduler_queues.h"
 #include "kernel_event.h"
+#include "kernel_cpu_connection.h"
 
 t_scheduling_algorithm *srt_algorithm;
 t_list *pcbs_burst_estimations;
@@ -41,7 +42,7 @@ void srt_update_ready_queue_when_adding_function(t_pcb *pcb) {
     calculate_current_estimation_for(burst_estimation);
 
     bool _shortest_remaining_time(t_pcb *pcb_to_compare) {
-        return pcb_to_compare->next_burst <= pcb->next_burst;;
+        return pcb_to_compare->next_burst <= pcb->next_burst;
     }
 
     list_sort(scheduler_queue_of(READY)->pcb_list, _shortest_remaining_time);
@@ -55,8 +56,15 @@ void update_previous(t_burst *burst) {
     //TODO revisar calculo estimacion.
 }
 
+void send_interruption_signal () {
+    connect_and_send_interruption_to_cpu();
+}
+
 void srt_resolve_dependencies_function(t_burst *burst) {
     subscribe_to_event_doing(CONTEXT_SWITCH, (void (*)(void *)) update_previous);
+    subscribe_to_event_doing(NEW_PROCESS_READY_TO_EXECUTE, send_interruption_signal);
+    subscribe_to_event_doing(BLOCKED_PROCESS_READY_TO_EXECUTE, send_interruption_signal);
+    subscribe_to_event_doing(SUSPENDED_PROCESS_READY_TO_EXECUTE, send_interruption_signal);
 }
 
 void free_burst_estimations() {

@@ -6,6 +6,6 @@
 
 t_pcb *connect_and_send_pcb_to_cpu(void *structure_to_send);
 
-void connect_and_send_interruption_to_cpu(void *structure_to_send);
+void connect_and_send_interruption_to_cpu();
 
 #endif //KISS_KERNEL_CPU_CONNECTION_H

@@ -23,6 +23,8 @@ void log_pcb_suspended_ready_to_ready_transition(uint32_t pid);
 
 void log_pcb_exec_to_blocked_transition(uint32_t pid);
 
+void log_pcb_exec_to_ready_transition(uint32_t pid);
+
 void log_pcb_exec_to_exit_transition(uint32_t pid);
 
 void log_pcb_blocked_to_exit_transition(uint32_t pid);
