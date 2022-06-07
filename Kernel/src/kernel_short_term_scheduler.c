@@ -17,14 +17,13 @@ void execute_pcb(t_pcb *pcb) {
     burst->finished = current_time_in_milliseconds();
     pcb->page_table = returned_pcb->page_table;
     pcb->pc = returned_pcb->pc;
+    //Notifico al algoritmo para que reorganice la lista de ready segun su criterio (paso el burst para srt)
     notify_with_argument(CONTEXT_SWITCH, burst);
-    notify(CHECK_FOR_SUSPENSION);
     free(burst);
 }
 
 void process_added_to_ready() {
     safe_sem_post(&sem_processes_to_exec);
-
 }
 
 void algoritmo_planificador_corto_plazo() {

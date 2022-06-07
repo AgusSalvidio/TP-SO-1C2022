@@ -5,6 +5,7 @@
 #include "kernel_sanitizer.h"
 #include "kernel_logs_manager.h"
 #include "kernel_memory_connection.h"
+#include "kernel_event.h"
 
 t_list *state_transitions;
 
@@ -15,6 +16,7 @@ void new_to_ready_transition(t_pcb *pcb) {
     initialize_process->pid = pcb ->pid;
     initialize_process->process_size = pcb->process_size;
     connect_and_send_to_memory(INITIALIZE_PROCESS, initialize_process);
+    notify(NEW_PROCESS_READY_TO_EXECUTE);
     //TODO
 }
 

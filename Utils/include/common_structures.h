@@ -82,7 +82,7 @@ void safe_sem_destroy(sem_t* semaphore);
 void* safe_malloc(size_t size);
 
 char* process_description_for(char* process_name, t_list* strings_to_hash);
-uint64_t current_time_in_milliseconds();
+uint32_t current_time_in_milliseconds();
 void assert_only_one_in(t_list* self);
 
 void free_system_debugging_thread_alive_for(int seconds);
