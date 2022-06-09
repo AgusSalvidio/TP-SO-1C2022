@@ -34,10 +34,6 @@ void execute_pcb(t_pcb *pcb) {
     check_next_transition(pcb);
     //Notifico al algoritmo para que reorganice la lista de ready segun su criterio (paso el burst para srt)
     notify_with_argument(CONTEXT_SWITCH, burst);
-    
-   
-    
-    
     free(burst);
 }
 
@@ -47,9 +43,6 @@ void process_added_to_ready() {
 
 void algoritmo_planificador_corto_plazo() {
     initialize_scheduling_algorithm();
-    subscribe_to_event_doing(NEW_PROCESS_READY_TO_EXECUTE, process_added_to_ready);
-    subscribe_to_event_doing(SUSPENDED_PROCESS_READY_TO_EXECUTE, process_added_to_ready);
-    subscribe_to_event_doing(BLOCKED_PROCESS_READY_TO_EXECUTE, process_added_to_ready);
     subscribe_to_event_doing(PROCESS_READY_TO_EXECUTE, process_added_to_ready);
     while (1) {
         safe_sem_wait(&sem_processes_ready);

@@ -9,11 +9,9 @@
 t_scheduling_algorithm *srt_algorithm;
 t_list *pcbs_burst_estimations;
 
-void calculate_current_estimation_for(t_burst_estimation *burst_estimation) {
 
-    burst_estimation->pcb->next_burst =
-            (burst_estimation->previous) * get_alpha() + (1 - get_alpha()) * (burst_estimation->previous_real);
-
+bool shortest_remaining_time(t_pcb *p1, t_pcb *p2) {
+    return p1->next_burst <= p2->next_burst;
 }
 
 t_burst_estimation *burst_estimation_of_process(t_pcb *pcb) {
@@ -28,7 +26,7 @@ t_burst_estimation *burst_estimation_of_process(t_pcb *pcb) {
     if (!burst_estimation) {
         burst_estimation = safe_malloc(sizeof(t_burst_estimation));
         burst_estimation->pcb = pcb;
-        burst_estimation->previous = pcb->next_burst;
+        burst_estimation->estimated_previous = pcb->next_burst;
         burst_estimation->previous_real = 0;
         list_add(pcbs_burst_estimations, burst_estimation);
     }
@@ -36,24 +34,19 @@ t_burst_estimation *burst_estimation_of_process(t_pcb *pcb) {
     return burst_estimation;
 }
 
-void srt_update_ready_queue_when_adding_function(t_pcb *pcb) {
-    t_burst_estimation *burst_estimation =
-            burst_estimation_of_process(pcb);
-    calculate_current_estimation_for(burst_estimation);
+void srt_update_ready_queue_when_adding_function() {
 
-    bool _shortest_remaining_time(t_pcb *pcb_to_compare) {
-        return pcb_to_compare->next_burst <= pcb->next_burst;
-    }
+    list_sort(scheduler_queue_of(READY)->pcb_list, (bool (*)(void *, void *)) shortest_remaining_time);
 
-    list_sort(scheduler_queue_of(READY)->pcb_list, _shortest_remaining_time);
-
-    burst_estimation->previous_real = 0;
 }
 
-void update_previous(t_burst *burst) {
+void update_previous(t_burst *burst) { //est * α + real * (1 - α)
     t_burst_estimation *burst_estimation =
             burst_estimation_of_process(burst->pcb);
-    //TODO revisar calculo estimacion.
+    uint32_t last_burst = burst->finished - burst->start;
+    //actualizo estimacion pcb
+    burst_estimation -> pcb -> next_burst = burst_estimation -> pcb -> next_burst * get_alpha() + last_burst * (1-get_alpha());
+    srt_update_ready_queue_when_adding_function();
 }
 
 void send_interruption_signal () {
@@ -62,9 +55,7 @@ void send_interruption_signal () {
 
 void srt_resolve_dependencies_function(t_burst *burst) {
     subscribe_to_event_doing(CONTEXT_SWITCH, (void (*)(void *)) update_previous);
-    subscribe_to_event_doing(NEW_PROCESS_READY_TO_EXECUTE, send_interruption_signal);
-    subscribe_to_event_doing(BLOCKED_PROCESS_READY_TO_EXECUTE, send_interruption_signal);
-    subscribe_to_event_doing(SUSPENDED_PROCESS_READY_TO_EXECUTE, send_interruption_signal);
+    subscribe_to_event_doing(SEND_INTERRUPTION_SIGNAL, send_interruption_signal);
 }
 
 void free_burst_estimations() {

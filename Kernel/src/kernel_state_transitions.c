@@ -16,7 +16,8 @@ void new_to_ready_transition(t_pcb *pcb) {
     initialize_process->pid = pcb ->pid;
     initialize_process->process_size = pcb->process_size;
     connect_and_send_to_memory(INITIALIZE_PROCESS, initialize_process);
-    notify(NEW_PROCESS_READY_TO_EXECUTE);
+    notify(SEND_INTERRUPTION_SIGNAL);
+    notify(PROCESS_READY_TO_EXECUTE);
     //TODO
 }
 
@@ -28,6 +29,7 @@ void ready_to_exec_transition(t_pcb *pcb) {
 void blocked_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_blocked_to_ready_transition(pcb->pid);
+    notify(SEND_INTERRUPTION_SIGNAL);
     //TODO
 }
 
@@ -45,6 +47,7 @@ void suspended_blocked_to_suspended_ready_transition(t_pcb *pcb) {
 void suspended_ready_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_suspended_ready_to_ready_transition(pcb->pid);
+    notify(SEND_INTERRUPTION_SIGNAL);
     //TODO
 }
 
@@ -58,6 +61,7 @@ void exec_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_exec_to_ready_transition(pcb->pid);
     notify(PROCESS_READY_TO_EXECUTE);
+    notify(SEND_INTERRUPTION_SIGNAL);
     //TODO
 
 }
