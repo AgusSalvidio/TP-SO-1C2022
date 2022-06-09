@@ -61,9 +61,6 @@ void exec_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_exec_to_ready_transition(pcb->pid);
     notify(PROCESS_READY_TO_EXECUTE);
-    notify(SEND_INTERRUPTION_SIGNAL);
-    //TODO
-
 }
 
 void exec_to_exit_transition(t_pcb *pcb) {
