@@ -24,7 +24,7 @@ t_pcb * connect_and_send_pcb_to_cpu(void *structure_to_send) {
     serialize_and_send_structure(request, connection_information->socket_fd);
 
     t_receive_information *receive_information = receive_structure(connection_information->socket_fd);
-    t_pcb *pcb;
+    t_pcb *pcb = structure_to_send;
     if(receive_information -> receive_was_successful){
 
         t_serialization_information* serialization_information = receive_information -> serialization_information;
