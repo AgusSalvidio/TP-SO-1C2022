@@ -41,4 +41,8 @@ void log_scheduling_algorithm_not_found_error_for(char *algorithm_name);
 
 void log_context_executing(uint32_t pid);
 
+void log_io_starting_execution(uint32_t pid, uint32_t millis);
+
+void log_io_finished_execution(uint32_t pid);
+
 #endif //KISS_KERNEL_LOGS_MANAGER_H

@@ -1,5 +1,6 @@
 #include "../include/kernel_logs_manager.h"
 #include "../../Utils/include/logger.h"
+#include "../../Utils/include/common_structures.h"
 #include <stdint.h>
 #include <commons/string.h>
 #include <malloc.h>
@@ -105,6 +106,19 @@ void log_scheduling_algorithm_not_found_error_for(char *algorithm_name) {
 
 void log_context_executing(uint32_t pid) {
     char *message = string_from_format("Pcb %d ejecutando.", pid);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
+void log_io_starting_execution(uint32_t pid, uint32_t millis) {
+    char *message = string_from_format("Comienza ejecucion de IO por proceso %d... duracion: %dms", pid,
+                                       millis);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
+void log_io_finished_execution(uint32_t pid) {
+    char *message = string_from_format("Finaliza ejecucion de IO por proceso %d", pid);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 }

@@ -15,7 +15,7 @@ void check_next_transition(t_pcb *pcb) {
     if (instruction->type == IO) {
         transition = state_transition_for(pcb, BLOCKED);
     } else if (instruction->type == EXIT) {
-        transition = state_transition_for(pcb, EXIT);
+        transition = state_transition_for(pcb, Q_EXIT);
     } else {
         transition = state_transition_for(pcb, READY);
     }
@@ -30,7 +30,8 @@ void execute_pcb(t_pcb *pcb) {
     t_pcb *returned_pcb = connect_and_send_pcb_to_cpu(pcb);
     burst->finished = current_time_in_milliseconds();
     pcb->page_table = returned_pcb->page_table;
-    pcb->pc = returned_pcb->pc;
+   // pcb->pc = returned_pcb->pc;
+   pcb->pc +=1;
     check_next_transition(pcb);
     //Notifico al algoritmo para que reorganice la lista de ready segun su criterio (paso el burst para srt)
     notify_with_argument(CONTEXT_SWITCH, burst);

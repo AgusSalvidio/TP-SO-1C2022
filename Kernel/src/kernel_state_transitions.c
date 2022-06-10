@@ -6,6 +6,9 @@
 #include "kernel_logs_manager.h"
 #include "kernel_memory_connection.h"
 #include "kernel_event.h"
+#include "kernel_io_routine.h"
+#include "../../Utils/include/pthread_wrapper.h"
+#include "kernel_long_term_scheduler.h"
 
 t_list *state_transitions;
 
@@ -30,6 +33,7 @@ void blocked_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_blocked_to_ready_transition(pcb->pid);
     notify(SEND_INTERRUPTION_SIGNAL);
+    notify(PROCESS_READY_TO_EXECUTE);
     //TODO
 }
 
@@ -54,7 +58,7 @@ void suspended_ready_to_ready_transition(t_pcb *pcb) {
 void exec_to_blocked_transition(t_pcb *pcb) {
     move_to(pcb, BLOCKED);
     log_pcb_exec_to_blocked_transition(pcb->pid);
-    //TODO
+    default_safe_thread_create((void *(*)(void *)) execute_io_routine, pcb);
 }
 
 void exec_to_ready_transition(t_pcb *pcb) {
@@ -69,6 +73,7 @@ void exec_to_exit_transition(t_pcb *pcb) {
     t_finalize_process *finalize_process = safe_malloc(sizeof(t_finalize_process));
     finalize_process->pid = pcb->pid;
     connect_and_send_to_memory(FINALIZE_PROCESS, finalize_process);
+    request_process_remove_from_schedule();
 }
 
 //void blocked_to_exit_transition(t_pcb *pcb) {

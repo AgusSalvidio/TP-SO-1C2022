@@ -10,6 +10,7 @@
 #include "kernel_scheduler_queues.h"
 #include "kernel_state_transitions.h"
 #include "kernel_event.h"
+#include "kernel_io_routine.h"
 
 int main(void) {
 
@@ -23,6 +24,7 @@ int main(void) {
 
     initialize_scheduler_queues();
     initialize_state_transitions();
+    initialize_io_routine();
     initialize_kernel_process_image();
 
     log_succesful_start_up();

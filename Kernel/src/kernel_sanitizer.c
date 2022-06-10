@@ -11,6 +11,7 @@
 #include "kernel_long_term_scheduler.h"
 #include "kernel_short_term_scheduler.h"
 #include "kernel_event.h"
+#include "kernel_io_routine.h"
 
 void free_system() {
 
@@ -19,6 +20,7 @@ void free_system() {
     free_short_term_scheduler();
     free_scheduler_queues();
     free_state_transitions();
+    free_io_routine();
     free_kernel_process_image();
     free_event_notifier();
     free_pretty_printer();

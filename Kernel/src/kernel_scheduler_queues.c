@@ -28,7 +28,7 @@ void initialize_scheduler_queues() {
     list_add(scheduler_queues, new_scheduler_queue_for(BLOCKED));
     list_add(scheduler_queues, new_scheduler_queue_for(SUSPENDED_BLOCKED));
     list_add(scheduler_queues, new_scheduler_queue_for(SUSPENDED_READY));
-    list_add(scheduler_queues, new_scheduler_queue_for(EXIT));
+    list_add(scheduler_queues, new_scheduler_queue_for(Q_EXIT));
 
 }
 

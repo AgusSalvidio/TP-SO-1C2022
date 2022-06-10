@@ -23,7 +23,7 @@ void create_process_image(t_console_message *console_message) {
     pcb->next_burst = get_initial_estimation();
     list_add(processes, (void*) process);
     add_to_scheduler_queue(pcb, NEW);
-    request_schedule_context();
+    request_schedule_process();
 }
 
 t_process_image *find_process_image_by_pid(uint32_t pid) {
