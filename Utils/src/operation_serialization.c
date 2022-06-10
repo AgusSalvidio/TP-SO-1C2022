@@ -220,9 +220,9 @@ t_serialization_information* serialize_copy(void* structure){
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
     offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(copy -> destiny_logical_address), sizeof(uint32_t));
+    memcpy(serialized_request + offset, &(copy -> logical_address), sizeof(uint32_t));
     offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(copy -> origin_logical_address), sizeof(uint32_t));
+    memcpy(serialized_request + offset, &(copy -> value), sizeof(uint32_t));
 
     t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
     serialization_information -> serialized_request = serialized_request;

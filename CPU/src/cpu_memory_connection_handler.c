@@ -6,6 +6,7 @@
 #include "../../Utils/include/configuration_manager.h"
 #include "cpu_logs_manager.h"
 
+//TODO: Guardar logical_address_translator como variable global
 t_handshake* logical_address_translator;
 
 t_connection_information* connect_to_memory() {
@@ -87,12 +88,12 @@ void send_write_to_memory(uint32_t logical_address, uint32_t value){
     free_and_close_connection_information(memory_conn);
 }
 
-void send_copy_to_memory(uint32_t origin_logical_address, uint32_t destiny_logical_address){
+void send_copy_to_memory(uint32_t destiny_logical_address, uint32_t value){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_copy* copy = safe_malloc(sizeof(t_copy));
-    copy -> origin_logical_address = origin_logical_address;
-    copy -> destiny_logical_address = destiny_logical_address;
+    copy -> logical_address = destiny_logical_address;
+    copy -> value = value;
 
     t_request* request = safe_malloc(sizeof(t_request));
     request -> operation = COPY;

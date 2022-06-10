@@ -3,14 +3,11 @@
 #include "../../Utils/include/common_structures.h"
 #include "cpu_logs_manager.h"
 #include "cpu_configuration_manager.h"
+#include "cpu_memory_connection_handler.h"
+#include "cpu_kernel_interrupt_connection_handler.h"
+#include "cpu_instruction_cycle.h"
 #include <stdlib.h>
 #include <unistd.h>
-/*
-t_handshake* logical_address_translator;
-
-t_handshake* logic_address_translator(){
-    return logical_address_translator;
-}*/
 
 void wait_delay_time(){
     uint32_t delay_time_in_seconds = get_noop_delay()/1000;
@@ -25,22 +22,45 @@ t_request* response_request_with(void* received_structure, uint32_t operation){
     return request_to_send;
 }
 
-void* handle_no_op_request_procedure(){
-    //Tengo que esperar el tiempo especificado en .config
+void* handle_read_request_procedure(t_list* operands){
+    uint32_t logical_address = (uint32_t) list_get(operands, 0);
+    send_read_to_memory(logical_address);
+}
+
+void* handle_write_request_procedure(t_list* operands){
+    uint32_t logical_address = (uint32_t) list_get(operands, 0);
+    uint32_t value = (uint32_t) list_get(operands, 1);
+    send_write_to_memory(logical_address, value);
+}
+
+void* handle_copy_request_procedure(t_list* operands){
+    uint32_t logical_address = (uint32_t) list_get(operands, 0);
+    uint32_t value = (uint32_t) list_get(operands, 1);
+    send_copy_to_memory(logical_address, value);
+}
+
+void* handle_no_op_request_procedure(t_list* operands){
     wait_delay_time();
 }
-void* handle_IO_request_procedure(uint32_t blocked_time){
+void* handle_IO_request_procedure(t_list* operands){
+    uint32_t blocked_time = (uint32_t) list_get(operands, 0);
     //Retorno el PCB actualizado y el tiempo en milisegundos
     uint32_t time = blocked_time/1000;
     sleep(time);
 
-    //Retornar PCB
+    //return response_request_with(current_pcb, PCB);
 }
-void* handle_exit_request_procedure(){
+void* handle_exit_request_procedure(t_list* operands){
     //Retorno PCB actualizado
+
+    //return response_request_with(current_pcb, PCB);
 }
-void* handle_PCB_request_procedure(){
-    //Devolver PCB actualizado a Kernel
+void* handle_PCB_request_procedure(t_pcb* current_pcb){
+    while(current_interruption_status()){
+        execute_instruction_cycle(current_pcb);
+    }
+    modify_interruption_status();
+    return response_request_with(current_pcb, PCB);
 }
 
 void free_cpu_manager(){};
