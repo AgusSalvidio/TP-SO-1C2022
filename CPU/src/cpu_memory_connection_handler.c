@@ -1,12 +1,11 @@
 #include <cpu_memory_connection_handler.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cpu_query_performer.h>
 #include "../../Utils/include/socket.h"
 #include "../../Utils/include/configuration_manager.h"
 #include "cpu_logs_manager.h"
 
-//TODO: Guardar logical_address_translator como variable global
+
 t_handshake* logical_address_translator;
 
 t_connection_information* connect_to_memory() {
@@ -17,6 +16,10 @@ t_connection_information* connect_to_memory() {
     t_connection_information *conn_info = connect_to(ip, port);
 
     return conn_info;
+}
+
+t_handshake* get_logical_address_translator(){
+    return logical_address_translator;
 }
 
 void send_handshake_to_memory(){
@@ -63,8 +66,7 @@ void send_read_to_memory(uint32_t logical_address){
 
     t_request_response* content = safe_malloc(sizeof (t_request_response));
     content = (t_request_response*) response -> structure;
-    uint32_t content_converted = (uint32_t) content -> content;
-    log_read_content(content_converted);
+    log_read_content(content->content);
 
     free_request(response);
     free_and_close_connection_information(memory_conn);

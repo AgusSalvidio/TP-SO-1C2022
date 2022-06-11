@@ -10,8 +10,8 @@ void initialize_cpu_logs_manager(){
     create_process_execution_logger();
 }
 
-void log_read_content(uint32_t content){
-    char* message = string_from_format("El contenido leido es: %d.\n", content);
+void log_read_content(char* content){
+    char* message = string_from_format("El contenido leido es: %s.\n", content);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 }
