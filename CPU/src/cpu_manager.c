@@ -25,6 +25,7 @@ t_request* response_request_with(void* received_structure, uint32_t operation){
 void* handle_read_request_procedure(t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     send_read_to_memory(logical_address);
+    log_read_content(receive_read_content_from_memory());
 }
 
 void* handle_write_request_procedure(t_list* operands){
@@ -51,12 +52,11 @@ void* handle_IO_request_procedure(t_list* operands){
     //return response_request_with(current_pcb, PCB);
 }
 void* handle_exit_request_procedure(t_list* operands){
-    //Retorno PCB actualizado
 
     //return response_request_with(current_pcb, PCB);
 }
 void* handle_PCB_request_procedure(t_pcb* current_pcb){
-    while(current_interruption_status()){
+    while(!current_interruption_status()){
         execute_instruction_cycle(current_pcb);
     }
     modify_interruption_status();

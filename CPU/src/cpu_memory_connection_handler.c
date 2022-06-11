@@ -61,15 +61,29 @@ void send_read_to_memory(uint32_t logical_address){
 
     serialize_and_send_structure(request, memory_conn -> socket_fd);
     free_request(request);
-
+/*
     t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
 
     t_request_response* content = safe_malloc(sizeof (t_request_response));
     content = (t_request_response*) response -> structure;
     log_read_content(content->content);
 
+    free_request(response);*/
+    free_and_close_connection_information(memory_conn);
+}
+
+char* receive_read_content_from_memory(){
+    t_connection_information *memory_conn = connect_to_memory();
+
+    t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
+
+    t_request_response* content = safe_malloc(sizeof (t_request_response));
+    content = (t_request_response*) response -> structure;
+    char* read_content = content -> content;
+
     free_request(response);
     free_and_close_connection_information(memory_conn);
+    return read_content;
 }
 
 void send_write_to_memory(uint32_t logical_address, uint32_t value){
