@@ -48,10 +48,11 @@ void send_handshake_to_memory(){
     free_and_close_connection_information(memory_conn);
 }
 
-void send_read_to_memory(uint32_t logical_address){
+void send_read_to_memory(uint32_t pid, uint32_t logical_address){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_read* read = safe_malloc(sizeof(t_read));
+    read -> pid = pid;
     read -> logical_address = logical_address;
 
     t_request* request = safe_malloc(sizeof(t_request));
@@ -86,10 +87,11 @@ char* receive_read_content_from_memory(){
     return read_content;
 }
 
-void send_write_to_memory(uint32_t logical_address, uint32_t value){
+void send_write_to_memory(uint32_t pid, uint32_t logical_address, uint32_t value){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_write* write = safe_malloc(sizeof(t_write));
+    write -> pid = pid;
     write -> logical_address = logical_address;
     write -> value = value;
 
@@ -104,10 +106,11 @@ void send_write_to_memory(uint32_t logical_address, uint32_t value){
     free_and_close_connection_information(memory_conn);
 }
 
-void send_copy_to_memory(uint32_t destiny_logical_address, uint32_t value){
+void send_copy_to_memory(uint32_t pid, uint32_t destiny_logical_address, uint32_t value){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_copy* copy = safe_malloc(sizeof(t_copy));
+    copy -> pid = pid;
     copy -> logical_address = destiny_logical_address;
     copy -> value = value;
 

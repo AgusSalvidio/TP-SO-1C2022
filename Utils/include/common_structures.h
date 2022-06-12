@@ -20,10 +20,12 @@ typedef struct Request_Response {
 } t_request_response;
 
 typedef struct Read{
+    uint32_t pid;
     uint32_t logical_address;
 }t_read;
 
 typedef struct Write{
+    uint32_t pid;
     uint32_t logical_address;
     uint32_t value;
 }t_write, t_copy;
@@ -47,8 +49,13 @@ typedef struct Pcb{
     double next_burst;
 } t_pcb;
 
+typedef struct IO_pcb{
+    t_pcb* pcb;
+    uint32_t blocked_time;
+}t_io_pcb;
+
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INTERRUPT, PCB
+    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INTERRUPT, PCB, IO_PCB
 };
 
 void initialize_signal_handler();
