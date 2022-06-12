@@ -24,9 +24,9 @@ t_instruction* decode_instruction(t_instruction* current_instruction){
     uint32_t value, operand;
 
     if(current_instruction -> type == COPY){
-        operand = list_get(current_instruction -> operands, 1);
+        operand = (uint32_t) list_get(current_instruction -> operands, 1);
         value = fetch_operands(operand);
-        list_add_in_index(current_instruction -> operands, 1, value);
+        list_add_in_index(current_instruction -> operands, 1, (void*) value);
     }
     return current_instruction;
 }

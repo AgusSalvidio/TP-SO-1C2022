@@ -16,7 +16,7 @@ bool current_interruption_status(){
 }
 
 void modify_interruption_status(){
-    interruption_status = false;
+    interruption_status = !interruption_status;
 }
 
 void interrupt_connection_handler(int server_socket_fd){
@@ -32,7 +32,6 @@ void interrupt_connection_handler(int server_socket_fd){
             t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
             log_request_received_basic();
 
-            //t_query_performer* query_performer = query_performer_with_code(deserialized_request -> operation);
             interruption_status = true;
 
             send_ack_message(1, connection_fd);
@@ -45,4 +44,5 @@ void interrupt_connection_handler(int server_socket_fd){
 void initialize_cpu_interrupt_threads(){
     uint32_t interrupt_socket = listen_at(get_interrupt_port());
     interrupt_thread = default_safe_thread_create(interrupt_connection_handler, interrupt_socket);
+    safe_thread_join(interrupt_thread);
 }

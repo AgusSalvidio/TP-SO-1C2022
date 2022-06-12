@@ -45,15 +45,14 @@ void* handle_no_op_request_procedure(t_list* operands){
 }
 void* handle_IO_request_procedure(t_list* operands){
     uint32_t blocked_time = (uint32_t) list_get(operands, 0);
-    //Retorno el PCB actualizado y el tiempo en milisegundos
-    uint32_t time = blocked_time/1000;
-    sleep(time);
+    //Retorno el PCB actualizado y el tiempo en milisegundos (t_io_pcb)
 
+    modify_interruption_status();
     //return response_request_with(current_pcb, PCB);
 }
 void* handle_exit_request_procedure(t_list* operands){
 
-    //return response_request_with(current_pcb, PCB);
+    modify_interruption_status();
 }
 void* handle_PCB_request_procedure(t_pcb* current_pcb){
     while(!current_interruption_status()){
