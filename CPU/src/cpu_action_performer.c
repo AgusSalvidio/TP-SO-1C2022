@@ -37,7 +37,7 @@ void initialize_and_load_no_op_action_performer(){
 
     list_add(action_performers, action_performer);
 }
-
+/*
 void initialize_and_load_IO_action_performer(){
     t_action_performer* action_performer = safe_malloc(sizeof(t_action_performer));
     action_performer -> operation = IO;
@@ -53,7 +53,7 @@ void initialize_and_load_exit_action_performer(){
 
     list_add(action_performers, action_performer);
 }
-
+*/
 void initialize_action_performers(){
 
     action_performers = list_create();
@@ -62,8 +62,8 @@ void initialize_action_performers(){
     initialize_and_load_write_action_performer();
     initialize_and_load_copy_action_performer();
     initialize_and_load_no_op_action_performer();
-    initialize_and_load_IO_action_performer();
-    initialize_and_load_exit_action_performer();
+    //initialize_and_load_IO_action_performer();
+    //initialize_and_load_exit_action_performer();
 }
 
 t_action_performer* action_performer_with_code(uint32_t operation_code){

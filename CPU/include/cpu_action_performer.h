@@ -6,7 +6,7 @@
 
 typedef struct Action_Performer{
     uint32_t operation;
-    void* (*perform_function) (t_list* operands);
+    void* (*perform_function) (uint32_t pid, t_list* operands);
 }t_action_performer;
 
 void initialize_action_performers();

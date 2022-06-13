@@ -1,6 +1,4 @@
 #include <cpu_manager.h>
-#include <cpu_query_performer.h>
-#include "../../Utils/include/common_structures.h"
 #include "cpu_logs_manager.h"
 #include "cpu_configuration_manager.h"
 #include "cpu_memory_connection_handler.h"
@@ -22,41 +20,57 @@ t_request* response_request_with(void* received_structure, uint32_t operation){
     return request_to_send;
 }
 
-void* handle_read_request_procedure(t_list* operands){
+void* handle_read_request_procedure(uint32_t pid, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
-    send_read_to_memory(logical_address);
+    send_read_to_memory(pid, logical_address);
     log_read_content(receive_read_content_from_memory());
 }
 
-void* handle_write_request_procedure(t_list* operands){
+void* handle_write_request_procedure(uint32_t pid, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
-    send_write_to_memory(logical_address, value);
+    send_write_to_memory(pid, logical_address, value);
 }
 
-void* handle_copy_request_procedure(t_list* operands){
+void* handle_copy_request_procedure(uint32_t pid, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
-    send_copy_to_memory(logical_address, value);
+    send_copy_to_memory(pid, logical_address, value);
 }
 
-void* handle_no_op_request_procedure(t_list* operands){
+void* handle_no_op_request_procedure(uint32_t pid, t_list* operands){
     wait_delay_time();
 }
-void* handle_IO_request_procedure(t_list* operands){
-    uint32_t blocked_time = (uint32_t) list_get(operands, 0);
-    //Retorno el PCB actualizado y el tiempo en milisegundos (t_io_pcb)
 
-    modify_interruption_status();
-    //return response_request_with(current_pcb, PCB);
-}
-void* handle_exit_request_procedure(t_list* operands){
+void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* current_pcb){
+    t_request_response* request_response = safe_malloc(sizeof(t_request_response));
+    if(instruction -> type == IO){
+        t_io_pcb* io_pcb = safe_malloc(sizeof(t_io_pcb));
+        io_pcb -> pcb = current_pcb;
+        io_pcb -> blocked_time = (uint32_t)list_get(instruction->operands, 0);
 
-    modify_interruption_status();
+        request_response = response_request_with(io_pcb, IO_PCB);
+    }
+    if(instruction -> type == EXIT)
+        request_response = response_request_with(current_pcb, PCB);
+    else
+        return NULL;
+
+    return request_response;
 }
+
 void* handle_PCB_request_procedure(t_pcb* current_pcb){
     while(!current_interruption_status()){
-        execute_instruction_cycle(current_pcb);
+        uint32_t pid = current_pcb -> pid;
+        t_instruction* instruction = fetch_instruction(current_pcb);
+        decode_instruction(pid, instruction);
+
+        t_request_response* request_response = safe_malloc(sizeof(t_request_response));
+        request_response = request_reponse_of_instruction_for_pcb(instruction, current_pcb);
+        if(request_response != NULL)
+            return request_response;
+        else
+            execute(pid, instruction);
     }
     modify_interruption_status();
     return response_request_with(current_pcb, PCB);

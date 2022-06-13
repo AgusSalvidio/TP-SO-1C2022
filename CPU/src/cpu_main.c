@@ -8,6 +8,7 @@
 #include "../../Utils/include/general_logs.h"
 #include "cpu_action_performer.h"
 #include "cpu_kernel_interrupt_connection_handler.h"
+#include "../../Utils/include/pretty_printer.h"
 #include <cpu_kernel_dispatch_connection_handler.h>
 
 
@@ -17,13 +18,14 @@ int main(void){
     initialize_cpu_configuration_manager();
     initialize_garbage_collector();
     initialize_cpu_logs_manager();
+    initialize_pretty_printer();
     initialize_cpu_serializable_objects();
     initialize_cpu_query_performers();
     initialize_action_performers();
 
     log_succesful_start_up();
 
-    //send_handshake_to_memory();
+    send_handshake_to_memory();
     //initialize_mmu();
     initialize_cpu_dispatch_threads();
     initialize_cpu_interrupt_threads();
