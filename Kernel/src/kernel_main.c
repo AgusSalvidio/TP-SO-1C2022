@@ -9,6 +9,8 @@
 #include "kernel_console_connection.h"
 #include "kernel_scheduler_queues.h"
 #include "kernel_state_transitions.h"
+#include "kernel_event.h"
+#include "kernel_io_routine.h"
 
 int main(void) {
 
@@ -18,13 +20,16 @@ int main(void) {
     initialize_garbage_collector();
     initialize_serializable_objects();
     initialize_signal_handler();
+    initialize_event_notifier();
 
     initialize_scheduler_queues();
     initialize_state_transitions();
+    initialize_io_routine();
     initialize_kernel_process_image();
 
     log_succesful_start_up();
     //TODO: invocacion logica principal
+    iniciar_planificador_corto_plazo();
     iniciar_planificador_largo_plazo();
     //
     free_system();

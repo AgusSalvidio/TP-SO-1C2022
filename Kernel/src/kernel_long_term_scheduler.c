@@ -33,8 +33,20 @@ void algoritmo_planificador_largo_plazo() {
     }
 }
 
-void request_schedule_context() {
+void request_schedule_process() {
     safe_mutex_lock(&mutex_process);
     safe_sem_post(&sem_new_processes);
     safe_mutex_unlock(&mutex_process);
+}
+
+void request_process_remove_from_schedule() {
+    safe_mutex_lock(&mutex_process);
+    safe_sem_post(&sem_available_slots);
+    safe_mutex_unlock(&mutex_process);
+}
+
+void free_long_term_scheduler() {
+    safe_sem_destroy(&sem_available_slots);
+    safe_sem_destroy(&sem_new_processes);
+    safe_mutex_destroy(&mutex_process);
 }

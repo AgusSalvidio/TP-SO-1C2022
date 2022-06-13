@@ -2,6 +2,7 @@
 #include "kernel_scheduler_queues.h"
 #include "kernel_state_transitions.h"
 #include "kernel_long_term_scheduler.h"
+#include "kernel_configuration.h"
 
 t_list* processes;
 uint32_t process_counter;
@@ -19,10 +20,10 @@ void create_process_image(t_console_message *console_message) {
     pcb->instructions = console_message->instructions;
     pcb->pc = 0;
     pcb->page_table = 0;
-    pcb->next_burst = 0;
+    pcb->next_burst = get_initial_estimation();
     list_add(processes, (void*) process);
     add_to_scheduler_queue(pcb, NEW);
-    request_schedule_context();
+    request_schedule_process();
 }
 
 t_process_image *find_process_image_by_pid(uint32_t pid) {
