@@ -1,10 +1,10 @@
 #include <cpu_memory_connection_handler.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cpu_query_performer.h>
 #include "../../Utils/include/socket.h"
 #include "../../Utils/include/configuration_manager.h"
 #include "cpu_logs_manager.h"
+
 
 t_handshake* logical_address_translator;
 
@@ -16,6 +16,10 @@ t_connection_information* connect_to_memory() {
     t_connection_information *conn_info = connect_to(ip, port);
 
     return conn_info;
+}
+
+t_handshake* get_logical_address_translator(){
+    return logical_address_translator;
 }
 
 void send_handshake_to_memory(){
@@ -44,10 +48,11 @@ void send_handshake_to_memory(){
     free_and_close_connection_information(memory_conn);
 }
 
-void send_read_to_memory(uint32_t logical_address){
+void send_read_to_memory(uint32_t pid, uint32_t logical_address){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_read* read = safe_malloc(sizeof(t_read));
+    read -> pid = pid;
     read -> logical_address = logical_address;
 
     t_request* request = safe_malloc(sizeof(t_request));
@@ -57,22 +62,36 @@ void send_read_to_memory(uint32_t logical_address){
 
     serialize_and_send_structure(request, memory_conn -> socket_fd);
     free_request(request);
+/*
+    t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
+
+    t_request_response* content = safe_malloc(sizeof (t_request_response));
+    content = (t_request_response*) response -> structure;
+    log_read_content(content->content);
+
+    free_request(response);*/
+    free_and_close_connection_information(memory_conn);
+}
+
+char* receive_read_content_from_memory(){
+    t_connection_information *memory_conn = connect_to_memory();
 
     t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
 
     t_request_response* content = safe_malloc(sizeof (t_request_response));
     content = (t_request_response*) response -> structure;
-    uint32_t content_converted = (uint32_t) content -> content;
-    log_read_content(content_converted);
+    char* read_content = content -> content;
 
     free_request(response);
     free_and_close_connection_information(memory_conn);
+    return read_content;
 }
 
-void send_write_to_memory(uint32_t logical_address, uint32_t value){
+void send_write_to_memory(uint32_t pid, uint32_t logical_address, uint32_t value){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_write* write = safe_malloc(sizeof(t_write));
+    write -> pid = pid;
     write -> logical_address = logical_address;
     write -> value = value;
 
@@ -87,12 +106,13 @@ void send_write_to_memory(uint32_t logical_address, uint32_t value){
     free_and_close_connection_information(memory_conn);
 }
 
-void send_copy_to_memory(uint32_t origin_logical_address, uint32_t destiny_logical_address){
+void send_copy_to_memory(uint32_t pid, uint32_t destiny_logical_address, uint32_t value){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_copy* copy = safe_malloc(sizeof(t_copy));
-    copy -> origin_logical_address = origin_logical_address;
-    copy -> destiny_logical_address = destiny_logical_address;
+    copy -> pid = pid;
+    copy -> logical_address = destiny_logical_address;
+    copy -> value = value;
 
     t_request* request = safe_malloc(sizeof(t_request));
     request -> operation = COPY;
