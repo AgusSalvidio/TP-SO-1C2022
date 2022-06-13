@@ -42,6 +42,7 @@ void process_added_to_ready() {
 }
 
 void algoritmo_planificador_corto_plazo() {
+    safe_sem_initialize(&sem_processes_ready);
     initialize_scheduling_algorithm();
     subscribe_to_event_doing(PROCESS_READY_TO_EXECUTE, process_added_to_ready);
     while (1) {
