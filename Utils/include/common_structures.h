@@ -73,7 +73,7 @@ typedef struct Physical_address{
 
 enum Operation {
     CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INTERRUPT, PCB, IO_PCB,
-    MMU_ACCESS
+    MMU_ACCESS, FIRST_ACCES, SECOND_ACCESS
 };
 
 void initialize_signal_handler();

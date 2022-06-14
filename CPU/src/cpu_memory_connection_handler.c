@@ -125,7 +125,7 @@ void send_copy_to_memory(uint32_t pid, uint32_t destiny_logical_address, uint32_
     free_and_close_connection_information(memory_conn);
 }
 
-void send_first_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
+void send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_mmu_access* mmu_access = safe_malloc(sizeof(t_mmu_access));
