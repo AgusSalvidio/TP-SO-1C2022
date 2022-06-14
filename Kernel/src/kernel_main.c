@@ -30,6 +30,7 @@ int main(void) {
     log_succesful_start_up();
     //TODO: invocacion logica principal
     iniciar_planificador_corto_plazo();
+    iniciar_planificador_mediano_plazo();
     iniciar_planificador_largo_plazo();
     //
     free_system();

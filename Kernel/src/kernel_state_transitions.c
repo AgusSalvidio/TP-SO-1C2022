@@ -46,6 +46,7 @@ void blocked_to_suspended_blocked_transition(t_pcb *pcb) {
 void suspended_blocked_to_suspended_ready_transition(t_pcb *pcb) {
     move_to(pcb, SUSPENDED_READY);
     log_pcb_suspended_blocked_to_suspended_ready_transition(pcb->pid);
+    notify(SUSPENDED_PROCESS_READY);
 }
 
 void suspended_ready_to_ready_transition(t_pcb *pcb) {
@@ -57,6 +58,7 @@ void suspended_ready_to_ready_transition(t_pcb *pcb) {
 
 void exec_to_blocked_transition(t_pcb *pcb) {
     move_to(pcb, BLOCKED);
+    notify_with_argument(PROCESS_BLOCKED, pcb);
     log_pcb_exec_to_blocked_transition(pcb->pid);
     default_safe_thread_create((void *(*)(void *)) execute_io_routine, pcb);
 }
@@ -75,18 +77,6 @@ void exec_to_exit_transition(t_pcb *pcb) {
     connect_and_send_to_memory(FINALIZE_PROCESS, finalize_process);
     request_process_remove_from_schedule();
 }
-
-//void blocked_to_exit_transition(t_pcb *pcb) {
-//    move_to(pcb, Q_EXIT);
-//    log_pcb_blocked_to_exit_transition(pcb->pid);
-//    //TODO
-//}
-//
-//void suspended_blocked_to_exit_transition(t_pcb *pcb) {
-//    move_to(pcb, Q_EXIT);
-//    log_pcb_suspended_blocked_to_exit_transition(pcb->pid);
-//    //TODO
-//}
 
 void initialize_and_load_state_transition(uint32_t from_state, uint32_t to_state, void (*function)(void *)) {
     t_state_transition *state_transition = safe_malloc(sizeof(t_state_transition));

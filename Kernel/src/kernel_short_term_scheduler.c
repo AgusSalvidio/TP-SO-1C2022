@@ -33,7 +33,7 @@ void execute_pcb(t_pcb *pcb) {
     pcb->pc = returned_pcb->pc;
     check_next_transition(pcb);
     //Notifico al algoritmo para que reorganice la lista de ready segun su criterio (paso el burst para srt)
-    notify_with_argument(CONTEXT_SWITCH, burst);
+    notify_with_argument(PROCESS_SWITCH, burst);
     free(burst);
 }
 

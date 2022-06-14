@@ -12,11 +12,13 @@
 #include "kernel_short_term_scheduler.h"
 #include "kernel_event.h"
 #include "kernel_io_routine.h"
+#include "kernel_mid_term_scheduler.h"
 
 void free_system() {
 
     free_planificacion_threads();
     free_long_term_scheduler();
+    free_mid_term_scheduler();
     free_short_term_scheduler();
     free_scheduler_queues();
     free_state_transitions();

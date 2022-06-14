@@ -6,13 +6,20 @@
 
 pthread_mutex_t mutex;
 
-void initialize_io_routine() {
-    safe_mutex_initialize(&mutex);
-}
-
 void unblock_process(t_pcb *pcb) {
-    t_state_transition *state_transition = state_transition_for(pcb, READY);
-    state_transition->function(pcb);
+    t_state_transition *state_transition;
+    bool _find_by_pcb (t_pcb *pcb_to_compare) {
+        return pcb -> pid == pcb_to_compare -> pid;
+    };
+
+    if (list_any_satisfy(scheduler_queue_of(SUSPENDED_BLOCKED)->pcb_list, _find_by_pcb)) {
+        state_transition = state_transition_for(pcb, SUSPENDED_READY);
+        state_transition -> function (pcb);
+    } else if (list_any_satisfy(scheduler_queue_of(BLOCKED)->pcb_list, _find_by_pcb)) {
+        t_state_transition *state_transition = state_transition_for(pcb, READY);
+        state_transition->function(pcb);
+    }
+
     //TODO modificar cuando este la suspension.
 }
 
@@ -25,6 +32,10 @@ void execute_io_routine(t_pcb *pcb) {
     log_io_finished_execution(pcb->pid);
     safe_mutex_unlock(&mutex);
     unblock_process(pcb);
+}
+
+void initialize_io_routine() {
+    safe_mutex_initialize(&mutex);
 }
 
 void free_io_routine() {
