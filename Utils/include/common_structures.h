@@ -19,14 +19,17 @@ typedef struct Request_Response {
     char* content;
 } t_request_response;
 
+typedef struct Physical_address{
+    uint32_t frame;
+    uint32_t offset;
+}t_physical_address;
+
 typedef struct Read{
-    uint32_t pid;
-    uint32_t logical_address;
+    t_physical_address* physical_address;
 }t_read;
 
 typedef struct Write{
-    uint32_t pid;
-    uint32_t logical_address;
+    t_physical_address* physical_address;
     uint32_t value;
 }t_write, t_copy;
 
@@ -65,11 +68,6 @@ typedef struct MMU_access{
     uint32_t index;
     uint32_t entry;
 }t_mmu_access;
-
-typedef struct Physical_address{
-    uint32_t frame;
-    uint32_t offset;
-}t_physical_address;
 
 enum Operation {
     CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INTERRUPT, PCB, IO_PCB,
