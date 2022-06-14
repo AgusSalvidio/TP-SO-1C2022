@@ -379,3 +379,26 @@ t_request* deserialize_io_pcb(void* serialized_structure) {
     consider_as_garbage(io_pcb, free);
     return request;
 }
+
+t_request* deserialize_mmu_access(void* serialized_structure){
+    uint32_t type, index, entry;
+
+    uint32_t offset = 0;
+
+    memcpy(&type, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&index, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&entry, serialized_structure + offset, sizeof(uint32_t));
+
+    t_mmu_access* mmu_access_to_deserialize = safe_malloc(sizeof(t_mmu_access));
+    mmu_access_to_deserialize -> index = index;
+    mmu_access_to_deserialize -> entry = entry;
+
+    t_request* request = safe_malloc(sizeof(t_request));
+    request -> operation = MMU_ACCESS;
+    request -> structure = (void*) mmu_access_to_deserialize;
+    request -> sanitizer_function = free;
+
+    return request;
+}

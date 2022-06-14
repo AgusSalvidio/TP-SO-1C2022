@@ -54,8 +54,26 @@ typedef struct IO_pcb{
     uint32_t blocked_time;
 }t_io_pcb;
 
+typedef struct Level_paging{
+    uint32_t first_level_entry;
+    uint32_t second_level_entry;
+    uint32_t offset;
+}t_level_paging;
+
+typedef struct MMU_access{
+    uint32_t type;
+    uint32_t index;
+    uint32_t entry;
+}t_mmu_access;
+
+typedef struct Physical_address{
+    uint32_t frame;
+    uint32_t offset;
+}t_physical_address;
+
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INTERRUPT, PCB, IO_PCB
+    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INTERRUPT, PCB, IO_PCB,
+    MMU_ACCESS
 };
 
 void initialize_signal_handler();

@@ -88,3 +88,9 @@ uint32_t amount_of_bytes_of_io_pcb(void *structure) {
 
     return amount_of_bytes;
 }
+
+uint32_t amount_of_bytes_of_mmu_access(void *structure) {
+    return sizeof(uint32_t) +        //type
+           sizeof(uint32_t) +       //index
+           sizeof(uint32_t);       //entry
+}

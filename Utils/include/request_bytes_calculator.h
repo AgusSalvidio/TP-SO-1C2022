@@ -10,6 +10,7 @@ uint32_t amount_of_bytes_of_write();
 uint32_t amount_of_bytes_of_copy();
 uint32_t amount_of_bytes_of_pcb(void *structure);
 uint32_t amount_of_bytes_of_io_pcb(void *structure);
+uint32_t amount_of_bytes_of_mmu_access(void *structure);
 
 
 #endif //KISS_REQUEST_BYTES_CALCULATOR_H
