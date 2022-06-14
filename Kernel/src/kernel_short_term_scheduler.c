@@ -27,10 +27,12 @@ void execute_pcb(t_pcb *pcb) {
     t_burst *burst = safe_malloc(sizeof(t_burst));
     burst->pcb = pcb;
     burst->start = current_time_in_milliseconds();
-    t_pcb *returned_pcb = connect_and_send_pcb_to_cpu(pcb);
+//    t_pcb *returned_pcb = connect_and_send_pcb_to_cpu(pcb);
+    t_pcb *returned_pcb = pcb;
     burst->finished = current_time_in_milliseconds();
     pcb->page_table = returned_pcb->page_table;
-    pcb->pc = returned_pcb->pc;
+//    pcb->pc = returned_pcb->pc;
+    pcb->pc = returned_pcb->pc + 1;
     check_next_transition(pcb);
     //Notifico al algoritmo para que reorganice la lista de ready segun su criterio (paso el burst para srt)
     notify_with_argument(PROCESS_SWITCH, burst);

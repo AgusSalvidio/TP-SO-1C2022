@@ -14,14 +14,16 @@ void schedule_process() {
     safe_sem_wait(&sem_available_slots);
 
     safe_mutex_lock(&mutex_process);
-    t_pcb * pcb_found = list_first(scheduler_queue_of(SUSPENDED_READY)->pcb_list);
-    if (!pcb_found) {
-        pcb_found = list_first(scheduler_queue_of(NEW)->pcb_list);
+    t_pcb * pcb;
+    if (list_size(scheduler_queue_of(SUSPENDED_READY)->pcb_list) > 0) {
+        pcb = list_first(scheduler_queue_of(SUSPENDED_READY)->pcb_list);
+    } else {
+        pcb = list_first(scheduler_queue_of(NEW)->pcb_list);
     }
     safe_mutex_unlock(&mutex_process);
 
-    t_state_transition *transition = state_transition_for(pcb_found, READY);
-    transition->function(pcb_found);
+    t_state_transition *transition = state_transition_for(pcb, READY);
+    transition->function(pcb);
 }
 
 void algoritmo_planificador_largo_plazo() {

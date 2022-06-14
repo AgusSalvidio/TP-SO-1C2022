@@ -46,21 +46,21 @@ void blocked_to_suspended_blocked_transition(t_pcb *pcb) {
 void suspended_blocked_to_suspended_ready_transition(t_pcb *pcb) {
     move_to(pcb, SUSPENDED_READY);
     log_pcb_suspended_blocked_to_suspended_ready_transition(pcb->pid);
-    notify(SUSPENDED_PROCESS_READY);
+    request_schedule_process();
 }
 
 void suspended_ready_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_suspended_ready_to_ready_transition(pcb->pid);
     notify(SEND_INTERRUPTION_SIGNAL);
-    //TODO
+    notify(PROCESS_READY_TO_EXECUTE);
 }
 
 void exec_to_blocked_transition(t_pcb *pcb) {
     move_to(pcb, BLOCKED);
-    notify_with_argument(PROCESS_BLOCKED, pcb);
     log_pcb_exec_to_blocked_transition(pcb->pid);
     default_safe_thread_create((void *(*)(void *)) execute_io_routine, pcb);
+    notify_with_argument(PROCESS_BLOCKED, pcb);
 }
 
 void exec_to_ready_transition(t_pcb *pcb) {
