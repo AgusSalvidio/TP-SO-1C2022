@@ -328,7 +328,7 @@ t_serialization_information* serialize_io_pcb(void* structure){
 }
 
 t_serialization_information* serialize_mmu_access(void* structure){
-    uint32_t operation = MMU_ACCESS;
+    uint32_t operation = safe_malloc(sizeof(uint32_t));
     t_mmu_access * mmu_access = (t_mmu_access*) structure;
     uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_mmu_access();
     uint32_t amount_of_bytes_of_request =
@@ -343,8 +343,6 @@ t_serialization_information* serialize_mmu_access(void* structure){
     memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(mmu_access -> type), sizeof(uint32_t));
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &(mmu_access -> index), sizeof(uint32_t));
     offset += sizeof(uint32_t);

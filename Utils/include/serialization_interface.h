@@ -40,7 +40,8 @@ t_request* deserialize_write(void* serialized_structure);
 t_request* deserialize_copy(void* serialized_structure);
 t_request* deserialize_pcb(void* serialized_structure);
 t_request* deserialize_io_pcb(void* serialized_structure);
-t_request* deserialize_mmu_access(void* serialized_structure);
+t_request* deserialize_first_access(void* serialized_structure);
+t_request* deserialize_second_access(void* serialized_structure);
 
 void free_request(t_request* request);
 void free_serialization_information(t_serialization_information* serialization_information);

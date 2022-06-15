@@ -64,14 +64,13 @@ typedef struct Level_paging{
 }t_level_paging;
 
 typedef struct MMU_access{
-    uint32_t type;
     uint32_t index;
     uint32_t entry;
 }t_mmu_access;
 
 enum Operation {
     CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT, INTERRUPT, PCB, IO_PCB,
-    MMU_ACCESS, FIRST_ACCES, SECOND_ACCESS
+    FIRST_ACCESS, SECOND_ACCESS
 };
 
 void initialize_signal_handler();

@@ -105,12 +105,11 @@ void send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_mmu_access* mmu_access = safe_malloc(sizeof(t_mmu_access));
-    mmu_access -> type = type;
     mmu_access -> index = index;
     mmu_access -> entry = entry;
 
     t_request* request = safe_malloc(sizeof(t_request));
-    request -> operation = MMU_ACCESS;
+    request -> operation = type;
     request -> structure = mmu_access;
     request -> sanitizer_function = free;
 
