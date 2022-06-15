@@ -16,7 +16,7 @@ typedef struct Handshake {
 
 typedef struct Request_Response {
     char* type_description;
-    char* content;
+    uint32_t content;
 } t_request_response;
 
 typedef struct Read{
@@ -33,8 +33,19 @@ typedef struct Copy{
     uint32_t origin_logical_address;
 }t_copy;
 
+typedef struct Process_Initialize {
+    uint32_t pid;
+    uint32_t process_size;
+} t_initialize_process;
+
+typedef struct Process_Suspend {
+    uint32_t pid;
+} t_suspend_process, t_finalize_process;
+
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
+    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT,
+    INITIALIZE_PROCESS, SUSPEND_PROCESS,
+    FINALIZE_PROCESS, INTERRUPTION, PCB
 };
 
 typedef struct Console_message {

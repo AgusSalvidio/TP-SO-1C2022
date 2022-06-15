@@ -1,4 +1,5 @@
 #include <common_structures.h>
+#include <string.h>
 #include "request_bytes_calculator.h"
 
 uint32_t amount_of_bytes_of_console_message(void *structure) {
@@ -27,10 +28,11 @@ uint32_t amount_of_bytes_of_handshake(){
 
 uint32_t amount_of_bytes_of_request_response(void* structure){
     t_request_response *request_response = (t_request_response *) structure;
-    return sizeof(uint32_t) +                                   //type_description lenght
-           strlen(request_response -> type_description) +    //type_description
-           sizeof(uint32_t) +                                  //content lenght
-           strlen(request_response -> content);             //content
+    return
+        sizeof(uint32_t) +                                   //type_description lenght
+        strlen(request_response -> type_description) +    //type_description
+        sizeof(uint32_t);                                    //content
+
 }
   
 uint32_t amount_of_bytes_of_read(){

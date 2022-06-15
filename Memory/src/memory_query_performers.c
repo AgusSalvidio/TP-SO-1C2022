@@ -6,7 +6,7 @@
 #include "../include/memory_query_performers.h"
 #include "../../Utils/include/paths.h"
 #include "../../Utils/include/socket.h"
-#include <memory_manager.h>
+#include <memory_request_handler.h>
 
 
 t_list *query_performers;
@@ -19,6 +19,12 @@ void* handshake_query_performer(t_request* request){
 
     t_handshake * handshake = ((t_handshake *) request->structure);
     return handle_handshake_request_procedure(handshake);
+}
+
+void* new_process_query_performer(t_request* request){
+
+    t_initialize_process * new_process = ((t_initialize_process *) request->structure);
+    return handle_new_process_request_procedure(new_process);
 }
 
 void initialize_handshake_query_performer(){
@@ -38,6 +44,18 @@ void initialize_copy_query_performer(){
 
 }
 
+void initialize_new_process_query_performer(){
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = INITIALIZE_PROCESS;
+    query_performer ->perform_function = new_process_query_performer;
+    list_add(query_performers, query_performer);
+
+}
+void initialize_suspend_process_query_performer(){}
+void initialize_terminate_process_query_performer(){}
+void initialize_second_level_table_cpu_first_access_query_performer(){}
+void initialize_second_level_table_cpu_second_access_query_performer(){}
+
 void initialize_memory_query_performers(){
 
     query_performers = list_create();
@@ -46,6 +64,11 @@ void initialize_memory_query_performers(){
     initialize_read_query_performer();
     initialize_write_query_performer();
     initialize_copy_query_performer();
+    initialize_new_process_query_performer();
+    initialize_suspend_process_query_performer();
+    initialize_terminate_process_query_performer();
+    initialize_second_level_table_cpu_first_access_query_performer();
+    initialize_second_level_table_cpu_second_access_query_performer();
 
     log_memory_query_performers_loaded_succesfully();
 

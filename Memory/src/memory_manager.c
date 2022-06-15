@@ -1,55 +1,72 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <memory_manager.h>
-#include <commons/collections/list.h>
-#include <memory_configuration_manager.h>
-#include <commons/string.h>
-#include <unistd.h>
 #include "../../Utils/include/common_structures.h"
-#include "../include/memory_logs_manager.h"
-#include "../../Utils/include/t_list_extension.h"
+#include "memory_configuration_manager.h"
 
-uint32_t maximum_frames_per_process;
+t_main_memory* MAIN_MEMORY;
+t_memory_table_manager* MEMORY_TABLE_MANAGER;
 
-uint32_t max_frames_per_process(){
-    return maximum_frames_per_process;
+void initialize_memory_table_manager(){
+    MEMORY_TABLE_MANAGER = safe_malloc(sizeof(t_memory_table_manager));
+    MEMORY_TABLE_MANAGER->first_level_table_collection  = list_create();
+    MEMORY_TABLE_MANAGER->second_level_table_collection = list_create();
+    MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned  = 0;
+    MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned = 0;
 }
 
-void wait_delay_time(){
-    uint32_t delay_time_in_seconds = swap_time()/1000;
-    sleep(delay_time_in_seconds);
+void initialize_memory_manager(){
+    MAIN_MEMORY = safe_malloc(sizeof(t_main_memory));
+    initialize_memory_table_manager();
+
+}
+void increase_value_by(uint32_t *value,uint32_t increase_value){
+    (*value) += increase_value;
+}
+void increment_value(uint32_t *value){
+    increase_value_by(value,7);
+}
+t_first_level_table* first_level_table_for(uint32_t pid){
+
+    bool _pid_equals(void *first_level_table) {
+        t_first_level_table *cast_first_level_table = (t_first_level_table *) first_level_table;
+        return (cast_first_level_table->pid) == (pid);
+    }
+
+    t_first_level_table* first_level_table = list_find(MEMORY_TABLE_MANAGER->first_level_table_collection, _pid_equals);
+
+    return first_level_table;
+}
+uint32_t table_index_for(uint32_t pid){
+    //Return the index table for the pid received. Check handle null case.
+    return (first_level_table_for(pid))->id;
+}
+void initialize_first_level_table_for(uint32_t pid){
+    t_first_level_table* first_level_table = safe_malloc(sizeof(t_first_level_table));
+    first_level_table->pid = pid;
+    first_level_table->id = MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned;
+    increment_value(&(MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned));
+    first_level_table->second_level_table_id_collection = list_create();
+}
+void initialize_second_level_table_for(uint32_t pid,uint32_t page_quantity){
+
+    for (uint32_t i = 0; i < entries_per_table_getter() ; ++i) {
+
+    }
+
+    t_second_level_table* second_level_table = safe_malloc(sizeof(t_second_level_table));
+    second_level_table->id = MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned;
+    increment_value(&(MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned));
+    second_level_table->last_page_id_assigned = 0;
+    second_level_table->pages_per_row = list_create();
+
+
+
 
 }
 
-t_request* response_request_with(void* received_structure, uint32_t operation){
-    t_request* request_to_send = safe_malloc(sizeof(t_request));
-    request_to_send -> operation = operation;
-    request_to_send -> structure = received_structure;
-    request_to_send -> sanitizer_function = free;
-    return request_to_send;
-}
-t_handshake* handshake_configurations(){
+void initialize_new_process_identified_and_sized_as(uint32_t pid, uint32_t process_page_quantity){
 
-    t_handshake* handshake = safe_malloc(sizeof(t_handshake));
-    handshake->page_size = page_size_getter();
-    handshake->entries_per_page = entries_per_table_getter();
-    return handshake;
+        initialize_first_level_table_for(pid);
+        initialize_second_level_table_for(pid,process_page_quantity);
+
 }
 
-void* handle_handshake_request_procedure(t_handshake * received_handshake){
-
-    uint32_t page_size = received_handshake->page_size;
-    uint32_t entries_per_page = received_handshake->entries_per_page;
-
-    t_handshake* handshake_to_send = handshake_configurations();
-
-    t_request * request_to_send;
-
-    request_to_send = response_request_with(handshake_to_send,HANDSHAKE);
-
-    //wait_delay_time();
-    return request_to_send;
-}
-
-void free_memory_manager(){}

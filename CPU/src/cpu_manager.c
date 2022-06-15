@@ -17,7 +17,7 @@ void wait_delay_time(){
     sleep(delay_time_in_seconds);
 }
 
-t_request* response_request_with(void* received_structure, uint32_t operation){
+t_request* request_to_send_using(void* received_structure, uint32_t operation){
     t_request* request_to_send = safe_malloc(sizeof(t_request));
     request_to_send -> operation = operation;
     request_to_send -> structure = received_structure;
