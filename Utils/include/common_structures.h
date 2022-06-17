@@ -47,7 +47,7 @@ enum Operation {
     REQUEST_RESPONSE, READ, WRITE,
     COPY, NO_OP, IO,
     EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS,
-    FINALIZE_PROCESS, INTERRUPTION, PCB
+    FINALIZE_PROCESS, INTERRUPTION, PCB, IO_PCB
 };
 
 typedef struct Console_message {
@@ -69,6 +69,10 @@ typedef struct Pcb{
     double next_burst;
 } t_pcb;
 
+typedef struct IO_pcb{
+    t_pcb* pcb;
+    uint32_t blocked_time;
+}t_io_pcb;
 
 void initialize_signal_handler();
 void handle_signal(int signal_number, void (*handler_function) ());

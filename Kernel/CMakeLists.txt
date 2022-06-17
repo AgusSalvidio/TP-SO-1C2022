@@ -19,7 +19,8 @@ set(SOURCES
         src/kernel_fifo_algorithm.c
         src/kernel_srt_algorithm.c
         src/kernel_event.c
-        src/kernel_io_routine.c)
+        src/kernel_io_routine.c
+        src/kernel_cpu_message_handler.c)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/target")
 add_executable(Kernel ${SOURCES})

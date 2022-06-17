@@ -6,11 +6,11 @@
 #include "../../Utils/include/serializable_objects.h"
 #include "../../Utils/include/general_logs.h"
 #include "../include/kernel_logs_manager.h"
-#include "kernel_console_connection.h"
 #include "kernel_scheduler_queues.h"
 #include "kernel_state_transitions.h"
 #include "kernel_event.h"
 #include "kernel_io_routine.h"
+#include "kernel_cpu_message_handler.h"
 
 int main(void) {
 
@@ -26,13 +26,14 @@ int main(void) {
     initialize_state_transitions();
     initialize_io_routine();
     initialize_kernel_process_image();
+    initialize_cpu_message_handler();
 
     log_succesful_start_up();
-    //TODO: invocacion logica principal
+
     iniciar_planificador_corto_plazo();
     iniciar_planificador_mediano_plazo();
     iniciar_planificador_largo_plazo();
-    //
+
     free_system();
     return EXIT_SUCCESS;
 }

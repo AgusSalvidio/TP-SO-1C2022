@@ -6,7 +6,7 @@
 
 void initialize_io_routine();
 
-void execute_io_routine(t_pcb *pcb);
+void execute_io_routine(t_io_pcb *io_pcb);
 
 void free_io_routine();
 

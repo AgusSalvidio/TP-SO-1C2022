@@ -13,6 +13,7 @@
 #include "kernel_event.h"
 #include "kernel_io_routine.h"
 #include "kernel_mid_term_scheduler.h"
+#include "kernel_cpu_message_handler.h"
 
 void free_system() {
 
@@ -20,6 +21,7 @@ void free_system() {
     free_long_term_scheduler();
     free_mid_term_scheduler();
     free_short_term_scheduler();
+    free_cpu_message_handler();
     free_scheduler_queues();
     free_state_transitions();
     free_io_routine();
