@@ -8,7 +8,7 @@
 #include "kernel_long_term_scheduler.h"
 #include "../../Utils/include/pthread_wrapper.h"
 
-sem_t suspended_ready_processes;
+sem_t sem_blocked_processes;
 pthread_mutex_t suspension_mutex;
 
 void execute_suspension_routine(t_pcb *pcb) {
@@ -25,21 +25,21 @@ void execute_suspension_routine(t_pcb *pcb) {
 }
 
 void new_blocked_process() {
-    safe_sem_post(&suspended_ready_processes);
+    safe_sem_post(&sem_blocked_processes);
 }
 
 void algoritmo_planificador_mediano_plazo() {
-    safe_sem_initialize(&suspended_ready_processes);
+    safe_sem_initialize(&sem_blocked_processes);
     safe_mutex_initialize(&suspension_mutex);
     subscribe_to_event_doing(PROCESS_BLOCKED, new_blocked_process);
     while (1) {
-        safe_sem_wait(&suspended_ready_processes);
+        safe_sem_wait(&sem_blocked_processes);
         t_pcb *pcb = list_get_last_element(scheduler_queue_of(BLOCKED)->pcb_list);
         default_safe_thread_create((void *(*)(void *)) execute_suspension_routine, pcb);
     }
 }
 
 void free_mid_term_scheduler() {
-    safe_sem_destroy(&suspended_ready_processes);
+    safe_sem_destroy(&sem_blocked_processes);
     safe_mutex_destroy(&suspension_mutex);
 }
