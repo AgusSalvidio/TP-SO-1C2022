@@ -39,6 +39,18 @@ void* cpu_second_access_query_performer(t_request* request){
     return handle_cpu_second_access_request_procedure(second_access);
 }
 
+void* read_query_performer(t_request* request){
+
+    t_read * read_request = ((t_read *) request->structure);
+    return handle_read_request_procedure(read_request);
+}
+
+void* write_query_performer(t_request* request){
+
+    t_write * write_request = ((t_write *) request->structure);
+    return handle_write_request_procedure(write_request);
+}
+
 
 void initialize_handshake_query_performer(){
 
@@ -48,12 +60,26 @@ void initialize_handshake_query_performer(){
     list_add(query_performers, query_performer);
 }
 void initialize_read_query_performer(){
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = READ;
+    query_performer ->perform_function = read_query_performer;
+    list_add(query_performers, query_performer);
 
 }
 void initialize_write_query_performer(){
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = WRITE;
+    query_performer ->perform_function = write_query_performer;
+    list_add(query_performers, query_performer);
+
 
 }
 void initialize_copy_query_performer(){
+    //The perform function is the same as Write
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = COPY;
+    query_performer ->perform_function = write_query_performer;
+    list_add(query_performers, query_performer);
 
 }
 
@@ -62,7 +88,6 @@ void initialize_new_process_query_performer(){
     query_performer -> operation = INITIALIZE_PROCESS;
     query_performer ->perform_function = new_process_query_performer;
     list_add(query_performers, query_performer);
-
 }
 void initialize_suspend_process_query_performer(){}
 void initialize_terminate_process_query_performer(){}

@@ -13,6 +13,7 @@
 #include<unistd.h>
 #include<commons/collections/list.h>
 #include<pthread.h>
+#include "../../Utils/include/common_structures.h"
 
 typedef struct {
     t_list* first_level_table_collection;
@@ -54,5 +55,7 @@ void increase_value_by(uint32_t *value,uint32_t increase_value);
 void increment_value(uint32_t *value);
 uint32_t second_level_table_index_at(uint32_t index, uint32_t entry);
 uint32_t frame_at(uint32_t page, uint32_t entry);
+uint32_t read_value_from(t_physical_address* physical_address);
+uint32_t write_value_on(t_physical_address* physical_address,uint32_t value_to_write);
 
 #endif //KISS_MEMORY_MANAGER_H

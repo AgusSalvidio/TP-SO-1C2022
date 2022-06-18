@@ -110,6 +110,36 @@ uint32_t frame_at(uint32_t index, uint32_t entry){
     return (page_at(second_level_table,entry))->frame;
 }
 
+uint32_t frame_parse_from(t_physical_address* physical_address){
+    //Work in progress
+}
+uint32_t offset_parse_from(t_physical_address* physical_address){
+    //Work in progress
+}
+uint32_t read_value_at(uint32_t frame, uint32_t offset){
+    //Work in progress
+
+}
+uint32_t write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
+
+    //Work in progress
+}
+uint32_t read_value_from(t_physical_address* physical_address){
+
+    uint32_t frame = frame_parse_from(physical_address);
+    uint32_t offset = offset_parse_from(physical_address);
+
+    return read_value_at(frame,offset);
+}
+
+uint32_t write_value_on(t_physical_address* physical_address,uint32_t value_to_write){
+
+    uint32_t frame = frame_parse_from(physical_address);
+    uint32_t offset = offset_parse_from(physical_address);
+
+    return write_value_at(frame,offset,value_to_write);
+
+}
 void initialize_first_level_table_for(uint32_t pid){
     t_first_level_table* first_level_table = safe_malloc(sizeof(t_first_level_table));
     first_level_table->pid = pid;
