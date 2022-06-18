@@ -34,20 +34,20 @@ uint32_t amount_of_bytes_of_request_response(void* structure){
 }
   
 uint32_t amount_of_bytes_of_read(){
-    return sizeof(uint32_t) +       //pid
-           sizeof(uint32_t);       //logical_adress
+    return sizeof(uint32_t) +       //frame
+           sizeof(uint32_t);       //offset
 
 }
 
 uint32_t amount_of_bytes_of_write(){
-    return sizeof(uint32_t) +        //pid
-           sizeof(uint32_t) +       //logical_adress
+    return sizeof(uint32_t) +        //frame
+           sizeof(uint32_t) +       //offset
            sizeof(uint32_t);       //value
 }
 
 uint32_t amount_of_bytes_of_copy(){
-    return sizeof(uint32_t) +        //pid
-           sizeof(uint32_t) +       //logical_adress
+    return sizeof(uint32_t) +        //frame
+           sizeof(uint32_t) +       //offset
            sizeof(uint32_t);       //value
 }
 
@@ -87,4 +87,9 @@ uint32_t amount_of_bytes_of_io_pcb(void *structure) {
                       sizeof(uint32_t); //blocked_time;
 
     return amount_of_bytes;
+}
+
+uint32_t amount_of_bytes_of_mmu_access() {
+    return sizeof(uint32_t) +       //index
+           sizeof(uint32_t);       //entry
 }

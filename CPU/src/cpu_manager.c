@@ -4,6 +4,7 @@
 #include "cpu_memory_connection_handler.h"
 #include "cpu_kernel_interrupt_connection_handler.h"
 #include "cpu_instruction_cycle.h"
+#include "cpu_mmu.h"
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -20,22 +21,25 @@ t_request* response_request_with(void* received_structure, uint32_t operation){
     return request_to_send;
 }
 
-void* handle_read_request_procedure(uint32_t pid, t_list* operands){
+void* handle_read_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
-    send_read_to_memory(pid, logical_address);
-    log_read_content(receive_read_content_from_memory());
+    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    send_read_to_memory(physical_address);
+    log_read_content(receive_content_from_memory());
 }
 
-void* handle_write_request_procedure(uint32_t pid, t_list* operands){
+void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
-    send_write_to_memory(pid, logical_address, value);
+    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    send_write_to_memory(physical_address, value);
 }
 
-void* handle_copy_request_procedure(uint32_t pid, t_list* operands){
+void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
-    send_copy_to_memory(pid, logical_address, value);
+    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    send_copy_to_memory(physical_address, value);
 }
 
 void* handle_no_op_request_procedure(uint32_t pid, t_list* operands){
@@ -61,16 +65,16 @@ void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* 
 
 void* handle_PCB_request_procedure(t_pcb* current_pcb){
     while(!current_interruption_status()){
-        uint32_t pid = current_pcb -> pid;
+        uint32_t table_index = current_pcb -> page_table;
         t_instruction* instruction = fetch_instruction(current_pcb);
-        decode_instruction(pid, instruction);
+        decode_instruction(table_index, instruction);
 
         t_request_response* request_response = safe_malloc(sizeof(t_request_response));
         request_response = request_reponse_of_instruction_for_pcb(instruction, current_pcb);
         if(request_response != NULL)
             return request_response;
         else
-            execute(pid, instruction);
+            execute(table_index, instruction);
     }
     modify_interruption_status();
     return response_request_with(current_pcb, PCB);
