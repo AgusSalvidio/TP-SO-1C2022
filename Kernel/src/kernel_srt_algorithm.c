@@ -54,7 +54,7 @@ void send_interruption_signal () {
 }
 
 void srt_resolve_dependencies_function(t_burst *burst) {
-    subscribe_to_event_doing(CONTEXT_SWITCH, (void (*)(void *)) update_previous);
+    subscribe_to_event_doing(PROCESS_SWITCH, (void (*)(void *)) update_previous);
     subscribe_to_event_doing(SEND_INTERRUPTION_SIGNAL, send_interruption_signal);
 }
 

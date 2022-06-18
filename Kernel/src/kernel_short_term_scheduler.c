@@ -9,31 +9,11 @@
 
 sem_t sem_processes_ready;
 
-void check_next_transition(t_pcb *pcb) {
-    t_instruction *instruction = list_get(pcb->instructions, pcb->pc);
-    t_state_transition *transition;
-    if (instruction->type == IO) {
-        transition = state_transition_for(pcb, BLOCKED);
-    } else if (instruction->type == EXIT) {
-        transition = state_transition_for(pcb, Q_EXIT);
-    } else {
-        transition = state_transition_for(pcb, READY);
-    }
-    transition->function(pcb);
-}
-
-
 void execute_pcb(t_pcb *pcb) {
-    t_burst *burst = safe_malloc(sizeof(t_burst));
-    burst->pcb = pcb;
-    burst->start = current_time_in_milliseconds();
-    t_pcb *returned_pcb = connect_and_send_pcb_to_cpu(pcb);
-    burst->finished = current_time_in_milliseconds();
-    pcb->page_table = returned_pcb->page_table;
-    pcb->pc = returned_pcb->pc;
-    check_next_transition(pcb);
+
+    t_burst *burst = connect_and_send_pcb_to_cpu(pcb);
     //Notifico al algoritmo para que reorganice la lista de ready segun su criterio (paso el burst para srt)
-    notify_with_argument(CONTEXT_SWITCH, burst);
+    notify_with_argument(PROCESS_SWITCH, burst);
     free(burst);
 }
 
