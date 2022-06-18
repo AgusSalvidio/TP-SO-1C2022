@@ -23,6 +23,13 @@ void wait_delay_time(){
 
 }
 
+t_request_response* request_response_using(uint32_t content,char* type_description){
+    t_request_response* request_response = safe_malloc(sizeof(t_request_response));
+    request_response->content = content;
+    request_response->type_description = type_description;
+    return request_response;
+}
+
 t_request* request_to_send_using(void* received_structure, uint32_t operation){
     t_request* request_to_send = safe_malloc(sizeof(t_request));
     request_to_send -> operation = operation;
@@ -51,11 +58,29 @@ void* handle_handshake_request_procedure(t_handshake * received_handshake){
     return request_to_send;
 }
 
-t_request_response* request_response_using(uint32_t content,char* type_description){
-    t_request_response* request_response = safe_malloc(sizeof(t_request_response));
-    request_response->content = content;
-    request_response->type_description = type_description;
-    return request_response;
+void* handle_cpu_first_access_request_procedure(t_mmu_access *first_access){
+
+    t_request_response *second_level_table_index_request_to_send = request_response_using(second_level_table_index_at(first_access->index, first_access->entry), "SUCCESS");
+
+    t_request * request_to_send;
+    request_to_send = request_to_send_using(second_level_table_index_request_to_send, REQUEST_RESPONSE);
+
+    wait_delay_time();
+    return request_to_send;
+
+}
+
+void* handle_cpu_second_access_request_procedure(t_mmu_access *second_access){
+
+    t_request_response *frame_request_to_send = request_response_using(
+            frame_at(second_access->index, second_access->entry), "SUCCESS");
+
+    t_request * request_to_send;
+    request_to_send = request_to_send_using(frame_request_to_send, REQUEST_RESPONSE);
+
+    wait_delay_time();
+    return request_to_send;
+
 }
 
 

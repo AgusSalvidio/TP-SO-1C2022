@@ -27,6 +27,19 @@ void* new_process_query_performer(t_request* request){
     return handle_new_process_request_procedure(new_process);
 }
 
+void* cpu_first_access_query_performer(t_request* request){
+
+    t_mmu_access * first_access = ((t_mmu_access *) request->structure);
+    return handle_cpu_first_access_request_procedure(first_access);
+}
+
+void* cpu_second_access_query_performer(t_request* request){
+
+    t_mmu_access * second_access = ((t_mmu_access *) request->structure);
+    return handle_cpu_second_access_request_procedure(second_access);
+}
+
+
 void initialize_handshake_query_performer(){
 
     t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
@@ -53,8 +66,22 @@ void initialize_new_process_query_performer(){
 }
 void initialize_suspend_process_query_performer(){}
 void initialize_terminate_process_query_performer(){}
-void initialize_second_level_table_cpu_first_access_query_performer(){}
-void initialize_second_level_table_cpu_second_access_query_performer(){}
+void initialize_cpu_first_access_query_performer(){
+
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = FIRST_ACCESS;
+    query_performer ->perform_function = cpu_first_access_query_performer;
+    list_add(query_performers, query_performer);
+
+}
+void initialize_cpu_second_access_query_performer(){
+
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = SECOND_ACCESS;
+    query_performer ->perform_function = cpu_second_access_query_performer;
+    list_add(query_performers, query_performer);
+
+}
 
 void initialize_memory_query_performers(){
 
@@ -67,8 +94,8 @@ void initialize_memory_query_performers(){
     initialize_new_process_query_performer();
     initialize_suspend_process_query_performer();
     initialize_terminate_process_query_performer();
-    initialize_second_level_table_cpu_first_access_query_performer();
-    initialize_second_level_table_cpu_second_access_query_performer();
+    initialize_cpu_first_access_query_performer();
+    initialize_cpu_second_access_query_performer();
 
     log_memory_query_performers_loaded_succesfully();
 

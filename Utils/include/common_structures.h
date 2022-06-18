@@ -19,19 +19,24 @@ typedef struct Request_Response {
     uint32_t content;
 } t_request_response;
 
+typedef struct Physical_address{
+    uint32_t frame;
+    uint32_t offset;
+}t_physical_address;
+
 typedef struct Read{
-    uint32_t logical_address;
+    t_physical_address* physical_address;
 }t_read;
 
 typedef struct Write{
-    uint32_t logical_address;
+    t_physical_address* physical_address;
     uint32_t value;
-}t_write;
+}t_write, t_copy;
 
-typedef struct Copy{
-    uint32_t destiny_logical_address;
-    uint32_t origin_logical_address;
-}t_copy;
+typedef struct MMU_access{
+    uint32_t index;
+    uint32_t entry;
+}t_mmu_access;
 
 typedef struct Process_Initialize {
     uint32_t pid;
@@ -43,7 +48,7 @@ typedef struct Process_Suspend {
 } t_suspend_process, t_finalize_process;
 
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT,
+    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT,FIRST_ACCESS,SECOND_ACCESS,
     INITIALIZE_PROCESS, SUSPEND_PROCESS,
     FINALIZE_PROCESS, INTERRUPTION, PCB
 };

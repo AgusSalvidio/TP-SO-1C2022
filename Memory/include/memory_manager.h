@@ -52,5 +52,7 @@ void initialize_new_process_identified_and_sized_as(uint32_t pid, uint32_t proce
 uint32_t table_index_for(uint32_t pid);
 void increase_value_by(uint32_t *value,uint32_t increase_value);
 void increment_value(uint32_t *value);
+uint32_t second_level_table_index_at(uint32_t index, uint32_t entry);
+uint32_t frame_at(uint32_t page, uint32_t entry);
 
 #endif //KISS_MEMORY_MANAGER_H
