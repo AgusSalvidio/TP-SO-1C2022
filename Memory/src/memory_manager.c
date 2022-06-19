@@ -131,7 +131,6 @@ uint32_t read_value_from(t_physical_address* physical_address){
 
     return read_value_at(frame,offset);
 }
-
 uint32_t write_value_on(t_physical_address* physical_address,uint32_t value_to_write){
 
     uint32_t frame = frame_parse_from(physical_address);
@@ -140,6 +139,7 @@ uint32_t write_value_on(t_physical_address* physical_address,uint32_t value_to_w
     return write_value_at(frame,offset,value_to_write);
 
 }
+
 void initialize_first_level_table_for(uint32_t pid){
     t_first_level_table* first_level_table = safe_malloc(sizeof(t_first_level_table));
     first_level_table->pid = pid;
@@ -161,7 +161,13 @@ void initialize_second_level_table_for(uint32_t pid,uint32_t page_quantity){
 
 }
 
-void initialize_new_process_identified_and_sized_as(uint32_t pid, uint32_t process_page_quantity){
+void suspend_process(uint32_t pid){
+
+}
+void finalize_process(uint32_t pid){
+
+}
+void initialize_new_process(uint32_t pid, uint32_t process_page_quantity){
 
         initialize_first_level_table_for(pid);
         initialize_second_level_table_for(pid,process_page_quantity);

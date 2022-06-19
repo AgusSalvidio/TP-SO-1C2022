@@ -49,7 +49,9 @@ typedef struct {
 
 
 void initialize_memory_manager();
-void initialize_new_process_identified_and_sized_as(uint32_t pid, uint32_t process_page_quantity);
+void initialize_new_process(uint32_t pid, uint32_t process_page_quantity);
+void suspend_process(uint32_t pid);
+void finalize_process(uint32_t pid);
 uint32_t table_index_for(uint32_t pid);
 void increase_value_by(uint32_t *value,uint32_t increase_value);
 void increment_value(uint32_t *value);

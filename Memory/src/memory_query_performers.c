@@ -26,6 +26,16 @@ void* new_process_query_performer(t_request* request){
     t_initialize_process * new_process = ((t_initialize_process *) request->structure);
     return handle_new_process_request_procedure(new_process);
 }
+void* suspend_process_query_performer(t_request* request){
+
+    t_suspend_process * process_to_suspend = ((t_suspend_process *) request->structure);
+    return handle_suspend_process_request_procedure(process_to_suspend);
+}
+void* finalize_process_query_performer(t_request* request){
+
+    t_finalize_process * process_to_finalize = ((t_finalize_process *) request->structure);
+    return handle_finalize_process_request_procedure(process_to_finalize);
+}
 
 void* cpu_first_access_query_performer(t_request* request){
 
@@ -89,8 +99,18 @@ void initialize_new_process_query_performer(){
     query_performer ->perform_function = new_process_query_performer;
     list_add(query_performers, query_performer);
 }
-void initialize_suspend_process_query_performer(){}
-void initialize_terminate_process_query_performer(){}
+void initialize_suspend_process_query_performer(){
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = SUSPEND_PROCESS;
+    query_performer ->perform_function = suspend_process_query_performer;
+    list_add(query_performers, query_performer);
+}
+void initialize_terminate_process_query_performer(){
+    t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
+    query_performer -> operation = FINALIZE_PROCESS;
+    query_performer ->perform_function = finalize_process_query_performer;
+    list_add(query_performers, query_performer);
+}
 void initialize_cpu_first_access_query_performer(){
 
     t_query_performer * query_performer = safe_malloc(sizeof(t_query_performer));
