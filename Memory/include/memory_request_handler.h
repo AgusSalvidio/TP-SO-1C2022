@@ -14,4 +14,5 @@ void* handle_cpu_first_access_request_procedure(t_mmu_access *first_access);
 void* handle_cpu_second_access_request_procedure(t_mmu_access *first_access);
 void * handle_read_request_procedure(t_read *read_request);
 void* handle_write_request_procedure(t_write* write_request);
+uint32_t converted_table_quantity_based_on(uint32_t page_quantity, uint32_t frames_per_table);
 #endif //KISS_MEMORY_REQUEST_HANDLER_H

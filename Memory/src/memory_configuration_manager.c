@@ -49,7 +49,7 @@ char* algorithm(){
 uint32_t swap_time(){
     return swap_delay_time;
 }
-uint32_t frames_per_table_getter(){
+uint32_t frames_per_process_getter(){
     return frames_per_process;
 }
 char* swap_path(){

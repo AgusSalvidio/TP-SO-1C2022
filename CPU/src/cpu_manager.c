@@ -12,7 +12,7 @@ t_handshake* logic_adress_translator(){
     return logical_adress_translator;
 }
 
-void wait_delay_time(){
+void wait_swap_delay_time(){
     uint32_t delay_time_in_seconds = get_noop_delay()/1000;
     sleep(delay_time_in_seconds);
 }
@@ -46,7 +46,7 @@ void* handle_copy_request_procedure(){
 
 void* handle_no_op_request_procedure(){
     //Tengo que esperar el tiempo especificado en .config
-    wait_delay_time();
+    wait_swap_delay_time();
 }
 
 void* handle_IO_request_procedure(uint32_t blocked_time){

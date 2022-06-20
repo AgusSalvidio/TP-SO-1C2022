@@ -10,6 +10,7 @@
 #include "../../Utils/include/common_structures.h"
 #include "../include/memory_logs_manager.h"
 #include "../../Utils/include/t_list_extension.h"
+#include "memory_replacement_algorithms.h"
 
 uint32_t maximum_frames_per_process;
 
@@ -17,8 +18,14 @@ uint32_t max_frames_per_process(){
     return maximum_frames_per_process;
 }
 
-void wait_delay_time(){
+void wait_swap_delay_time(){
     uint32_t delay_time_in_seconds = swap_time()/1000;
+    sleep(delay_time_in_seconds);
+
+}
+
+void wait_cpu_response_delay_time(){
+    uint32_t delay_time_in_seconds = memory_time()/1000;
     sleep(delay_time_in_seconds);
 
 }
@@ -54,46 +61,97 @@ void* handle_handshake_request_procedure(t_handshake * received_handshake){
 
     request_to_send = request_to_send_using(handshake_to_send, HANDSHAKE);
 
-    //wait_delay_time();
+    //wait_swap_delay_time();
     return request_to_send;
 }
 
 void* handle_cpu_first_access_request_procedure(t_mmu_access *first_access){
 
     t_request_response *second_level_table_index_request_to_send = request_response_using(second_level_table_index_at(first_access->index, first_access->entry), "SUCCESS");
-
     t_request * request_to_send;
+
     request_to_send = request_to_send_using(second_level_table_index_request_to_send, REQUEST_RESPONSE);
 
-    wait_delay_time();
+    wait_cpu_response_delay_time();
     return request_to_send;
+}
 
+bool could_page_be_loaded_in_main_memory(t_page* selected_page, uint32_t pid){
+
+    if(can_memory_load_another_page_for(pid)){
+        load_page_in_memory(selected_page,pid);
+        return true;
+    }
+    else
+    if(can_swap_page_for(pid))
+        swap_page_procedure(selected_page, pid);
+    else
+        return false;
+}
+
+bool could_memory_handle_second_access_request(t_mmu_access *second_access){
+
+    t_second_level_table* second_level_table = second_level_table_for(second_access->index);
+    t_page* selected_page = page_at(second_level_table,second_access->entry);
+
+    if(!is_page_loaded_in_main_memory(selected_page)){
+        return could_page_be_loaded_in_main_memory(selected_page, pid_for(second_level_table->id));
+    }
+    else
+        return true;
 }
 
 void* handle_cpu_second_access_request_procedure(t_mmu_access *second_access){
 
-    t_request_response *frame_request_to_send = request_response_using(
-            frame_at(second_access->index, second_access->entry), "SUCCESS");
+    t_request_response *frame_request_to_send;
+
+    if(could_memory_handle_second_access_request(second_access))
+        request_response_using(frame_at(second_access->index, second_access->entry), "SUCCESS");
+    else
+        request_response_using(0, "ERROR");
 
     t_request * request_to_send;
     request_to_send = request_to_send_using(frame_request_to_send, REQUEST_RESPONSE);
 
-    wait_delay_time();
+    wait_cpu_response_delay_time();
     return request_to_send;
 
 }
 
+uint32_t integer_division(uint32_t dividend, uint32_t divisor){
+
+    uint32_t remnant = dividend % divisor;
+    uint32_t quotient = dividend / divisor;
+
+    if(remnant!=0 && quotient !=0)
+        return quotient+1;
+    else
+    if(quotient == 0 && remnant !=0)
+        return 1;
+    else
+        return quotient;
+
+}
+
+uint32_t converted_page_quantity_based_on(uint32_t process_size, uint32_t page_size){
+    integer_division(process_size,page_size);
+}
+uint32_t converted_table_quantity_based_on(uint32_t page_quantity, uint32_t frames_per_table){
+    integer_division(page_quantity,frames_per_table);
+}
+
 
 void* handle_new_process_request_procedure(t_initialize_process* new_process_received){
+
     t_initialize_process* new_process = new_process_received;
     uint32_t pid = new_process->pid;
     uint32_t process_size = new_process->process_size;
     t_request *request_to_send;
-    uint32_t process_page_quantity = process_size / page_size_getter();
+    uint32_t process_page_quantity = converted_page_quantity_based_on(process_size,page_size_getter());
 
     if(process_page_quantity <= max_page_quantity()) {
 
-        initialize_new_process(pid, process_page_quantity);
+        initialize_new_process(pid, process_page_quantity,process_size);
 
         t_request_response *first_level_table_index_request_to_send = request_response_using(table_index_for(pid),"SUCCESS");
         request_to_send = request_to_send_using(first_level_table_index_request_to_send, REQUEST_RESPONSE);
@@ -148,7 +206,7 @@ void* handle_read_request_procedure(t_read *read_request){
     t_request * request_to_send;
     request_to_send = request_to_send_using(read_value_request_to_send, REQUEST_RESPONSE);
 
-    wait_delay_time();
+    wait_cpu_response_delay_time();
     return request_to_send;
 }
 
@@ -162,7 +220,7 @@ void* handle_write_request_procedure(t_write* write_request){
     t_request * request_to_send;
     request_to_send = request_to_send_using(write_value_request_to_send, REQUEST_RESPONSE);
 
-    wait_delay_time();
+    wait_cpu_response_delay_time();
     return request_to_send;
 
 }

@@ -31,6 +31,13 @@ void log_query_performer_not_found_error_from_memory(uint32_t operation){
     free(message);
 }
 
+void log_swap_file_delete_procedure_description(char* swap_file_path, char* description){
+
+    char* message = string_from_format("El archivo ubicado en %s %s\n",swap_file_path,description);
+    log_info(process_execution_logger(), message);
+    free(message);
+
+}
 
 void free_memory_logs_manager(){
 
