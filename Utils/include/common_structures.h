@@ -15,37 +15,64 @@ typedef struct Handshake {
 } t_handshake;
 
 typedef struct Request_Response {
-    char* type_description;
-    char* content;
+    char *type_description;
+    char *content;
 } t_request_response;
 
-typedef struct Read{
+typedef struct Read {
     uint32_t logical_address;
-}t_read;
+} t_read;
 
-typedef struct Write{
+typedef struct Write {
     uint32_t logical_address;
     uint32_t value;
-}t_write;
+} t_write;
 
-typedef struct Copy{
+typedef struct Copy {
     uint32_t destiny_logical_address;
     uint32_t origin_logical_address;
-}t_copy;
+} t_copy;
+
+typedef struct Process_Initialize {
+    uint32_t pid;
+    uint32_t process_size;
+} t_initialize_process;
+
+typedef struct Process_Suspend {
+    uint32_t pid;
+} t_suspend_process, t_finalize_process;
 
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT
+    CONSOLE_MESSAGE, INSTRUCTION, HANDSHAKE,
+    REQUEST_RESPONSE, READ, WRITE,
+    COPY, NO_OP, IO,
+    EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS,
+    FINALIZE_PROCESS, INTERRUPTION, PCB, IO_PCB
 };
 
 typedef struct Console_message {
     uint32_t process_size;
-    t_list * instructions;
+    t_list *instructions;
 } t_console_message;
 
 typedef struct Instruction {
     uint32_t type;
-    t_list * operands;
+    t_list *operands;
 } t_instruction;
+
+typedef struct Pcb{
+    uint32_t pid;
+    uint32_t process_size;
+    t_list* instructions;
+    uint32_t pc;
+    uint32_t page_table;
+    double next_burst;
+} t_pcb;
+
+typedef struct IO_pcb{
+    t_pcb* pcb;
+    uint32_t blocked_time;
+}t_io_pcb;
 
 void initialize_signal_handler();
 void handle_signal(int signal_number, void (*handler_function) ());
@@ -59,7 +86,7 @@ void safe_sem_destroy(sem_t* semaphore);
 void* safe_malloc(size_t size);
 
 char* process_description_for(char* process_name, t_list* strings_to_hash);
-uint64_t current_time_in_milliseconds();
+uint32_t current_time_in_milliseconds();
 void assert_only_one_in(t_list* self);
 
 void free_system_debugging_thread_alive_for(int seconds);

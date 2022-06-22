@@ -91,7 +91,7 @@ t_instruction *create_copy_instruction (char** instruction_array) {
 t_instruction *create_exit_instruction (char** instruction_array) {
     if (string_array_size(instruction_array) == 1) {
         t_instruction *instruction = safe_malloc(sizeof (t_instruction));
-        instruction -> type = NO_OP;
+        instruction -> type = EXIT;
         t_list *operands = list_create();
         for (int i = 1; instruction_array[i] ; ++i) {
             list_add(operands, atoi(instruction_array[i]));
