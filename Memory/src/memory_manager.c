@@ -8,6 +8,12 @@
 t_main_memory* MAIN_MEMORY;
 t_memory_table_manager* MEMORY_TABLE_MANAGER;
 
+uint32_t frame_available(){
+    uint32_t frame = list_get(MAIN_MEMORY->available_frames,0);
+    list_remove(MAIN_MEMORY->available_frames,0);
+    return frame;
+}
+
 void initialize_memory_table_manager(){
     MEMORY_TABLE_MANAGER = safe_malloc(sizeof(t_memory_table_manager));
     MEMORY_TABLE_MANAGER->first_level_table_collection  = list_create();
@@ -18,8 +24,14 @@ void initialize_memory_table_manager(){
 
 void initialize_main_memory(){
 
-    //definir que esquema se va a usar para la memoria principal
+    uint32_t frame_quantity = quantity_memory_frames();
 
+    MAIN_MEMORY = safe_malloc(sizeof(t_main_memory));
+    MAIN_MEMORY->buffer = safe_malloc(sizeof(uint32_t)*frame_quantity);
+    MAIN_MEMORY->available_frames = list_create();
+
+    for (int i = 0; i < frame_quantity ; ++i)
+        list_add(MAIN_MEMORY->available_frames,i);
 }
 
 void initialize_memory_manager(){
@@ -67,7 +79,6 @@ uint32_t pid_for(uint32_t second_level_table_index){
     return first_level_table->pid;
 }
 
-
 uint32_t second_level_table_index_at(uint32_t index, uint32_t entry){
 
     bool _index_equals(void *first_level_table) {
@@ -78,14 +89,6 @@ uint32_t second_level_table_index_at(uint32_t index, uint32_t entry){
     t_first_level_table* first_level_table = list_find(MEMORY_TABLE_MANAGER->first_level_table_collection, _index_equals);
 
     return list_get(first_level_table->second_level_table_id_collection,entry);
-
-}
-
-
-
-void load_page_in_memory(t_page* page, uint32_t pid) {
-
-    //sacarle a memoria un frame libre
 
 }
 
@@ -158,6 +161,17 @@ void free_main_memory_frames(t_list* page_id_collection){
         list_add(MAIN_MEMORY->available_frames, list_get(page_id_collection,i));
 }
 
+void load_page_in_memory(t_page* page, uint32_t pid) {
+
+    uint32_t frame = frame_available();
+
+    uint32_t content = read_from_file(swap_file_path_for(pid),page->id);
+
+    write_value_at(frame, sizeof(uint32_t),content);
+
+
+}
+
 uint32_t frame_parse_from(t_physical_address* physical_address){
     //Work in progress
 }
@@ -165,12 +179,16 @@ uint32_t offset_parse_from(t_physical_address* physical_address){
     //Work in progress
 }
 uint32_t read_value_at(uint32_t frame, uint32_t offset){
-    //Work in progress
+
+    uint32_t value;
+    memcpy(&value,(MAIN_MEMORY->buffer) + frame,offset* sizeof(uint32_t));
+    return value;
 
 }
-uint32_t write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
+void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
 
-    //Work in progress
+    memcpy((MAIN_MEMORY->buffer) + frame,&value_to_write,offset);
+
 }
 uint32_t read_value_from(t_physical_address* physical_address){
 
@@ -179,13 +197,11 @@ uint32_t read_value_from(t_physical_address* physical_address){
 
     return read_value_at(frame,offset);
 }
-uint32_t write_value_on(t_physical_address* physical_address,uint32_t value_to_write){
+void write_value_on(t_physical_address* physical_address,uint32_t value_to_write){
 
     uint32_t frame = frame_parse_from(physical_address);
     uint32_t offset = offset_parse_from(physical_address);
-
-    return write_value_at(frame,offset,value_to_write);
-
+    write_value_at(frame,offset,value_to_write);
 }
 
 void initialize_first_level_table_for(uint32_t pid){
@@ -197,7 +213,7 @@ void initialize_first_level_table_for(uint32_t pid){
     list_add(MEMORY_TABLE_MANAGER->first_level_table_collection,first_level_table);
 }
 
-t_page* page_using(uint32_t page_id){
+t_page* new_page_identified_by(uint32_t page_id){
 
     t_page* page = safe_malloc(sizeof(t_page));
     page->id = page_id;
@@ -210,7 +226,7 @@ t_page* page_using(uint32_t page_id){
 void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount){
 
     for (uint32_t i = 0; i < page_amount ; ++i){
-        list_add(second_level_table->pages_per_row,page_using(second_level_table->last_page_id_assigned));
+        list_add(second_level_table->pages_per_row, new_page_identified_by(second_level_table->last_page_id_assigned));
         increment_value(&(second_level_table->last_page_id_assigned));
     }
 

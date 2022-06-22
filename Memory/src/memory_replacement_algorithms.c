@@ -15,17 +15,12 @@ void initialize_process_context_manager(){
     safe_mutex_initialize(&mutex_process);
 }
 
-char* swap_file_path_for(uint32_t pid){
-
-    return string_from_format("%s%d.swap",swap_path(),pid);
-}
-
 void new_process_context_for(uint32_t pid){
     t_process_context* process_context = safe_malloc(sizeof(t_process_context));
     process_context->pid = pid;
     process_context->last_page_index_swapped = 0;
     process_context->swap_file_path = swap_file_path_for(pid);
-    process_context->page_number_collection = list_create();
+    process_context->frame_related_to_page_id_collection = list_create();
 
     list_add(PROCESS_CONTEXT_MANAGER->process_context_collection,process_context);
 }
@@ -45,20 +40,20 @@ t_process_context* process_context_for(uint32_t pid){
 
 uint32_t loaded_page_quantity_of(uint32_t pid){
 
-   return list_size(process_context_for(pid)->page_number_collection);
+   return list_size(process_context_for(pid)->frame_related_to_page_id_collection);
 }
 
 bool can_swap_page_for(uint32_t pid){
-    return !list_is_empty(process_context_for(pid)->page_number_collection);
+    return !list_is_empty(process_context_for(pid)->frame_related_to_page_id_collection);
 }
 
 bool has_to_restart_clock_position(t_process_context* process_context){
-    return (list_size(process_context->page_number_collection) == (process_context->last_page_index_swapped + 1));
+    return (list_size(process_context->frame_related_to_page_id_collection) == (process_context->last_page_index_swapped + 1));
 }
 
 bool can_page_be_swapped_at(t_process_context* process_context, uint32_t step){
 
-    uint32_t page_id = list_get(process_context->page_number_collection,process_context->last_page_index_swapped);
+    uint32_t page_id = list_get(process_context->frame_related_to_page_id_collection, process_context->last_page_index_swapped);
     t_page* selected_page_to_swap = page_in_pid(process_context->pid,page_id);
 
 
@@ -75,9 +70,9 @@ bool can_page_be_swapped_at(t_process_context* process_context, uint32_t step){
 
 }
 
-void update_page_bits(t_process_context *process_context){
+void update_use_bit_from_page_in(t_process_context *process_context){
 
-    uint32_t page_id = list_get(process_context->page_number_collection,process_context->last_page_index_swapped);
+    uint32_t page_id = list_get(process_context->frame_related_to_page_id_collection, process_context->last_page_index_swapped);
 
     t_page* selected_page_to_swap = page_in_pid(process_context->pid,page_id);
 
@@ -95,11 +90,19 @@ void save_content_to_file_for(t_process_context* process_context,t_page* victim_
 
 }
 
+void update_page_when_loaded(t_page* page, uint32_t frame){
+    page->frame = frame;
+    page->presence_bit = 1;
+    page->use_bit = 0;                  //Only used when read or write/copy are called
+    page->modified_bit = 0;
+
+}
+
 void load_content_to_memory_for(t_process_context* process_context,t_page* selected_page, uint32_t frame){
 
     uint32_t content_to_load = read_from_file(process_context->swap_file_path,selected_page->id);
-    load_page_in_memory_at(frame,content_to_load);
-    update_page_when_loaded(selected_page,frame);
+    write_value_at(frame, sizeof(uint32_t),content_to_load);
+    update_page_when_loaded(selected_page,frame);               //Update bits and frame for pages_per_row
 
 }
 
@@ -108,14 +111,13 @@ void initialize_swap_page_procedure(t_page* selected_page, t_process_context* pr
 
     uint32_t pid = process_context->pid;
     uint32_t last_page_index = process_context->last_page_index_swapped;
-    uint32_t victim_page_id = list_get(process_context->page_number_collection,last_page_index);
+    uint32_t victim_page_id = list_get(process_context->frame_related_to_page_id_collection, last_page_index);
     t_page* victim_page = page_in_pid(pid,victim_page_id);
 
     safe_mutex_lock(&mutex_process);
 
     save_content_to_file_for(process_context,victim_page);
-    list_replace(process_context_for(pid)->page_number_collection,last_page_index , selected_page->id);
-
+    list_replace(process_context_for(pid)->frame_related_to_page_id_collection, last_page_index , selected_page->id);
     load_content_to_memory_for(process_context,selected_page,victim_page->frame);
 
     safe_mutex_unlock(&mutex_process);
@@ -141,7 +143,7 @@ void clock_algorithm(t_process_context* process_context,t_page* page_requested){
                 process_context->last_page_index_swapped = 0;
             else
                 increment_value(&(process_context->last_page_index_swapped));
-            update_page_bits(process_context);
+            update_use_bit_from_page_in(process_context);
         }
     }
 }
@@ -173,7 +175,7 @@ void enhanced_clock_algorithm(t_process_context* process_context,t_page* page_re
             }
             else{
                 if(step != 1)
-                    update_page_bits(process_context);
+                    update_use_bit_from_page_in(process_context);
                 increment_value(&(process_context->last_page_index_swapped));
             }
         }
@@ -198,7 +200,7 @@ void suspend_process(uint32_t pid){
 
     t_process_context * process_context = process_context_for(pid);
 
-    t_list* page_id_collection = process_context->page_number_collection;
+    t_list* page_id_collection = process_context->frame_related_to_page_id_collection;
 
     for (int i = 0; i < list_size(page_id_collection) ; ++i) {
         t_page* page = list_get(page_id_collection,i);

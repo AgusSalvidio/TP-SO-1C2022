@@ -22,8 +22,13 @@ typedef struct {
     uint32_t pid;
     char* swap_file_path;
     uint32_t last_page_index_swapped;
-    t_list* page_number_collection;
+    t_list* frame_related_to_page_id_collection;
 }t_process_context;
+
+typedef struct {
+    uint32_t frame;
+    uint32_t page_id;
+}t_frame_related_to_page_id;                    //Not Convinced with the name, open to offers.
 
 uint32_t loaded_page_quantity_of(uint32_t pid);
 bool can_swap_page_for(uint32_t pid);
@@ -33,7 +38,7 @@ void initialize_memory_replacement_algorithm();
 void new_process_context_for(uint32_t pid);
 void suspend_process(uint32_t pid);
 void finalize_process(uint32_t pid);
-char* swap_file_path_for(uint32_t pid);
+
 
 
 

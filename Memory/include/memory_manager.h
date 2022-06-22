@@ -14,6 +14,7 @@
 #include<commons/collections/list.h>
 #include<pthread.h>
 #include "../../Utils/include/common_structures.h"
+#include "memory_configuration_manager.h"
 
 typedef struct {
     t_list* first_level_table_collection;
@@ -43,8 +44,7 @@ typedef struct {
 }t_page;
 
 typedef struct {
-    uint32_t size;
-    uint32_t frame_array[16]; //hacer cuenta de cantidad
+    uint32_t * buffer;
     t_list* available_frames;
 }t_main_memory;
 
@@ -63,9 +63,9 @@ t_page* page_in_pid(uint32_t pid, uint32_t page_id);
 bool is_page_loaded_in_main_memory(t_page* page);
 t_second_level_table* second_level_table_for(uint32_t index);
 uint32_t read_value_from(t_physical_address* physical_address);
-uint32_t write_value_on(t_physical_address* physical_address,uint32_t value_to_write);
+void write_value_on(t_physical_address* physical_address,uint32_t value_to_write);
 uint32_t read_value_at(uint32_t frame, uint32_t offset);
-uint32_t write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write);
+void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write);
 void load_page_in_memory(t_page* page, uint32_t pid);
 bool can_memory_load_another_page_for(uint32_t pid);
 void free_main_memory_frames(t_list* page_id_collection);

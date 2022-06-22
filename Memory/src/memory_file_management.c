@@ -2,7 +2,12 @@
 #include "memory_configuration_manager.h"
 #include "../../Utils/include/garbage_collector.h"
 #include "memory_logs_manager.h"
-#include "memory_replacement_algorithms.h"
+
+
+char* swap_file_path_for(uint32_t pid){
+
+    return string_from_format("%s%d.swap",swap_path(),pid);
+}
 
 void initialize_swap_file_for(uint32_t pid, uint32_t process_size){
     create_swap_file(swap_file_path_for(pid), process_size);
