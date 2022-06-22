@@ -12,12 +12,6 @@
 #include "../../Utils/include/t_list_extension.h"
 #include "memory_replacement_algorithms.h"
 
-uint32_t maximum_frames_per_process;
-
-uint32_t max_frames_per_process(){
-    return maximum_frames_per_process;
-}
-
 void wait_swap_delay_time(){
     uint32_t delay_time_in_seconds = swap_time()/1000;
     sleep(delay_time_in_seconds);
@@ -61,6 +55,7 @@ void* handle_handshake_request_procedure(t_handshake * received_handshake){
 
     request_to_send = request_to_send_using(handshake_to_send, HANDSHAKE);
 
+    log_handshake_was_sent_succesfully();
     //wait_swap_delay_time();
     return request_to_send;
 }
@@ -71,8 +66,10 @@ void* handle_cpu_first_access_request_procedure(t_mmu_access *first_access){
     t_request * request_to_send;
 
     request_to_send = request_to_send_using(second_level_table_index_request_to_send, REQUEST_RESPONSE);
-
     wait_cpu_response_delay_time();
+
+    log_cpu_first_access_was_handled_successfully(first_access->index,first_access->entry);
+
     return request_to_send;
 }
 
@@ -105,10 +102,14 @@ void* handle_cpu_second_access_request_procedure(t_mmu_access *second_access){
 
     t_request_response *frame_request_to_send;
 
-    if(could_memory_handle_second_access_request(second_access))
+    if(could_memory_handle_second_access_request(second_access)){
         request_response_using(frame_at(second_access->index, second_access->entry), "SUCCESS");
-    else
+        log_cpu_second_access_was_handled_successfully(second_access->index,second_access->entry);
+    }
+    else{
         request_response_using(0, "ERROR");
+        log_cpu_second_access_cannot_be_handled(second_access->index,second_access->entry);
+    }
 
     t_request * request_to_send;
     request_to_send = request_to_send_using(frame_request_to_send, REQUEST_RESPONSE);
@@ -136,10 +137,10 @@ uint32_t integer_division(uint32_t dividend, uint32_t divisor){
 uint32_t converted_page_quantity_based_on(uint32_t process_size, uint32_t page_size){
     integer_division(process_size,page_size);
 }
+
 uint32_t converted_table_quantity_based_on(uint32_t page_quantity, uint32_t frames_per_table){
     integer_division(page_quantity,frames_per_table);
 }
-
 
 void* handle_new_process_request_procedure(t_initialize_process* new_process_received){
 
@@ -159,11 +160,11 @@ void* handle_new_process_request_procedure(t_initialize_process* new_process_rec
     else{
         t_request_response *cannot_initialize_new_process_request_to_send = request_response_using(pid,"ERROR");
         request_to_send = request_to_send_using(cannot_initialize_new_process_request_to_send, REQUEST_RESPONSE);
+        log_cannot_initialize_new_process_because(string_from_format("El proceso %d no pudo ser inicializado debido a que la cantidad de paginas excede el maximo permitido.", pid));
     }
 
     return request_to_send;
 }
-
 
 void* handle_suspend_process_request_procedure(t_suspend_process* process_to_suspend){
 
@@ -175,6 +176,8 @@ void* handle_suspend_process_request_procedure(t_suspend_process* process_to_sus
     t_request *request_to_send;
     t_request_response *suspended_process_request_response = request_response_using(pid, "SUCCESS");
     request_to_send = request_to_send_using(suspended_process_request_response, REQUEST_RESPONSE);
+
+    log_process_suspension_was_successful(pid);
 
     return request_to_send;
 
@@ -191,11 +194,12 @@ void* handle_finalize_process_request_procedure(t_finalize_process * process_to_
     t_request_response *finalized_process_request_response = request_response_using(pid, "SUCCESS");
     request_to_send = request_to_send_using(finalized_process_request_response, REQUEST_RESPONSE);
 
+    log_process_finalization_was_successful(pid);
+
     return request_to_send;
 
 
 }
-
 
 void* handle_read_request_procedure(t_read *read_request){
 
@@ -205,8 +209,10 @@ void* handle_read_request_procedure(t_read *read_request){
 
     t_request * request_to_send;
     request_to_send = request_to_send_using(read_value_request_to_send, REQUEST_RESPONSE);
-
     wait_cpu_response_delay_time();
+
+    log_read_request_was_handled_successfully();
+
     return request_to_send;
 }
 
@@ -223,6 +229,8 @@ void* handle_write_request_procedure(t_write* write_request){
     request_to_send = request_to_send_using(write_value_request_to_send, REQUEST_RESPONSE);
 
     wait_cpu_response_delay_time();
+
+    log_write_request_was_handled_successfully();
     return request_to_send;
 
 }

@@ -68,5 +68,5 @@ uint32_t read_value_at(uint32_t frame, uint32_t offset);
 void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write);
 void load_page_in_memory(t_page* page, uint32_t pid);
 bool can_memory_load_another_page_for(uint32_t pid);
-void free_main_memory_frames(t_list* page_id_collection);
+void free_main_memory_frames(t_list* frame_related_to_page_id_collection);
 #endif //KISS_MEMORY_MANAGER_H

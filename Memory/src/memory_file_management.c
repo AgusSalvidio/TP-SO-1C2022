@@ -10,7 +10,15 @@ char* swap_file_path_for(uint32_t pid){
 }
 
 void initialize_swap_file_for(uint32_t pid, uint32_t process_size){
-    create_swap_file(swap_file_path_for(pid), process_size);
+
+    char* swap_file_path = swap_file_path_for(pid);
+
+    create_swap_file(swap_file_path, process_size);
+
+    log_swap_file_for_process_was_successfully_initialized(pid,swap_file_path);
+
+    consider_as_garbage(swap_file_path,free);
+
 }
 
 void write_in_file(char* swap_file_path, uint32_t frame_number,uint32_t content){
@@ -54,6 +62,7 @@ void create_swap_file(char* file_path,uint32_t process_size){
     fputc('\0', file_pointer);
 
     fclose(file_pointer);
+
 }
 
 void delete_file_from(char* swap_file_path){
