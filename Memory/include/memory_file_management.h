@@ -12,20 +12,11 @@
 #include<fcntl.h>
 #include<unistd.h>
 
-//VARIABLES GLOBALES
-
-t_log* init_logger(void);
-t_config* init_config(void);
-void init_global_variables(void);
-
-void initialize_memory(void);
-void save_value_in_memory(uint32_t address, uint32_t value,uint32_t pid);
-uint32_t read_value_in_memory(uint32_t address,uint32_t pid);
-void initialize_memory_file_management();
-void create_swap_file(uint32_t pid);
-char* generate_path_file(uint32_t pid);
-void save_content_in_swap_file(uint32_t address,uint32_t size,uint32_t pid);
-void load_file_into_memory(uint32_t pid,uint32_t address,uint32_t size);
-
+void write_in_file(char* swap_file_path, uint32_t frame_number,uint32_t content);
+uint32_t read_from_file(char* swap_file_path,uint32_t page_id);
+void create_swap_file(char* file_path,uint32_t process_size);
+void delete_file_from(char* swap_file_path);
+void initialize_swap_file_for(uint32_t pid,uint32_t process_size);
+char* swap_file_path_for(uint32_t pid);
 
 #endif //KISS_MEMORY_FILE_MANAGEMENT_H

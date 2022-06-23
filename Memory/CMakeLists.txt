@@ -8,8 +8,9 @@ set(SOURCES
         src/memory_manager.c
         src/memory_connection_handler.c
         src/memory_sanitizer.c
-        src/memory_file_management.c)
-
+        src/memory_file_management.c
+        src/memory_replacement_algorithms.c
+        src/memory_request_handler.c)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/target")
 add_executable(memory ${SOURCES})
 

@@ -8,12 +8,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+
 void wait_delay_time(){
     uint32_t delay_time_in_seconds = get_noop_delay()/1000;
     sleep(delay_time_in_seconds);
 }
 
-t_request* response_request_with(void* received_structure, uint32_t operation){
+t_request* request_to_send_using(void* received_structure, uint32_t operation){
     t_request* request_to_send = safe_malloc(sizeof(t_request));
     request_to_send -> operation = operation;
     request_to_send -> structure = received_structure;
@@ -41,6 +43,7 @@ void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
     t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
     send_copy_to_memory(physical_address, value);
 }
+
 
 void* handle_no_op_request_procedure(uint32_t pid, t_list* operands){
     wait_delay_time();

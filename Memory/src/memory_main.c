@@ -13,12 +13,10 @@
 #include <memory_manager.h>
 #include <string.h>
 
-
 int main (void) {
 
     initialize_memory_configuration_manager();
     initialize_signal_handler();
-    initialize_memory_file_management();
     initialize_garbage_collector();
     initialize_memory_logs_manager();
     initialize_memory_serializable_objects();
@@ -26,6 +24,7 @@ int main (void) {
 
     log_succesful_start_up();
 
+    initialize_memory_manager();
     execute_main_thread();
 
     //free_system();

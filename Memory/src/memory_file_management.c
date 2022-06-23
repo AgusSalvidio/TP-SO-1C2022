@@ -1,80 +1,75 @@
 #include "../include/memory_file_management.h"
 #include "memory_configuration_manager.h"
+#include "../../Utils/include/garbage_collector.h"
+#include "memory_logs_manager.h"
 
-void* MEMORY_BLOCK;
-t_log* LOGGER;
-char* PATH_SWAP_BASE;
-FILE* SWAP_FILE;
-void* MEMORY_BLOCK_SECONDARY;
 
-void initialize_memory_file_management(){
-    initialize_memory();
+char* swap_file_path_for(uint32_t pid){
+
+    return string_from_format("%s%d.swap",swap_path(),pid);
 }
 
-void initialize_memory(){
-    uint32_t size = memory_size_getter();
-    MEMORY_BLOCK = safe_malloc(size);
-}
+void initialize_swap_file_for(uint32_t pid, uint32_t process_size){
 
-void create_swap_file(uint32_t pid){
-    char* path = generate_path_file(pid);
-    SWAP_FILE = fopen(path,"w+");
-    if(SWAP_FILE == NULL){
-        log_info(LOGGER,"no se pudo abrir el archivo de swap %s",path);
-    }
-    log_info(LOGGER,"Archivo swap creado: %d.swap", pid);
-    fclose(SWAP_FILE);
-    free(path);
+    char* swap_file_path = swap_file_path_for(pid);
+
+    create_swap_file(swap_file_path, process_size);
+
+    log_swap_file_for_process_was_successfully_initialized(pid,swap_file_path);
+
+    consider_as_garbage(swap_file_path,free);
 
 }
 
-void save_value_in_memory(uint32_t address, uint32_t value,uint32_t pid){
-    memcpy(MEMORY_BLOCK+ address, &value, sizeof(uint32_t));
+void write_in_file(char* swap_file_path, uint32_t frame_number,uint32_t content){
 
-    log_info(LOGGER,"Se guardo el valor %d en la direccion %d para el PID %d",value,address,pid);
+    FILE* file_pointer = fopen(swap_file_path, "r+");
+    uint32_t offset_position = frame_number * page_size_getter();
+    char* transformed_content = string_itoa(content);
+
+    fseek(file_pointer, sizeof(uint32_t)*offset_position, SEEK_SET);
+
+    fprintf(file_pointer, transformed_content);
+
+    consider_as_garbage(transformed_content, free);
+    fclose(file_pointer);
 }
 
-uint32_t read_value_in_memory(uint32_t address,uint32_t pid){
-    uint32_t value;
-    memcpy(&value,MEMORY_BLOCK +address,sizeof(uint32_t));
-    log_info(LOGGER,"Se obtuvo el valor %d en la direccion %d para el PID %d",value,address,pid);
-    return value;
+uint32_t read_from_file(char* swap_file_path,uint32_t page_id){
+
+    FILE* file_pointer = fopen(swap_file_path, "r");
+
+    uint32_t initial_position = page_id * page_size_getter();
+    uint32_t displacement = page_size_getter();
+
+    char* content_to_return = safe_malloc(displacement);
+
+    fseek(file_pointer, sizeof(char)*initial_position, SEEK_SET);
+    fgets(content_to_return, displacement+1, file_pointer);
+
+    consider_as_garbage(content_to_return, free);
+    fclose(file_pointer);
+
+    return atoi(content_to_return);
 }
 
-char* generate_path_file(uint32_t pid){
-    char* path = string_new();
-    string_append(&path, PATH_SWAP_BASE);
-    string_append_with_format(&path,"/%d.swap",pid);
-    return path;
+void create_swap_file(char* file_path,uint32_t process_size){
+
+    FILE* file_pointer = fopen(file_path, "w");
+    uint32_t file_descriptor = fileno(file_pointer);
+    ftruncate(file_descriptor, process_size);
+
+    fputc('\0', file_pointer);
+
+    fclose(file_pointer);
+
 }
 
-void save_content_in_swap_file(uint32_t address,uint32_t size,uint32_t pid){
-    //PRECONDICION: EL SWAP_FILE para el pid ya debe existir
-    char* path = generate_path_file(pid);
-    SWAP_FILE = open(path,O_CREAT|O_RDWR, 07777);
-    if(SWAP_FILE == -1){
-        log_info(LOGGER,"No se pudo abrir el archivo de swap %s",path);
-    }else{
-        //inicio de la memoria SECONDARY con mmap
-        MEMORY_BLOCK_SECONDARY = mmap(NULL, size,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,SWAP_FILE, 0);
-        ftruncate(SWAP_FILE, size);
-        memcpy(MEMORY_BLOCK_SECONDARY,MEMORY_BLOCK + address,size);
-        msync(MEMORY_BLOCK_SECONDARY, size, MS_SYNC);
-        close(SWAP_FILE);
+void delete_file_from(char* swap_file_path){
 
-    }
-}
+    if(remove(swap_file_path) == 0)
+        log_swap_file_delete_procedure_description(swap_file_path,"fue eliminado correctamente.");
+    else
+        log_swap_file_delete_procedure_description(swap_file_path,"no pudo ser eliminado debido a un error.");
 
-void load_file_into_memory(uint32_t pid,uint32_t address,uint32_t size){
-    char* path = generate_path_file(pid);
-    SWAP_FILE = open(path,O_CREAT|O_RDWR, 07777);
-    if(SWAP_FILE == -1){
-        log_info(LOGGER,"No se pudo abrir el archivo de swap %s",path);
-    }else{
-        MEMORY_BLOCK_SECONDARY = mmap(NULL, size,PROT_WRITE|PROT_READ,MAP_SHARED|MAP_FILE,SWAP_FILE, 0);
-        ftruncate(SWAP_FILE, size);
-        memcpy(MEMORY_BLOCK + address,MEMORY_BLOCK_SECONDARY,size);
-        msync(MEMORY_BLOCK_SECONDARY, size, MS_SYNC);
-        close(SWAP_FILE);
-    }
 }

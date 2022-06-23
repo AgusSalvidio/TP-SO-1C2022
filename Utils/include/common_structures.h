@@ -15,8 +15,8 @@ typedef struct Handshake {
 } t_handshake;
 
 typedef struct Request_Response {
-    char *type_description;
-    char *content;
+    char* type_description;
+    uint32_t content;
 } t_request_response;
 
 typedef struct Physical_address{

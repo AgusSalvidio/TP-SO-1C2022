@@ -49,13 +49,18 @@ char* algorithm(){
 uint32_t swap_time(){
     return swap_delay_time;
 }
-uint32_t frames_per_table_getter(){
+uint32_t frames_per_process_getter(){
     return frames_per_process;
 }
 char* swap_path(){
     return swap_file_path;
 }
-
+uint32_t max_page_quantity(){
+    return entries_per_table_getter() * entries_per_table_getter();
+}
+uint32_t quantity_memory_frames(){
+        return memory_size_getter()/page_size_getter();
+}
 void free_memory_configuration_manager(){
 
     free_configuration_manager();

@@ -146,11 +146,7 @@ t_request* deserialize_request_response(void* serialized_structure){
 
     char* type_description;
     uint32_t type_description_lenght;
-
-    char* content;
-    uint32_t content_lenght;
-
-
+    uint32_t content;
     uint32_t offset = 0;
 
     memcpy(&type_description_lenght, serialized_structure + offset, sizeof(uint32_t));
@@ -161,11 +157,8 @@ t_request* deserialize_request_response(void* serialized_structure){
     memcpy(type_description, serialized_structure + offset, type_description_lenght);
     offset += strlen(type_description);
 
-    memcpy(&content_lenght, serialized_structure + offset, sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    uint32_t content_length_with_trailing_null = content_lenght + 2;
-    content = calloc(content_length_with_trailing_null, sizeof(char));
-    memcpy(content, serialized_structure + offset, content_lenght);
+    memcpy(&content, serialized_structure + offset, sizeof(uint32_t));
+
 
     t_request_response * request_response = safe_malloc(sizeof(t_request_response));
     request_response -> type_description = type_description;
