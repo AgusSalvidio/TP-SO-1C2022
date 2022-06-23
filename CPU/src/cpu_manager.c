@@ -56,10 +56,10 @@ void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* 
         io_pcb -> pcb = current_pcb;
         io_pcb -> blocked_time = (uint32_t)list_get(instruction->operands, 0);
 
-        request_response = response_request_with(io_pcb, IO_PCB);
+        request_response = request_to_send_using(io_pcb, IO_PCB);
     }
     if(instruction -> type == EXIT)
-        request_response = response_request_with(current_pcb, PCB);
+        request_response = request_to_send_using(current_pcb, PCB);
     else
         return NULL;
 
@@ -80,7 +80,7 @@ void* handle_PCB_request_procedure(t_pcb* current_pcb){
             execute(table_index, instruction);
     }
     modify_interruption_status();
-    return response_request_with(current_pcb, PCB);
+    return request_to_send_using(current_pcb, PCB);
 }
 
 void free_cpu_manager(){};

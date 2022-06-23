@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "../../Utils/include/common_structures.h"
 
-t_request* response_request_with(void* received_structure, uint32_t operation);
+t_request* request_to_send_using(void* received_structure, uint32_t operation);
 void* handle_read_request_procedure(uint32_t pid, t_list* operands);
 void* handle_write_request_procedure(uint32_t pid, t_list* operands);
 void* handle_copy_request_procedure(uint32_t pid, t_list* operands);

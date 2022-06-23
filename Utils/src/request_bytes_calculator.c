@@ -79,23 +79,6 @@ uint32_t amount_of_bytes_of_suspend_process() {
     return sizeof(uint32_t);       //pid
 }
 
-uint32_t amount_of_bytes_of_pcb(void *structure) {
-    t_pcb *pcb = (t_pcb *) structure;
-    uint32_t amount_of_bytes = sizeof(uint32_t) + //pid
-                               sizeof(uint32_t) + //process_size
-                               sizeof(uint32_t); //instruction length
-
-    for (int i = 0; i < list_size(pcb->instructions); ++i) {
-        amount_of_bytes = amount_of_bytes + amount_of_bytes_of_instruction(list_get(pcb->instructions, i));
-    }
-
-    amount_of_bytes = amount_of_bytes +
-                      sizeof(uint32_t) + // pc
-                      sizeof(uint32_t) + // page_table
-                      sizeof(double)+ // next_burst
-   return amount_of_bytes;
-}
-
 uint32_t amount_of_bytes_of_mmu_access() {
     return sizeof(uint32_t) +       //index
            sizeof(uint32_t);       //entry
