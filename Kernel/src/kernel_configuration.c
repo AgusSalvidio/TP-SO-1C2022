@@ -29,7 +29,7 @@ char* get_scheduling_algorithm() {
     return config_get_string_at("ALGORITMO_PLANIFICACION");
 }
 
-uint32_t get_initial_estimation() {
+double get_initial_estimation() {
     return config_get_int_at("ESTIMACION_INICIAL");
 }
 

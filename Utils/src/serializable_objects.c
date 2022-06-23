@@ -99,6 +99,30 @@ void initialize_and_load_serializable_second_access(){
     serializable_object -> code = SECOND_ACCESS;
     serializable_object -> serialize_function = serialize_mmu_access;
     serializable_object -> deserialize_function = deserialize_second_access;
+   list_add(all_serializables, (void*) serializable_object);
+}
+  
+void initialize_and_load_serializable_initialize_process(){
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = INITIALIZE_PROCESS;
+    serializable_object -> serialize_function = serialize_initialize_process;
+    serializable_object -> deserialize_function = deserialize_initialize_process;
+    list_add(all_serializables, (void*) serializable_object);
+}
+
+void initialize_and_load_serializable_suspend_process(){
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = SUSPEND_PROCESS;
+    serializable_object -> serialize_function = serialize_suspend_process;
+    serializable_object -> deserialize_function = deserialize_suspend_process;
+    list_add(all_serializables, (void*) serializable_object);
+}
+
+void initialize_and_load_serializable_finalize_process(){
+    t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
+    serializable_object -> code = FINALIZE_PROCESS;
+    serializable_object -> serialize_function = serialize_finalize_process;
+    serializable_object -> deserialize_function = deserialize_finalize_process;
     list_add(all_serializables, (void*) serializable_object);
 }
 
@@ -120,8 +144,11 @@ void initialize_serializable_objects(){
     initialize_and_load_serializable_io_pcb();
     initialize_and_load_serializable_first_access();
     initialize_and_load_serializable_second_access();
+    initialize_and_load_serializable_initialize_process();
+    initialize_and_load_serializable_suspend_process();
+    initialize_and_load_serializable_finalize_process();
 
-    log_succesful_initialize_serializable_objects();
+  log_succesful_initialize_serializable_objects();
 }
 
 

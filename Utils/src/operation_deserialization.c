@@ -431,3 +431,108 @@ t_request* deserialize_second_access(void* serialized_structure){
 
     return request;
 }
+
+t_request* deserialize_initialize_process(void* serialized_structure) {
+
+    uint32_t pid;
+    uint32_t process_size;
+
+    uint32_t offset = 0;
+
+    memcpy(&pid, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&process_size, serialized_structure + offset, sizeof(uint32_t));
+
+    t_initialize_process *initialize_process = safe_malloc(sizeof(t_initialize_process));
+    initialize_process -> pid = pid;
+    initialize_process -> process_size = process_size;
+
+    t_request *request = safe_malloc(sizeof(t_request));
+    request->operation = INITIALIZE_PROCESS;
+    request->structure = (void *) initialize_process;
+    request->sanitizer_function = free;
+
+    consider_as_garbage(initialize_process, free);
+    return request;
+}
+
+t_request* deserialize_pid(uint32_t operation, void* serialized_structure) {
+    uint32_t pid;
+    memcpy(&pid, serialized_structure, sizeof(uint32_t));
+
+    t_suspend_process *suspend_process = safe_malloc(sizeof(t_suspend_process));
+    suspend_process -> pid = pid;
+
+    t_request *request = safe_malloc(sizeof(t_request));
+    request->operation = operation;
+    request->structure = (void *) suspend_process;
+    request->sanitizer_function = free;
+
+    consider_as_garbage(suspend_process, free);
+    return request;
+}
+
+t_request* deserialize_suspend_process(void* serialized_structure) {
+    return deserialize_pid(SUSPEND_PROCESS, serialized_structure);
+}
+
+t_request* deserialize_finalize_process(void* serialized_structure) {
+    return deserialize_pid(FINALIZE_PROCESS, serialized_structure);
+}
+
+t_request* deserialize_pcb(void* serialized_structure) {
+
+    uint32_t pid;
+    uint32_t process_size;
+    uint32_t instructions_size;
+    t_list *instructions = list_create();
+    uint32_t operands_size;
+    uint32_t operand_value;
+    uint32_t pc;
+    uint32_t page_table;
+    double next_burst;
+    uint32_t offset = 0;
+
+    memcpy(&pid, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&process_size, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&instructions_size, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    for (int i = 0; i < instructions_size; ++i) {
+        t_instruction *instruction = safe_malloc(sizeof(t_instruction));
+        memcpy(&instruction->type, serialized_structure + offset, sizeof(uint32_t));
+        offset += sizeof(uint32_t);
+        memcpy(&operands_size, serialized_structure + offset, sizeof(uint32_t));
+        offset += sizeof(uint32_t);
+        t_list *operands = list_create();
+        for (int j = 0; j < operands_size; ++j) {
+            memcpy(&operand_value, serialized_structure + offset, sizeof(uint32_t));
+            offset += sizeof(uint32_t);
+            list_add(operands, operand_value);
+        }
+        instruction->operands = operands;
+        list_add(instructions, instruction);
+    }
+    memcpy(&pc, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&page_table, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&next_burst, serialized_structure + offset, sizeof(double));
+
+    t_pcb *pcb = safe_malloc(sizeof(t_pcb));
+    pcb->pid = pid;
+    pcb->process_size = process_size;
+    pcb->instructions = instructions;
+    pcb->pc = pc;
+    pcb->page_table = page_table;
+    pcb->next_burst = next_burst;
+
+    t_request *request = safe_malloc(sizeof(t_request));
+    request->operation = PCB;
+    request->structure = (void *) pcb;
+    request->sanitizer_function = free;
+
+    consider_as_garbage(pcb, free);
+    return request;
+}
