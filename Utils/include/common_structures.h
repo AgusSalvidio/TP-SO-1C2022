@@ -19,19 +19,30 @@ typedef struct Request_Response {
     char *content;
 } t_request_response;
 
-typedef struct Read {
-    uint32_t logical_address;
-} t_read;
+typedef struct Physical_address{
+    uint32_t frame;
+    uint32_t offset;
+}t_physical_address;
 
-typedef struct Write {
-    uint32_t logical_address;
+typedef struct Read{
+    t_physical_address* physical_address;
+}t_read;
+
+typedef struct Write{
+    t_physical_address* physical_address;
     uint32_t value;
-} t_write;
+}t_write, t_copy;
 
-typedef struct Copy {
-    uint32_t destiny_logical_address;
-    uint32_t origin_logical_address;
-} t_copy;
+typedef struct Level_paging{
+    uint32_t first_level_entry;
+    uint32_t second_level_entry;
+    uint32_t offset;
+}t_level_paging;
+
+typedef struct MMU_access{
+    uint32_t index;
+    uint32_t entry;
+}t_mmu_access;
 
 typedef struct Process_Initialize {
     uint32_t pid;
@@ -47,7 +58,7 @@ enum Operation {
     REQUEST_RESPONSE, READ, WRITE,
     COPY, NO_OP, IO,
     EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS,
-    FINALIZE_PROCESS, INTERRUPTION, PCB, IO_PCB
+    FINALIZE_PROCESS, INTERRUPTION, PCB, IO_PCB, FIRST_ACCESS, SECOND_ACCESS
 };
 
 typedef struct Console_message {

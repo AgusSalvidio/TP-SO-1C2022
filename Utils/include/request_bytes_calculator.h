@@ -8,10 +8,10 @@ uint32_t amount_of_bytes_of_request_response(void* structure);
 uint32_t amount_of_bytes_of_read();
 uint32_t amount_of_bytes_of_write();
 uint32_t amount_of_bytes_of_copy();
+uint32_t amount_of_bytes_of_pcb(void *structure);
+uint32_t amount_of_bytes_of_io_pcb(void *structure);
+uint32_t amount_of_bytes_of_mmu_access();
 uint32_t amount_of_bytes_of_initialize_process();
 uint32_t amount_of_bytes_of_suspend_process();
-uint32_t amount_of_bytes_of_pcb();
-
-
 
 #endif //KISS_REQUEST_BYTES_CALCULATOR_H

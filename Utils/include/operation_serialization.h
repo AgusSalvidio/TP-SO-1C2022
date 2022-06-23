@@ -13,6 +13,9 @@ t_serialization_information* serialize_request_response(void* structure);
 t_serialization_information* serialize_read(void *structure);
 t_serialization_information* serialize_write(void* structure);
 t_serialization_information* serialize_copy(void* structure);
+t_serialization_information* serialize_pcb(void* structure);
+t_serialization_information* serialize_io_pcb(void* structure);
+t_serialization_information* serialize_mmu_access(void* structure);
 
 t_serialization_information* serialize_pcb(void* structure);
 

@@ -1,16 +1,12 @@
 #include <cpu_manager.h>
-#include <cpu_query_performer.h>
-#include "../../Utils/include/common_structures.h"
 #include "cpu_logs_manager.h"
 #include "cpu_configuration_manager.h"
+#include "cpu_memory_connection_handler.h"
+#include "cpu_kernel_interrupt_connection_handler.h"
+#include "cpu_instruction_cycle.h"
+#include "cpu_mmu.h"
 #include <stdlib.h>
 #include <unistd.h>
-
-t_handshake* logical_adress_translator;
-
-t_handshake* logic_adress_translator(){
-    return logical_adress_translator;
-}
 
 void wait_delay_time(){
     uint32_t delay_time_in_seconds = get_noop_delay()/1000;
@@ -25,40 +21,63 @@ t_request* response_request_with(void* received_structure, uint32_t operation){
     return request_to_send;
 }
 
-void* handle_handshake_request_procedure(t_handshake * received_handshake){
-
-    logical_adress_translator -> page_size = received_handshake->page_size;
-    logical_adress_translator -> entries_per_page = received_handshake->entries_per_page;
-
-}
-void* handle_read_request_procedure(uint32_t received_content){
-    //Solo muestro por pantalla el contenido que devuelve memoria
-    log_read_content(received_content);
-}
-void* handle_write_request_procedure(){
-    //No hago nada, solo recibo la confirmacion por parte de memoria
-
-}
-void* handle_copy_request_procedure(){
-    //Idem write, solo recibo la confirmacion por parte de memoria
-
+void* handle_read_request_procedure(uint32_t table_index, t_list* operands){
+    uint32_t logical_address = (uint32_t) list_get(operands, 0);
+    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    send_read_to_memory(physical_address);
+    log_read_content(receive_content_from_memory());
 }
 
-void* handle_no_op_request_procedure(){
-    //Tengo que esperar el tiempo especificado en .config
+void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
+    uint32_t logical_address = (uint32_t) list_get(operands, 0);
+    uint32_t value = (uint32_t) list_get(operands, 1);
+    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    send_write_to_memory(physical_address, value);
+}
+
+void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
+    uint32_t logical_address = (uint32_t) list_get(operands, 0);
+    uint32_t value = (uint32_t) list_get(operands, 1);
+    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    send_copy_to_memory(physical_address, value);
+}
+
+void* handle_no_op_request_procedure(uint32_t pid, t_list* operands){
     wait_delay_time();
 }
 
-void* handle_IO_request_procedure(uint32_t blocked_time){
-    //Retorno el PCB actualizado y el tiempo en milisegundos
-    uint32_t time = blocked_time/1000;
-    sleep(time);
+void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* current_pcb){
+    t_request_response* request_response = safe_malloc(sizeof(t_request_response));
+    if(instruction -> type == IO){
+        t_io_pcb* io_pcb = safe_malloc(sizeof(t_io_pcb));
+        io_pcb -> pcb = current_pcb;
+        io_pcb -> blocked_time = (uint32_t)list_get(instruction->operands, 0);
 
-    //Retornar PCB
+        request_response = response_request_with(io_pcb, IO_PCB);
+    }
+    if(instruction -> type == EXIT)
+        request_response = response_request_with(current_pcb, PCB);
+    else
+        return NULL;
+
+    return request_response;
 }
 
-void* handle_exit_request_procedure(){
-    //Retorno PCB actualizado
+void* handle_PCB_request_procedure(t_pcb* current_pcb){
+    while(!current_interruption_status()){
+        uint32_t table_index = current_pcb -> page_table;
+        t_instruction* instruction = fetch_instruction(current_pcb);
+        decode_instruction(table_index, instruction);
+
+        t_request_response* request_response = safe_malloc(sizeof(t_request_response));
+        request_response = request_reponse_of_instruction_for_pcb(instruction, current_pcb);
+        if(request_response != NULL)
+            return request_response;
+        else
+            execute(table_index, instruction);
+    }
+    modify_interruption_status();
+    return response_request_with(current_pcb, PCB);
 }
 
 void free_cpu_manager(){};

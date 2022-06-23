@@ -89,6 +89,7 @@ t_serialization_information * serialize_read(void *structure) {
 
     uint32_t operation = READ;
     t_read * read = (t_read*) structure;
+    t_physical_address* physical_address = read -> physical_address;
     uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_read();
     uint32_t amount_of_bytes_of_request =
             sizeof(uint32_t)                    // operation
@@ -103,7 +104,9 @@ t_serialization_information * serialize_read(void *structure) {
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
     offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(read -> logical_address), sizeof(uint32_t));
+    memcpy(serialized_request + offset, &(physical_address -> frame), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(physical_address -> offset), sizeof(uint32_t));
 
     t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
     serialization_information -> serialized_request = serialized_request;
@@ -176,6 +179,7 @@ t_serialization_information* serialize_request_response(void* structure){
 t_serialization_information* serialize_write(void* structure){
 
     t_write * write = (t_write*) structure;
+    t_physical_address* physical_address = write->physical_address;
     uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_write();
     uint32_t amount_of_bytes_of_request =
             sizeof(uint32_t)                    // operation
@@ -191,7 +195,9 @@ t_serialization_information* serialize_write(void* structure){
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
     offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(write -> logical_address), sizeof(uint32_t));
+    memcpy(serialized_request + offset, &(physical_address -> frame), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(physical_address -> offset), sizeof(uint32_t));
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &(write -> value), sizeof(uint32_t));
 
@@ -204,6 +210,7 @@ t_serialization_information* serialize_write(void* structure){
 t_serialization_information* serialize_copy(void* structure){
 
     t_copy * copy = (t_copy*) structure;
+    t_physical_address* physical_address = copy->physical_address;
     uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_copy();
     uint32_t amount_of_bytes_of_request =
             sizeof(uint32_t)                    // operation
@@ -220,15 +227,131 @@ t_serialization_information* serialize_copy(void* structure){
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
     offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(copy -> destiny_logical_address), sizeof(uint32_t));
+    memcpy(serialized_request + offset, &(physical_address -> frame), sizeof(uint32_t));
     offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(copy -> origin_logical_address), sizeof(uint32_t));
+    memcpy(serialized_request + offset, &(physical_address -> offset), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(copy -> value), sizeof(uint32_t));
 
     t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
     serialization_information -> serialized_request = serialized_request;
     serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
     return serialization_information;
 
+}
+
+t_serialization_information* serialize_pcb(void* structure){
+
+    t_pcb *pcb = (t_pcb*) structure;
+    uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_pcb(structure);
+    uint32_t amount_of_bytes_of_request =
+            sizeof(uint32_t)                    // operation
+            + sizeof(uint32_t)                  // structure size
+            + amount_of_bytes_of_struct;   // structure
+
+    void* serialized_request = safe_malloc(amount_of_bytes_of_request);
+
+    uint32_t operation = PCB;
+    uint32_t instructions_size = list_size(pcb->instructions);
+    uint32_t offset = 0;
+
+    memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> pid), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> process_size), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &instructions_size, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    for (int i = 0; i < instructions_size; ++i) {
+        t_instruction *instruction = list_get(pcb->instructions, i);
+        serialize_instruction_structure(serialized_request, &offset, instruction);
+    }
+    memcpy(serialized_request + offset, &(pcb -> pc), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> page_table), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> next_burst), sizeof(double));
+
+    t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
+    serialization_information -> serialized_request = serialized_request;
+    serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
+    return serialization_information;
+
+}
+
+t_serialization_information* serialize_io_pcb(void* structure){
+
+    t_io_pcb* io_pcb = (t_io_pcb*)structure;
+    t_pcb *pcb = io_pcb -> pcb;
+    uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_io_pcb(structure);
+    uint32_t amount_of_bytes_of_request =
+            sizeof(uint32_t)                    // operation
+            + sizeof(uint32_t)                  // structure size
+            + amount_of_bytes_of_struct;   // structure
+
+    void* serialized_request = safe_malloc(amount_of_bytes_of_request);
+
+
+    uint32_t operation = IO_PCB;
+    uint32_t instructions_size = list_size(pcb->instructions);
+    uint32_t offset = 0;
+
+    memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> pid), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> process_size), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &instructions_size, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    for (int i = 0; i < instructions_size; ++i) {
+        t_instruction *instruction = list_get(pcb->instructions, i);
+        serialize_instruction_structure(serialized_request, &offset, instruction);
+    }
+    memcpy(serialized_request + offset, &(pcb -> pc), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> page_table), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(pcb -> next_burst), sizeof(double));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(io_pcb -> blocked_time), sizeof(uint32_t));
+
+    t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
+    serialization_information -> serialized_request = serialized_request;
+    serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
+    return serialization_information;
+
+}
+
+t_serialization_information* serialize_mmu_access(void* structure){
+    uint32_t operation = safe_malloc(sizeof(uint32_t));
+    t_mmu_access * mmu_access = (t_mmu_access*) structure;
+    uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_mmu_access();
+    uint32_t amount_of_bytes_of_request =
+            sizeof(uint32_t)                    // operation
+            + sizeof(uint32_t)                  // structure size
+            + amount_of_bytes_of_struct;          // structure
+
+    void* serialized_request = safe_malloc(amount_of_bytes_of_request);
+    uint32_t offset = 0;
+
+    memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(mmu_access -> index), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(mmu_access -> entry), sizeof(uint32_t));
+
+    t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
+    serialization_information -> serialized_request = serialized_request;
+    serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
+    return serialization_information;
 }
 
 t_serialization_information* serialize_initialize_process(void* structure){
@@ -293,47 +416,5 @@ t_serialization_information* serialize_suspend_process(void* structure) {
 
 t_serialization_information* serialize_finalize_process(void* structure) {
     return serialize_pid(FINALIZE_PROCESS, structure);
-}
-
-t_serialization_information* serialize_pcb(void* structure){
-
-    t_pcb *pcb = (t_pcb*) structure;
-    uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_pcb(structure);
-    uint32_t amount_of_bytes_of_request =
-            sizeof(uint32_t)                    // operation
-            + sizeof(uint32_t)                  // structure size
-            + amount_of_bytes_of_struct;   // structure
-
-    void* serialized_request = safe_malloc(amount_of_bytes_of_request);
-
-    uint32_t operation = PCB;
-    uint32_t instructions_size = list_size(pcb->instructions);
-    uint32_t offset = 0;
-
-    memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(pcb -> pid), sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(pcb -> process_size), sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &instructions_size, sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    for (int i = 0; i < instructions_size; ++i) {
-        t_instruction *instruction = list_get(pcb->instructions, i);
-        serialize_instruction_structure(serialized_request, &offset, instruction);
-    }
-    memcpy(serialized_request + offset, &(pcb -> pc), sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(pcb -> page_table), sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(serialized_request + offset, &(pcb -> next_burst), sizeof(double));
-
-    t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
-    serialization_information -> serialized_request = serialized_request;
-    serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
-    return serialization_information;
-
 }
 

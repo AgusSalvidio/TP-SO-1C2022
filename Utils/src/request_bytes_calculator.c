@@ -32,19 +32,41 @@ uint32_t amount_of_bytes_of_request_response(void *structure) {
            sizeof(uint32_t) +                                  //content lenght
            strlen(request_response->content);             //content
 }
+  
+uint32_t amount_of_bytes_of_read(){
+    return sizeof(uint32_t) +       //frame
+           sizeof(uint32_t);       //offset
 
-uint32_t amount_of_bytes_of_read() {
-    return sizeof(uint32_t);       //logical_adress
 }
 
-uint32_t amount_of_bytes_of_write() {
-    return sizeof(uint32_t) +       //logical_adress
+uint32_t amount_of_bytes_of_write(){
+    return sizeof(uint32_t) +        //frame
+           sizeof(uint32_t) +       //offset
            sizeof(uint32_t);       //value
 }
 
-uint32_t amount_of_bytes_of_copy() {
-    return sizeof(uint32_t) +       //destiny_logical_adress
-           sizeof(uint32_t);       //origin_logical_adress
+uint32_t amount_of_bytes_of_copy(){
+    return sizeof(uint32_t) +        //frame
+           sizeof(uint32_t) +       //offset
+           sizeof(uint32_t);       //value
+}
+
+uint32_t amount_of_bytes_of_pcb(void *structure) {
+    t_pcb *pcb = (t_pcb *) structure;
+    uint32_t amount_of_bytes = sizeof(uint32_t) + //pid
+                               sizeof(uint32_t) + //process_size
+                               sizeof(uint32_t); //instruction length
+
+    for (int i = 0; i < list_size(pcb->instructions); ++i) {
+        amount_of_bytes = amount_of_bytes + amount_of_bytes_of_instruction(list_get(pcb->instructions, i));
+    }
+
+    amount_of_bytes = amount_of_bytes +
+                      sizeof(uint32_t) + // pc
+                      sizeof(uint32_t) + // page_table
+                      sizeof(double); // next_burst
+
+    return amount_of_bytes;
 }
 
 uint32_t amount_of_bytes_of_initialize_process() {
@@ -69,7 +91,32 @@ uint32_t amount_of_bytes_of_pcb(void *structure) {
     amount_of_bytes = amount_of_bytes +
                       sizeof(uint32_t) + // pc
                       sizeof(uint32_t) + // page_table
-                      sizeof(double); // next_burst
+                      sizeof(double)+ // next_burst
+   return amount_of_bytes;
+}
+
+uint32_t amount_of_bytes_of_mmu_access() {
+    return sizeof(uint32_t) +       //index
+           sizeof(uint32_t);       //entry
+}
+
+uint32_t amount_of_bytes_of_io_pcb(void *structure) {
+    t_io_pcb* io_pcb = (t_io_pcb*)structure;
+    t_pcb *pcb = io_pcb -> pcb;
+    uint32_t amount_of_bytes = sizeof(uint32_t) + //pid
+                               sizeof(uint32_t) + //process_size
+                               sizeof(uint32_t); //instruction length
+
+    for (int i = 0; i < list_size(pcb->instructions); ++i) {
+        amount_of_bytes = amount_of_bytes + amount_of_bytes_of_instruction(list_get(pcb->instructions, i));
+    }
+
+    amount_of_bytes = amount_of_bytes +
+                      sizeof(uint32_t) + // pc
+                      sizeof(uint32_t) + // page_table
+                      sizeof(double)+ // next_burst
+                      sizeof(uint32_t); //blocked_time;
 
     return amount_of_bytes;
 }
+
