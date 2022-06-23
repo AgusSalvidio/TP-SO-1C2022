@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
-void connect_and_send_to_memory(uint32_t operation, void *structure_to_send);
+uint32_t connect_and_send_initialize_to_memory(void *structure_to_send);
+
+void connect_and_send_suspend_to_memory(void *structure_to_send);
+
+void connect_and_send_finalize_to_memory(void *structure_to_send);
 
 #endif //KISS_KERNEL_MEMORY_CONNECTION_H

@@ -18,10 +18,10 @@ void new_to_ready_transition(t_pcb *pcb) {
     t_initialize_process *initialize_process = safe_malloc(sizeof(t_initialize_process));
     initialize_process->pid = pcb ->pid;
     initialize_process->process_size = pcb->process_size;
-    connect_and_send_to_memory(INITIALIZE_PROCESS, initialize_process);
+    uint32_t page_table_id = connect_and_send_initialize_to_memory(initialize_process);
+    pcb->page_table = page_table_id;
     notify(SEND_INTERRUPTION_SIGNAL);
     notify(PROCESS_READY_TO_EXECUTE);
-    //TODO
 }
 
 void ready_to_exec_transition(t_pcb *pcb) {
@@ -34,13 +34,14 @@ void blocked_to_ready_transition(t_pcb *pcb) {
     log_pcb_blocked_to_ready_transition(pcb->pid);
     notify(SEND_INTERRUPTION_SIGNAL);
     notify(PROCESS_READY_TO_EXECUTE);
-    //TODO
 }
 
 void blocked_to_suspended_blocked_transition(t_pcb *pcb) {
     move_to(pcb, SUSPENDED_BLOCKED);
+    t_suspend_process *suspend_process = safe_malloc(sizeof(t_suspend_process));
+    suspend_process->pid = pcb->pid;
+    connect_and_send_suspend_to_memory(suspend_process);
     log_pcb_blocked_to_suspended_blocked_transition(pcb->pid);
-    //TODO
 }
 
 void suspended_blocked_to_suspended_ready_transition(t_pcb *pcb) {
@@ -72,7 +73,7 @@ void exec_to_exit_transition(t_pcb *pcb) {
     log_pcb_exec_to_exit_transition(pcb->pid);
     t_finalize_process *finalize_process = safe_malloc(sizeof(t_finalize_process));
     finalize_process->pid = pcb->pid;
-    connect_and_send_to_memory(FINALIZE_PROCESS, finalize_process);
+    connect_and_send_finalize_to_memory(finalize_process);
     request_process_remove_from_schedule();
 }
 
@@ -99,9 +100,6 @@ void initialize_state_transitions() {
     initialize_and_load_state_transition(SUSPENDED_READY, READY,
                                          (void (*)(void *)) suspended_ready_to_ready_transition);
     initialize_and_load_state_transition(EXEC, Q_EXIT, (void (*)(void *)) exec_to_exit_transition);
-//    initialize_and_load_state_transition(BLOCKED, EXIT, (void (*)(void *)) blocked_to_exit_transition);
-//    initialize_and_load_state_transition(SUSPENDED_BLOCKED, EXIT,
-//                                         (void (*)(void *)) suspended_blocked_to_exit_transition);
 }
 
 void free_state_transitions() {
