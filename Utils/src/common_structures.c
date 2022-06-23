@@ -121,23 +121,23 @@ void safe_sem_destroy(sem_t* semaphore){
     }
 }
 
-uint64_t current_time_in_milliseconds(){
+uint32_t current_time_in_milliseconds(){
 
-   char* time = temporal_get_string_time("%d/%m/%y %H:%M:%S");
-   char** time_splitted = string_split(time, ":");
-   char* hours = time_splitted[0];
-   char* minutes = time_splitted[1];
-   char* seconds = time_splitted[2];
-   int milliseconds = atoi(time_splitted[3]);
+    char* time = temporal_get_string_time("%H:%M:%S:%MS");
+    char** time_splitted = string_split(time, ":");
+    char* hours = time_splitted[0];
+    char* minutes = time_splitted[1];
+    char* seconds = time_splitted[2];
+    int milliseconds = atoi(time_splitted[3]);
 
-   int hours_in_milliseconds = atoi(hours) * 3600000;
-   int minutes_in_milliseconds = atoi(minutes) * 60000;
-   int seconds_in_milliseconds = atoi(seconds) * 1000;
+    int hours_in_milliseconds = atoi(hours) * 3600000;
+    int minutes_in_milliseconds = atoi(minutes) * 60000;
+    int seconds_in_milliseconds = atoi(seconds) * 1000;
 
-   free(time);
-   free_char_array(time_splitted);
+    free(time);
+    free_char_array(time_splitted);
 
-   return hours_in_milliseconds + minutes_in_milliseconds + seconds_in_milliseconds + milliseconds;
+    return hours_in_milliseconds + minutes_in_milliseconds + seconds_in_milliseconds + milliseconds;
 }
 
 void assert_only_one_in(t_list* self){

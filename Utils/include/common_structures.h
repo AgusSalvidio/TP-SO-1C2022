@@ -33,6 +33,12 @@ typedef struct Write{
     uint32_t value;
 }t_write, t_copy;
 
+typedef struct Level_paging{
+    uint32_t first_level_entry;
+    uint32_t second_level_entry;
+    uint32_t offset;
+}t_level_paging;
+
 typedef struct MMU_access{
     uint32_t index;
     uint32_t entry;
@@ -48,20 +54,36 @@ typedef struct Process_Suspend {
 } t_suspend_process, t_finalize_process;
 
 enum Operation {
-    CONSOLE_MESSAGE, INSTRUCTION,HANDSHAKE,REQUEST_RESPONSE, READ, WRITE, COPY, NO_OP, IO, EXIT,FIRST_ACCESS,SECOND_ACCESS,
-    INITIALIZE_PROCESS, SUSPEND_PROCESS,
-    FINALIZE_PROCESS, INTERRUPTION, PCB
+    CONSOLE_MESSAGE, INSTRUCTION, HANDSHAKE,
+    REQUEST_RESPONSE, READ, WRITE,
+    COPY, NO_OP, IO,
+    EXIT, INITIALIZE_PROCESS, SUSPEND_PROCESS,
+    FINALIZE_PROCESS, INTERRUPTION, PCB, IO_PCB, FIRST_ACCESS, SECOND_ACCESS
 };
 
 typedef struct Console_message {
     uint32_t process_size;
-    t_list * instructions;
+    t_list *instructions;
 } t_console_message;
 
 typedef struct Instruction {
     uint32_t type;
-    t_list * operands;
+    t_list *operands;
 } t_instruction;
+
+typedef struct Pcb{
+    uint32_t pid;
+    uint32_t process_size;
+    t_list* instructions;
+    uint32_t pc;
+    uint32_t page_table;
+    double next_burst;
+} t_pcb;
+
+typedef struct IO_pcb{
+    t_pcb* pcb;
+    uint32_t blocked_time;
+}t_io_pcb;
 
 void initialize_signal_handler();
 void handle_signal(int signal_number, void (*handler_function) ());
@@ -75,7 +97,7 @@ void safe_sem_destroy(sem_t* semaphore);
 void* safe_malloc(size_t size);
 
 char* process_description_for(char* process_name, t_list* strings_to_hash);
-uint64_t current_time_in_milliseconds();
+uint32_t current_time_in_milliseconds();
 void assert_only_one_in(t_list* self);
 
 void free_system_debugging_thread_alive_for(int seconds);

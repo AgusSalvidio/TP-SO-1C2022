@@ -15,29 +15,7 @@
 #include <commons/config.h>
 #include <commons/string.h>
 #include "../include/structs.h"
-
-//LISTAS
-t_list* LISTA_NEW;
-t_list* LISTA_READY;
-t_list* LISTA_EXEC;
-t_list* LISTA_BLOCKED;
-t_list* LISTA_BLOCKED_SUSPENDED;
-t_list* LISTA_READY_SUSPENDED;
-t_list* LISTA_READY_EXIT;
-
-//MUTEXES
-pthread_mutex_t mutex_lista_new;
-pthread_mutex_t mutex_lista_ready;
-pthread_mutex_t mutex_lista_exec;
-pthread_mutex_t mutex_lista_blocked;
-pthread_mutex_t mutex_lista_blocked_suspended;
-pthread_mutex_t mutex_lista_ready_suspended;
-pthread_mutex_t mutex_lista_exit;
-
-//HILOS
-pthread_t planificador_corto_plazo;
-pthread_t planificador_largo_plazo;
-pthread_t planificador_mediano_plazo;
+#include "../../Utils/include/common_structures.h"
 
 //FUNCIONES
 void iniciar_planificador_corto_plazo();
@@ -50,5 +28,7 @@ void algoritmo_planificador_corto_plazo();
 
 t_pcb* algoritmo_FIFO();
 t_pcb* algoritmo_SRT();
+
+void free_planificacion_threads();
 
 #endif //KISS_PLANIFICATION_H
