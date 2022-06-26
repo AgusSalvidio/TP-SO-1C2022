@@ -19,7 +19,6 @@ void create_process_image(t_console_message *console_message) {
     pcb->process_size = console_message->process_size;
     pcb->instructions = console_message->instructions;
     pcb->pc = 0;
-    pcb->page_table = 0;
     pcb->next_burst = get_initial_estimation();
     list_add(processes, (void*) process);
     add_to_scheduler_queue(pcb, NEW);

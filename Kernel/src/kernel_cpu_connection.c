@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <commons/string.h>
 #include "kernel_cpu_connection.h"
 #include "../../Utils/include/common_structures.h"
 #include "../../Utils/include/pretty_printer.h"
@@ -59,9 +60,7 @@ void connect_and_send_interruption_to_cpu() {
     request->structure = NULL;
     request->sanitizer_function = free;
 
-    char *message = pretty_print_of(request->operation, request->structure);
-    log_info(process_execution_logger(), message);
-    free(message);
+    log_info(process_execution_logger(), "Sent Interruption to CPU");
 
     t_connection_information *connection_information;
     connection_information = connect_to(get_cpu_ip(), get_cpu_interrupt_port());
