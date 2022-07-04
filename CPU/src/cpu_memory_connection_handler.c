@@ -119,14 +119,15 @@ void send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
     free_and_close_connection_information(memory_conn);
 }
 
-char* receive_content_from_memory(){
+//TODO: sacar casteos innecesarios
+uint32_t receive_content_from_memory(){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
 
     t_request_response* content = safe_malloc(sizeof (t_request_response));
     content = (t_request_response*) response -> structure;
-    char* read_content = content -> content;
+    uint32_t read_content = content -> content;
 
     free_request(response);
     free_and_close_connection_information(memory_conn);

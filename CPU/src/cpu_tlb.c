@@ -1,0 +1,42 @@
+#include <cpu_tlb.h>
+#include "cpu_manager.h"
+#include "cpu_configuration_manager.h"
+
+t_list* tlb_elements;
+
+
+uint32_t tlb_hit(uint32_t page_number){
+    t_tlb_element* tlb_element = safe_malloc(sizeof(t_tlb_element));
+
+    bool _list_contains_element(void* tlb_element) {
+        return ((t_tlb_element *) tlb_element)->page_number == page_number;
+    }
+
+    tlb_element = list_find(tlb_elements, _list_contains_element);
+    return tlb_element -> frame_number;
+}
+
+bool page_number_contained_in_tlb(uint32_t page_number){
+
+    for(uint32_t counter = 0; counter < list_size(tlb_elements); counter++){
+        t_tlb_element* tlb_element = list_get(tlb_elements, counter);
+
+        if(tlb_element->page_number == page_number){
+            return true;
+        }
+    }
+    return false;
+}
+
+void add_new_element_to_tlb(uint32_t page_number, uint32_t frame_number){
+    t_tlb_element* tlb_element = safe_malloc(sizeof(t_tlb_element));
+    tlb_element -> page_number = page_number;
+    tlb_element -> frame_number = frame_number;
+
+    list_add(tlb_elements, tlb_element);
+}
+
+
+void initialize_tlb(){
+    tlb_elements = safe_malloc(sizeof(t_tlb_element)*get_tlb_entries());
+}
