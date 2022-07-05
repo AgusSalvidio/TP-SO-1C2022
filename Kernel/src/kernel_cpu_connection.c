@@ -33,7 +33,7 @@ t_burst * connect_and_send_pcb_to_cpu(t_pcb *pcb) {
 
         t_serialization_information* serialization_information = receive_information -> serialization_information;
         t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
-        log_request_received(process_execution_logger(), deserialized_request);
+      //  log_request_received(process_execution_logger(), deserialized_request);
 
         t_message_handler * message_handler = message_handler_for_operation(deserialized_request -> operation);
         returned_pcb = message_handler -> perform_function (deserialized_request -> structure);
@@ -47,7 +47,7 @@ t_burst * connect_and_send_pcb_to_cpu(t_pcb *pcb) {
 
     free(receive_information);
 
-    stop_considering_garbage(request->structure);
+ //   stop_considering_garbage(request->structure);
     free(request);
     free_and_close_connection_information(connection_information);
     return burst;
