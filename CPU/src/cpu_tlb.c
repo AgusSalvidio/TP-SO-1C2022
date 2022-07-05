@@ -28,6 +28,7 @@ bool page_number_contained_in_tlb(uint32_t page_number){
     return false;
 }
 
+//TODO: Agregar aplicaciòn de algoritmo de reemplazo
 void add_new_element_to_tlb(uint32_t page_number, uint32_t frame_number){
     t_tlb_element* tlb_element = safe_malloc(sizeof(t_tlb_element));
     tlb_element -> page_number = page_number;

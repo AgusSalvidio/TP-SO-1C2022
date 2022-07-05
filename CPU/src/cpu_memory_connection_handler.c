@@ -119,7 +119,6 @@ void send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
     free_and_close_connection_information(memory_conn);
 }
 
-//TODO: sacar casteos innecesarios
 uint32_t receive_content_from_memory(){
     t_connection_information *memory_conn = connect_to_memory();
 
