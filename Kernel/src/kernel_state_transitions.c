@@ -42,6 +42,7 @@ void blocked_to_suspended_blocked_transition(t_pcb *pcb) {
     suspend_process->pid = pcb->pid;
     connect_and_send_suspend_to_memory(suspend_process);
     log_pcb_blocked_to_suspended_blocked_transition(pcb->pid);
+    request_process_remove_from_schedule();
 }
 
 void suspended_blocked_to_suspended_ready_transition(t_pcb *pcb) {
