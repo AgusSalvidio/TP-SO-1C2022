@@ -5,14 +5,21 @@
 #include "kernel_process_image.h"
 #include "kernel_state_transitions.h"
 #include "kernel_scheduler_queues.h"
+#include "kernel_logs_manager.h"
 
 sem_t sem_available_slots;
 sem_t sem_processes;
 pthread_mutex_t mutex_process;
 
+uint32_t get_current_available_slots() {
+    int val;
+    sem_getvalue(&sem_available_slots, &val);
+    return val;
+}
+
 void schedule_process() {
     safe_sem_wait(&sem_available_slots);
-
+    log_current_available_slots(get_current_available_slots(), get_multiprogramming_degree());
     safe_mutex_lock(&mutex_process);
     t_pcb * pcb;
     if (list_size(scheduler_queue_of(SUSPENDED_READY)->pcb_list) > 0) {

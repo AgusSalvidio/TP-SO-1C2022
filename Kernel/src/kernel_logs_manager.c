@@ -123,6 +123,12 @@ void log_io_finished_execution(uint32_t pid) {
     free(message);
 }
 
+void log_current_available_slots (uint32_t available, uint32_t max) {
+    char *message = string_from_format("Cantidad de procesos actual %d/%d", available, max);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
 void free_kernel_logs_manager() {
     free_loggers();
 }
