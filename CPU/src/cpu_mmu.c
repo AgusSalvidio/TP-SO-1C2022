@@ -52,8 +52,7 @@ t_physical_address* physical_address_tlb_translator(uint32_t frame_number, uint3
     return physical_address;
 }
 
-//TODO: Cambiar nombre
-t_physical_address* basura_intergalactica(uint32_t first_level_index, uint32_t logical_address){
+t_physical_address* address_translator_management(uint32_t first_level_index, uint32_t logical_address){
     uint32_t frame_number;
     t_handshake* handshake_information = get_handshake_information();
 
