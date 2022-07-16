@@ -45,4 +45,6 @@ void log_io_starting_execution(uint32_t pid, uint32_t millis);
 
 void log_io_finished_execution(uint32_t pid);
 
+void log_current_available_slots(uint32_t available, uint32_t max);
+
 #endif //KISS_KERNEL_LOGS_MANAGER_H

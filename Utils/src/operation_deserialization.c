@@ -358,7 +358,7 @@ t_request* deserialize_io_pcb(void* serialized_structure) {
     memcpy(&page_table, serialized_structure + offset, sizeof(uint32_t));
     offset += sizeof(uint32_t);
     memcpy(&next_burst, serialized_structure + offset, sizeof(double));
-    offset += sizeof(uint32_t);
+    offset += sizeof(double);
     memcpy(&blocked_time, serialized_structure + offset, sizeof(uint32_t));
 
     t_pcb *pcb = safe_malloc(sizeof(t_pcb));
