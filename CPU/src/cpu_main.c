@@ -9,6 +9,7 @@
 #include "cpu_action_performer.h"
 #include "cpu_kernel_interrupt_connection_handler.h"
 #include "../../Utils/include/pretty_printer.h"
+#include "cpu_tlb.h"
 #include <cpu_kernel_dispatch_connection_handler.h>
 
 
@@ -26,7 +27,7 @@ int main(void){
     log_succesful_start_up();
 
     send_handshake_to_memory();
-    //initialize_mmu();
+    initialize_tlb();
     initialize_cpu_dispatch_threads();
     initialize_cpu_interrupt_threads();
 

@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 
-
 void wait_delay_time(){
     uint32_t delay_time_in_seconds = get_noop_delay()/1000;
     sleep(delay_time_in_seconds);
@@ -25,7 +24,7 @@ t_request* request_to_send_using(void* received_structure, uint32_t operation){
 
 void* handle_read_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
-    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    t_physical_address* physical_address = basura_intergalactica(table_index, logical_address);
     send_read_to_memory(physical_address);
     log_read_content(receive_content_from_memory());
 }
@@ -33,14 +32,14 @@ void* handle_read_request_procedure(uint32_t table_index, t_list* operands){
 void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
-    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    t_physical_address* physical_address = basura_intergalactica(table_index, logical_address);
     send_write_to_memory(physical_address, value);
 }
 
 void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
-    t_physical_address* physical_address = physical_address_translator(table_index, logical_address);
+    t_physical_address* physical_address = basura_intergalactica(table_index, logical_address);
     send_copy_to_memory(physical_address, value);
 }
 
