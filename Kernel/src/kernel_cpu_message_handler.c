@@ -12,7 +12,7 @@
 t_list* handlers;
 
 t_pcb * next_transition (t_pcb* returned_pcb) {
-    t_instruction *instruction = list_get(returned_pcb->instructions, returned_pcb->pc);
+    t_instruction *instruction = list_get(returned_pcb->instructions, returned_pcb->pc-1);
     t_state_transition *transition;
     if (instruction->type == EXIT) {
         transition = state_transition_for(returned_pcb, Q_EXIT);

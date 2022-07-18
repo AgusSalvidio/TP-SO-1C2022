@@ -21,23 +21,23 @@ void modify_interruption_status(){
 
 void interrupt_connection_handler(int server_socket_fd){
 
-    int connection_fd = accept_incoming_connections_on(server_socket_fd);
-
     for ever{
-        t_receive_information *receive_information = receive_structure(connection_fd);
+        int connection_fd = accept_incoming_connections_on(server_socket_fd);
+        uint32_t *ack = receive_ack_with_timeout_in_seconds(connection_fd, 60000);
+        //t_receive_information *receive_information = receive_structure(connection_fd);
 
-        if (receive_information->receive_was_successful) {
+        if (*ack == 1) {
 
-            t_serialization_information* serialization_information = receive_information -> serialization_information;
-            t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
+           // t_serialization_information* serialization_information = receive_information -> serialization_information;
+           // t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
             log_request_received_basic();
 
             interruption_status = true;
 
             send_ack_message(1, connection_fd);
-            free_serialization_information(serialization_information);
+         //   free_serialization_information(serialization_information);
         }
-        free(receive_information);
+        //free(receive_information);
     }
 }
 

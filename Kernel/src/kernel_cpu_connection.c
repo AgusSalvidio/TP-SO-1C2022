@@ -55,21 +55,20 @@ t_burst * connect_and_send_pcb_to_cpu(t_pcb *pcb) {
 
 void connect_and_send_interruption_to_cpu() {
 
-    t_request* request = safe_malloc(sizeof(t_request));
+   /* t_request* request = safe_malloc(sizeof(t_request));
     request->operation = INTERRUPTION;
     request->structure = NULL;
-    request->sanitizer_function = free;
+    request->sanitizer_function = free;*/
 
-    log_info(process_execution_logger(), "Sent Interruption to CPU");
+    log_info(process_execution_logger(), "Send Interruption to CPU");
 
     t_connection_information *connection_information;
     connection_information = connect_to(get_cpu_ip(), get_cpu_interrupt_port());
 
+    send_ack_message(1, connection_information->socket_fd);
+    receive_ack_with_timeout_in_seconds(connection_information->socket_fd, 60000);
 
-    serialize_and_send_structure_and_wait_for_ack(request, connection_information->socket_fd,
-                                                  60000);
-
-    stop_considering_garbage(request->structure);
-    free_request(request);
+  //  stop_considering_garbage(request->structure);
+  //  free_request(request);
     free_and_close_connection_information(connection_information);
 }
