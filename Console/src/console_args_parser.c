@@ -12,7 +12,7 @@ t_list *parse_instructions(char *instructions_string) {
     char **instructions_array = string_split(instructions_string, "\n");
     for (int i = 0; instructions_array[i]; ++i) {
         char **instruction_str = string_split(instructions_array[i], " ");
-        list_add(instructions, create_instruction_from(instruction_str));
+        list_add_all(instructions, create_instruction_from(instruction_str));
         free_char_array(instruction_str);
     }
     free_char_array(instructions_array);
