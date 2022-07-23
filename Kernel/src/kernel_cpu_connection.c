@@ -28,10 +28,7 @@ t_burst *connect_and_send_pcb_to_cpu(t_pcb *pcb) {
         t_request *deserialized_request = deserialize(serialization_information->serialized_request);
 
         t_message_handler *message_handler = message_handler_for_operation(deserialized_request->operation);
-        returned_pcb = message_handler->perform_function(deserialized_request->structure, burst);
-
-        pcb->page_table = returned_pcb->page_table;
-        pcb->pc = returned_pcb->pc;
+        message_handler->perform_function(deserialized_request->structure, burst);
 
         free_serialization_information(serialization_information);
         free(deserialized_request);
