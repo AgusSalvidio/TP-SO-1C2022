@@ -39,4 +39,5 @@ void algoritmo_planificador_corto_plazo() {
 void free_short_term_scheduler() {
     safe_sem_destroy(&sem_processes_ready_to_exec);
     free_cpu_structures();
+    free_scheduling_algorithm();
 }

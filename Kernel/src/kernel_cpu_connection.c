@@ -4,11 +4,6 @@
 #include "../../Utils/include/socket.h"
 #include "kernel_configuration.h"
 #include "kernel_cpu_message_handler.h"
-#include "kernel_state_transitions.h"
-#include "kernel_event.h"
-#include "kernel_scheduler_queues.h"
-#include "../../Utils/include/pthread_wrapper.h"
-#include "kernel_io_routine.h"
 
 sem_t sem_preempt;
 

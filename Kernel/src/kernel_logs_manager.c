@@ -126,7 +126,9 @@ void log_io_finished_execution(uint32_t pid) {
 void log_estimation_list(t_list* list_of_pcbs) {
     char* to_log = string_new();
     void _print_estimation(t_pcb* pcb) {
-        string_append(&to_log, string_from_format("(pid: %d, est: %f),", pcb->pid, pcb->next_burst));
+        char *to_append = string_from_format("(pid: %d, est: %f),", pcb->pid, pcb->next_burst);
+        string_append(&to_log, to_append);
+        free(to_append);
     };
 
     list_iterate(list_of_pcbs, (void (*)(t_pcb *))_print_estimation);
@@ -137,7 +139,9 @@ void log_estimation_list(t_list* list_of_pcbs) {
 void log_ready_list(t_list* pcb_list) {
     char* to_log = string_new();
     void _print_pid(t_pcb* pcb) {
-        string_append(&to_log, string_from_format("(pid: %d),", pcb->pid));
+        char *to_append = string_from_format("(pid: %d),", pcb->pid);
+        string_append(&to_log, to_append);
+        free(to_append);
     };
 
     list_iterate(pcb_list, (void (*)(t_pcb *))_print_pid);

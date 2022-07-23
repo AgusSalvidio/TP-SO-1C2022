@@ -15,10 +15,6 @@ uint32_t connect_and_send_initialize_to_memory(void *structure_to_send) {
     request->structure = structure_to_send;
     request->sanitizer_function = free;
 
- /*   char *message = pretty_print_of(request->operation, request->structure);
-    log_info(process_execution_logger(), message);
-    free(message);*/
-
     t_connection_information *connection_information = connect_to(get_memory_ip(), get_memory_port());
 
     serialize_and_send_structure(request, connection_information->socket_fd);
@@ -28,7 +24,6 @@ uint32_t connect_and_send_initialize_to_memory(void *structure_to_send) {
 
         t_serialization_information* serialization_information = receive_information -> serialization_information;
         t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
-        //log_request_received(process_execution_logger(), deserialized_request);
 
         t_request_response *request_response = (t_request_response*) deserialized_request->structure;
         page_table_id = request_response->content;
@@ -41,8 +36,6 @@ uint32_t connect_and_send_initialize_to_memory(void *structure_to_send) {
     }
 
     free(receive_information);
-
-   // stop_considering_garbage(request->structure);
     free_request(request);
     free_and_close_connection_information(connection_information);
     return page_table_id;
@@ -67,7 +60,6 @@ void connect_and_send_suspend_to_memory(void *structure_to_send) {
 
         t_serialization_information* serialization_information = receive_information -> serialization_information;
         t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
-       // log_request_received(process_execution_logger(), deserialized_request);
 
         t_request_response *request_response = (t_request_response*) deserialized_request->structure;
         if (string_equals_ignore_case(request_response->type_description, "ERROR")) {
@@ -79,7 +71,6 @@ void connect_and_send_suspend_to_memory(void *structure_to_send) {
     }
 
     free(receive_information);
-  //  stop_considering_garbage(request->structure);
     free_request(request);
     free_and_close_connection_information(connection_information);
 }
@@ -103,7 +94,6 @@ void connect_and_send_finalize_to_memory(void *structure_to_send) {
 
         t_serialization_information* serialization_information = receive_information -> serialization_information;
         t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
-       // log_request_received(process_execution_logger(), deserialized_request);
 
         t_request_response *request_response = (t_request_response*) deserialized_request->structure;
         if (string_equals_ignore_case(request_response->type_description, "ERROR")) {
@@ -115,7 +105,6 @@ void connect_and_send_finalize_to_memory(void *structure_to_send) {
     }
 
     free(receive_information);
-  //  stop_considering_garbage(request->structure);
     free_request(request);
     free_and_close_connection_information(connection_information);
 }

@@ -41,3 +41,7 @@ void execute_connection_handler() {
     handle_signal(SIGUSR1, commit_suicide);
     start_multithreaded_server(get_listening_port(), connection_controller);
 }
+
+void free_console_connection() {
+    free_multithreaded_server();
+}
