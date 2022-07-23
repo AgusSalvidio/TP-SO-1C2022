@@ -9,46 +9,45 @@
 #include "kernel_io_routine.h"
 
 
-t_list* handlers;
+t_list *handlers;
 
-t_pcb * next_transition (t_pcb* returned_pcb) {
-    t_instruction *instruction = list_get(returned_pcb->instructions, returned_pcb->pc-1);
+t_pcb *next_transition(t_pcb *returned_pcb, t_pcb *pcb) {
     t_state_transition *transition;
-    if (instruction->type == EXIT) {
-        transition = state_transition_for(returned_pcb, Q_EXIT);
+    if (returned_pcb->pc < list_size(returned_pcb->instructions)) {
+        transition = state_transition_for(pcb, READY);
     } else {
-        transition = state_transition_for(returned_pcb, READY);
+        transition = state_transition_for(pcb, Q_EXIT);
     }
-    transition->function(returned_pcb);
+    transition->function(pcb);
     return returned_pcb;
 }
 
-t_pcb * block_process (t_io_pcb * returned_io_pcb) {
+t_pcb *block_process(t_io_pcb *returned_io_pcb, t_pcb* pcb) {
     t_state_transition *transition;
-    transition = state_transition_for(returned_io_pcb->pcb, BLOCKED);
-    transition->function(returned_io_pcb->pcb);
+    transition = state_transition_for(pcb, BLOCKED);
+    transition->function(pcb);
     default_safe_thread_create((void *(*)(void *)) execute_io_routine, returned_io_pcb);
-    notify_with_argument(PROCESS_BLOCKED, returned_io_pcb->pcb);
+    notify(PROCESS_BLOCKED);
     return returned_io_pcb->pcb;
 }
 
 void initialize_and_load_pcb_action_performer() {
-    t_message_handler* message_handler = safe_malloc(sizeof(t_message_handler));
-    message_handler -> operation = PCB;
-    message_handler -> perform_function = next_transition;
+    t_message_handler *message_handler = safe_malloc(sizeof(t_message_handler));
+    message_handler->operation = PCB;
+    message_handler->perform_function = next_transition;
 
     list_add(handlers, message_handler);
 }
 
 void initialize_and_load_io_action_performer() {
-    t_message_handler* message_handler = safe_malloc(sizeof(t_message_handler));
-    message_handler -> operation = IO_PCB;
-    message_handler -> perform_function = block_process;
+    t_message_handler *message_handler = safe_malloc(sizeof(t_message_handler));
+    message_handler->operation = IO_PCB;
+    message_handler->perform_function = block_process;
 
     list_add(handlers, message_handler);
 }
 
-void initialize_cpu_message_handler(){
+void initialize_cpu_message_handler() {
 
     handlers = list_create();
     initialize_and_load_pcb_action_performer();
@@ -56,10 +55,10 @@ void initialize_cpu_message_handler(){
 
 }
 
-t_message_handler * message_handler_for_operation(uint32_t operation_code) {
+t_message_handler *message_handler_for_operation(uint32_t operation_code) {
 
-    bool _equals_operation(void* message_handler){
-        return ((t_message_handler*) message_handler) -> operation == operation_code;
+    bool _equals_operation(void *message_handler) {
+        return ((t_message_handler *) message_handler)->operation == operation_code;
     }
 
     return list_find(handlers, _equals_operation);

@@ -2,7 +2,6 @@
 #include "../../Utils/include/common_structures.h"
 #include "../../Utils/include/pthread_wrapper.h"
 #include "kernel_configuration.h"
-#include "kernel_process_image.h"
 #include "kernel_state_transitions.h"
 #include "kernel_scheduler_queues.h"
 #include "kernel_logs_manager.h"
