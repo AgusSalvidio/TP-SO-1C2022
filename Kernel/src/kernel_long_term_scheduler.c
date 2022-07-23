@@ -18,7 +18,6 @@ uint32_t get_current_available_slots() {
 
 void schedule_process() {
     safe_sem_wait(&sem_available_slots);
-    log_current_available_slots(get_current_available_slots(), get_multiprogramming_degree());
     safe_mutex_lock(&mutex_process);
     t_pcb * pcb;
     if (list_size(scheduler_queue_of(SUSPENDED_READY)->pcb_list) > 0) {

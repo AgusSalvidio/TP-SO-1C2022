@@ -7,25 +7,33 @@
 #include "../../Utils/include/pthread_wrapper.h"
 #include "kernel_event.h"
 #include "kernel_io_routine.h"
+#include "kernel_scheduling_algorithm.h"
+#include "../../Utils/include/logger.h"
 
 
 t_list *handlers;
+extern sem_t sem_preempt;
 
-t_pcb *next_transition(t_pcb *returned_pcb, t_pcb *pcb) {
+t_pcb *next_transition(t_pcb *returned_pcb, t_burst *burst) {
     t_state_transition *transition;
     if (returned_pcb->pc < list_size(returned_pcb->instructions)) {
-        transition = state_transition_for(pcb, READY);
+        transition = state_transition_for(burst->pcb, READY);
+        transition->function(burst -> pcb);
+        notify_with_argument(UPDATE_CURRENT_PROCESS_ESTIMATION, burst);
+        safe_sem_post(&sem_preempt);
     } else {
-        transition = state_transition_for(pcb, Q_EXIT);
+        transition = state_transition_for(burst->pcb, Q_EXIT);
+        transition->function(burst -> pcb);
     }
-    transition->function(pcb);
+
     return returned_pcb;
 }
 
-t_pcb *block_process(t_io_pcb *returned_io_pcb, t_pcb* pcb) {
+t_pcb *block_process(t_io_pcb *returned_io_pcb, t_burst *burst) {
     t_state_transition *transition;
-    transition = state_transition_for(pcb, BLOCKED);
-    transition->function(pcb);
+    transition = state_transition_for(burst -> pcb, BLOCKED);
+    transition->function(burst -> pcb);
+    notify_with_argument(UPDATE_CURRENT_PROCESS_ESTIMATION, burst);
     default_safe_thread_create((void *(*)(void *)) execute_io_routine, returned_io_pcb);
     notify(PROCESS_BLOCKED);
     return returned_io_pcb->pcb;

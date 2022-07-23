@@ -5,7 +5,7 @@
 
 typedef struct Message_handler{
     uint32_t operation;
-    void* (*perform_function) (void* request_structure, void* pcb);
+    void* (*perform_function) (void* request_structure, void* burst);
 }t_message_handler;
 
 t_message_handler * message_handler_for_operation(uint32_t operation_code);

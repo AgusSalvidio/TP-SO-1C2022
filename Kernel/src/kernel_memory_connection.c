@@ -15,9 +15,9 @@ uint32_t connect_and_send_initialize_to_memory(void *structure_to_send) {
     request->structure = structure_to_send;
     request->sanitizer_function = free;
 
-    char *message = pretty_print_of(request->operation, request->structure);
+ /*   char *message = pretty_print_of(request->operation, request->structure);
     log_info(process_execution_logger(), message);
-    free(message);
+    free(message);*/
 
     t_connection_information *connection_information = connect_to(get_memory_ip(), get_memory_port());
 

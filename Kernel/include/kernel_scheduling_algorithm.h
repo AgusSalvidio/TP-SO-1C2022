@@ -6,6 +6,7 @@
 typedef struct Scheduling_algorithm{
     char* algorithm_name;
     void (*resolve_dependencies_function) ();
+    void (*list_logger) ();
 }t_scheduling_algorithm;
 
 typedef struct Burst_context{
@@ -15,6 +16,8 @@ typedef struct Burst_context{
 }t_burst;
 
 void initialize_scheduling_algorithm();
+
+void log_scheduling_list(t_list *pcb_list);
 
 void free_scheduling_algorithm();
 

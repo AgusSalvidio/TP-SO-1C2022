@@ -5,8 +5,8 @@
 
 typedef struct Burst_estimator{
     t_pcb *pcb;
-    double estimated_previous;
     double previous_real;
+    double current;
 }t_burst_estimation;
 
 void initialize_srt_algorithm();
