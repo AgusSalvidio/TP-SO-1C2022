@@ -34,7 +34,8 @@ t_pcb *block_process(t_io_pcb *returned_io_pcb, t_burst *burst) {
     transition = state_transition_for(burst -> pcb, BLOCKED);
     transition->function(burst -> pcb);
     notify_with_argument(UPDATE_CURRENT_PROCESS_ESTIMATION, burst);
-    default_safe_thread_create((void *(*)(void *)) execute_io_routine, returned_io_pcb);
+    pthread_t io_thread = default_safe_thread_create((void *(*)(void *)) execute_io_routine, returned_io_pcb);
+    pthread_detach(io_thread);
     notify(PROCESS_BLOCKED);
     return returned_io_pcb->pcb;
 }
