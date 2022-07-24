@@ -20,7 +20,6 @@ void* connection_controller(void* socket_fd){
 
         t_serialization_information* serialization_information = receive_information -> serialization_information;
         t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
-        log_request_received(process_execution_logger(), deserialized_request);
         handle_console_message(deserialized_request -> structure);
         send_ack_message(1, client_socket_fd);
 
@@ -41,4 +40,8 @@ void commit_suicide(){
 void execute_connection_handler() {
     handle_signal(SIGUSR1, commit_suicide);
     start_multithreaded_server(get_listening_port(), connection_controller);
+}
+
+void free_console_connection() {
+    free_multithreaded_server();
 }

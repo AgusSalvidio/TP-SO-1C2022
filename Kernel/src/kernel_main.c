@@ -34,7 +34,6 @@ int main(void) {
     iniciar_planificador_mediano_plazo();
     iniciar_planificador_largo_plazo();
 
-    free_system();
     return EXIT_SUCCESS;
 }
 

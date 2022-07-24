@@ -4,9 +4,14 @@
 
 #include "../../Utils/include/common_structures.h"
 
+typedef struct IO_Object {
+    uint32_t pid;
+    uint32_t block_time;
+} t_io_object;
+
 void initialize_io_routine();
 
-void execute_io_routine(t_io_pcb *io_pcb);
+void execute_io_routine(t_io_object *io_object);
 
 void free_io_routine();
 

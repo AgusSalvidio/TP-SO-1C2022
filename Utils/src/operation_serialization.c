@@ -161,12 +161,11 @@ t_serialization_information* serialize_request_response(void* structure){
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &bytes_of_request_response, sizeof(uint32_t));
     offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(request_response->content), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, &type_description_lenght, sizeof(uint32_t));
     offset += sizeof(uint32_t);
     memcpy(serialized_request + offset, request_response -> type_description, type_description_lenght);
-    offset += type_description_lenght;
-    memcpy(serialized_request + offset, &(request_response->content), sizeof(uint32_t));
-
 
     
     t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));

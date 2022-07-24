@@ -9,4 +9,8 @@ t_burst *connect_and_send_pcb_to_cpu(t_pcb *pcb);
 
 void connect_and_send_interruption_to_cpu();
 
+void initialize_cpu_structures();
+
+void free_cpu_structures();
+
 #endif //KISS_KERNEL_CPU_CONNECTION_H

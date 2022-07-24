@@ -12,9 +12,8 @@ pthread_t dispatch_thread;
 
 void dispatch_connection_handler(int server_socket_fd){
 
-    int connection_fd = accept_incoming_connections_on(server_socket_fd);
-
     for ever{
+        int connection_fd = accept_incoming_connections_on(server_socket_fd);
         t_receive_information *receive_information = receive_structure(connection_fd);
 
         if (receive_information->receive_was_successful) {
@@ -41,5 +40,4 @@ void dispatch_connection_handler(int server_socket_fd){
 void initialize_cpu_dispatch_threads(){
     uint32_t dispatch_socket = listen_at(get_dispatch_port());
     dispatch_thread = default_safe_thread_create(dispatch_connection_handler, dispatch_socket);
-    safe_thread_join(dispatch_thread);
 }

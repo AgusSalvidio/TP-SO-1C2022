@@ -35,7 +35,7 @@ void algoritmo_planificador_mediano_plazo() {
     while (1) {
         safe_sem_wait(&sem_blocked_processes);
         t_pcb *pcb = list_get_last_element(scheduler_queue_of(BLOCKED)->pcb_list);
-        default_safe_thread_create((void *(*)(void *)) execute_suspension_routine, pcb);
+        pthread_detach(default_safe_thread_create((void *(*)(void *)) execute_suspension_routine, pcb));
     }
 }
 
