@@ -145,19 +145,17 @@ t_request* deserialize_handshake(void* serialized_structure) {
 t_request* deserialize_request_response(void* serialized_structure){
 
     char* type_description;
-    uint32_t type_description_lenght;
+    uint32_t type_description_length;
     uint32_t content;
     uint32_t offset = 0;
 
-    memcpy(&type_description_lenght, serialized_structure + offset, sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-
-    uint32_t type_description_length_with_trailing_null = type_description_lenght + 2;
-    type_description = calloc(type_description_length_with_trailing_null, sizeof(char));
-    memcpy(type_description, serialized_structure + offset, type_description_lenght);
-    offset += strlen(type_description);
-
     memcpy(&content, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(&type_description_length, serialized_structure + offset, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    uint32_t type_description_length_with_trailing_null = type_description_length + 2;
+    type_description = calloc(type_description_length_with_trailing_null, sizeof(char));
+    memcpy(type_description, serialized_structure + offset, type_description_length);
 
 
     t_request_response * request_response = safe_malloc(sizeof(t_request_response));

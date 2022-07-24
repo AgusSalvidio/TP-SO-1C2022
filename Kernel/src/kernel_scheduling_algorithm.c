@@ -51,6 +51,10 @@ void initialize_scheduling_algorithm() {
     scheduling_algorithm -> resolve_dependencies_function();
 }
 
+void log_scheduling_list (t_list *pcb_list) {
+    scheduling_algorithm -> list_logger(pcb_list);
+}
+
 void free_scheduling_algorithm() {
     free(scheduling_algorithm);
 }

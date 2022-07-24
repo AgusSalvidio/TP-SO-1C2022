@@ -5,8 +5,10 @@
 #include "cpu_kernel_interrupt_connection_handler.h"
 #include "cpu_instruction_cycle.h"
 #include "cpu_mmu.h"
+#include "../../Utils/include/logger.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <commons/log.h>
 
 
 void wait_delay_time(){
@@ -49,20 +51,17 @@ void* handle_no_op_request_procedure(uint32_t pid, t_list* operands){
 }
 
 void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* current_pcb){
-    t_request_response* request_response = safe_malloc(sizeof(t_request_response));
     if(instruction -> type == IO){
         t_io_pcb* io_pcb = safe_malloc(sizeof(t_io_pcb));
         io_pcb -> pcb = current_pcb;
         io_pcb -> blocked_time = (uint32_t)list_get(instruction->operands, 0);
 
-        request_response = request_to_send_using(io_pcb, IO_PCB);
+        return request_to_send_using(io_pcb, IO_PCB);
     }
     if(instruction -> type == EXIT)
-        request_response = request_to_send_using(current_pcb, PCB);
+        return request_to_send_using(current_pcb, PCB);
     else
         return NULL;
-
-    return request_response;
 }
 
 void* handle_PCB_request_procedure(t_pcb* current_pcb){
@@ -71,8 +70,8 @@ void* handle_PCB_request_procedure(t_pcb* current_pcb){
         t_instruction* instruction = fetch_instruction(current_pcb);
         decode_instruction(table_index, instruction);
 
-        t_request_response* request_response = safe_malloc(sizeof(t_request_response));
-        request_response = request_reponse_of_instruction_for_pcb(instruction, current_pcb);
+        t_request * request_response = request_reponse_of_instruction_for_pcb(instruction, current_pcb);
+        log_debug(process_execution_logger(), "instruction: %d",instruction->type);
         if(request_response != NULL)
             return request_response;
         else

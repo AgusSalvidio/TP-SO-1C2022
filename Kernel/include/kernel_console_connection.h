@@ -3,4 +3,6 @@
 
 void execute_connection_handler();
 
+void free_console_connection();
+
 #endif //KISS_KERNEL_CONSOLE_CONNECTION_H
