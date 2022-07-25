@@ -102,17 +102,19 @@ void log_main_memory_frames_were_successfully_released(){
 
 }
 
-void log_process_suspension_was_successful(uint32_t pid){
-    char* message = string_from_format("El proceso %d fue suspendido exitosamente.\n",pid);
+void log_process_operation_was_succesful_for(uint32_t pid,char* operation_state){
+    char* message = string_from_format("El proceso %d fue %s exitosamente.\n",pid,operation_state);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 
 }
 
+void log_process_suspension_was_successful(uint32_t pid){
+    log_process_operation_was_succesful_for(pid,"suspendido");
+}
+
 void log_process_finalization_was_successful(uint32_t pid){
-    char* message = string_from_format("El proceso %d fue finalizado exitosamente.\n",pid);
-    log_succesful_message(process_execution_logger(), message);
-    free(message);
+    log_process_operation_was_succesful_for(pid,"finalizado");
 }
 void log_handshake_was_sent_succesfully(){
     char* message = string_from_format("El Handshake con las configuraciones iniciales fue enviado exitosamente.\n");
@@ -120,34 +122,37 @@ void log_handshake_was_sent_succesfully(){
     free(message);
 
 }
-void log_write_request_was_handled_successfully(){
-    char* message = string_from_format("El pedido de escritura fue handleado exitosamente.\n");
+
+void log_request_was_handled_succesfully_for(char* request_type){
+    char* message = string_from_format("El pedido de %s fue handleado exitosamente.\n",request_type);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 
 }
+
+void log_write_request_was_handled_successfully(){
+    log_request_was_handled_succesfully_for("escritura");
+}
 void log_read_request_was_handled_successfully(){
-    char* message = string_from_format("El pedido de lectura fue handleado exitosamente.\n");
-    log_succesful_message(process_execution_logger(), message);
-    free(message);
+    log_request_was_handled_succesfully_for("lectura");
 }
 
 void log_cpu_first_access_was_handled_successfully(uint32_t index,uint32_t entry){
-    char* message = string_from_format("El primer acceso de CPU a memoria para el indice de tabla de primer nivel:%d en la entrada:%d fue handleado exitosamente.\n",index,entry);
+    char* message = string_from_format("El primer acceso de CPU a memoria para el indice de tabla de primer nivel: %d en la entrada: %d fue handleado exitosamente.\n",index,entry);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 
 }
 
 void log_cpu_second_access_was_handled_successfully(uint32_t index,uint32_t entry){
-    char* message = string_from_format("El segundo acceso de CPU a memoria para el indice de tabla de segundo nivel:%d en la entrada:%d fue handleado exitosamente.\n",index,entry);
+    char* message = string_from_format("El segundo acceso de CPU a memoria para el indice de tabla de segundo nivel: %d en la entrada: %d fue handleado exitosamente.\n",index,entry);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 
 }
 void log_cpu_second_access_cannot_be_handled(uint32_t index,uint32_t entry){
 
-    char* message = string_from_format("El segundo acceso de CPU a memoria para el indice de tabla de segundo nivel:%d en la entrada:%d no pudo ser handleado.\n",index,entry);
+    char* message = string_from_format("El segundo acceso de CPU a memoria para el indice de tabla de segundo nivel: %d en la entrada: %d no pudo ser handleado.\n",index,entry);
     log_errorful_message(process_execution_logger(), message);
     free(message);
 
@@ -185,12 +190,8 @@ void log_swap_procedure_was_successful(uint32_t pid,uint32_t victim_page_id,uint
     char* message = string_from_format("Se realizo el swap del proceso %d exitosamente. Se swapeo la pagina %d por %d.\n",pid,victim_page_id,selected_page_id);
     log_succesful_message(process_execution_logger(), message);
     free(message);
-
-
 }
 
-
 void free_memory_logs_manager(){
-
     free_loggers();
 }

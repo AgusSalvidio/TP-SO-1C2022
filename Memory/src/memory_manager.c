@@ -31,9 +31,10 @@ void initialize_memory_table_manager(){
 void initialize_main_memory(){
 
     uint32_t frame_quantity = quantity_memory_frames();
+    uint32_t page_size = page_size_getter();
 
     MAIN_MEMORY = safe_malloc(sizeof(t_main_memory));
-    MAIN_MEMORY->buffer = safe_malloc(sizeof(uint32_t)*frame_quantity);
+    MAIN_MEMORY->buffer = safe_malloc(page_size * frame_quantity);
     MAIN_MEMORY->available_frames = list_create();
 
     for (int i = 0; i < frame_quantity ; ++i)
@@ -102,8 +103,10 @@ uint32_t second_level_table_index_at(uint32_t index, uint32_t entry){
 }
 
 bool are_available_frames_in_memory(){
-
-   return list_is_empty(MAIN_MEMORY->available_frames);
+   if(list_is_empty(MAIN_MEMORY->available_frames))
+       return false;
+   else
+       return true;
 }
 
 bool can_memory_load_another_page_for(uint32_t pid){
@@ -185,9 +188,10 @@ void load_page_in_memory(t_page* page, uint32_t pid) {
 
     uint32_t content = read_from_file(swap_file_path_for(pid),page->id);
 
+    add_frame_related_to_page_to(process_context_for(pid),page);
     write_value_at(frame, sizeof(uint32_t),content);
     update_page_bits_when_loaded_in_main_memory(page, frame);
-    add_frame_related_to_page_to(process_context_for(pid),page);
+
 
     safe_mutex_unlock(&mutex);
 
@@ -195,16 +199,16 @@ void load_page_in_memory(t_page* page, uint32_t pid) {
 }
 
 uint32_t frame_parse_from(t_physical_address* physical_address){
-    //Work in progress
+    return physical_address->frame;
 }
 uint32_t offset_parse_from(t_physical_address* physical_address){
-    //Work in progress
+    return physical_address->offset;
 }
 
 uint32_t read_value_at(uint32_t frame, uint32_t offset){
 
     uint32_t value;
-    memcpy(&value,(MAIN_MEMORY->buffer) + frame,offset* sizeof(uint32_t));
+    memcpy(&value,(MAIN_MEMORY->buffer) + frame + offset,sizeof(uint32_t));
 
     log_memory_read_at(frame,offset);
 

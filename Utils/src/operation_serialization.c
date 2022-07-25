@@ -327,8 +327,36 @@ t_serialization_information* serialize_io_pcb(void* structure){
 
 }
 
-t_serialization_information* serialize_mmu_access(void* structure){
-    uint32_t operation = safe_malloc(sizeof(uint32_t));
+t_serialization_information* serialize_first_access(void* structure){
+    uint32_t operation = FIRST_ACCESS;
+
+    t_mmu_access * mmu_access = (t_mmu_access*) structure;
+    uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_mmu_access();
+    uint32_t amount_of_bytes_of_request =
+            sizeof(uint32_t)                    // operation
+            + sizeof(uint32_t)                  // structure size
+            + amount_of_bytes_of_struct;          // structure
+
+    void* serialized_request = safe_malloc(amount_of_bytes_of_request);
+    uint32_t offset = 0;
+
+    memcpy(serialized_request + offset, &operation, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &amount_of_bytes_of_struct, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(mmu_access -> index), sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(serialized_request + offset, &(mmu_access -> entry), sizeof(uint32_t));
+
+    t_serialization_information* serialization_information = safe_malloc(sizeof(t_serialization_information));
+    serialization_information -> serialized_request = serialized_request;
+    serialization_information -> amount_of_bytes = amount_of_bytes_of_request;
+    return serialization_information;
+}
+
+t_serialization_information* serialize_second_access(void* structure){
+    uint32_t operation = SECOND_ACCESS;
+
     t_mmu_access * mmu_access = (t_mmu_access*) structure;
     uint32_t amount_of_bytes_of_struct = amount_of_bytes_of_mmu_access();
     uint32_t amount_of_bytes_of_request =

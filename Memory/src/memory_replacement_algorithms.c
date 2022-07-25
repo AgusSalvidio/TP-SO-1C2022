@@ -8,6 +8,12 @@
 
 t_process_context_manager* PROCESS_CONTEXT_MANAGER;
 pthread_mutex_t mutex_process;
+
+void wait_swap_delay_time(){
+    uint32_t delay_time_in_seconds = swap_time()/1000;
+    sleep(delay_time_in_seconds);
+}
+
 void initialize_process_context_manager(){
     PROCESS_CONTEXT_MANAGER = safe_malloc(sizeof(t_process_context_manager));
     PROCESS_CONTEXT_MANAGER->algorithm = algorithm();
@@ -193,7 +199,7 @@ void initialize_swap_page_procedure(t_page* selected_page, t_process_context* pr
     load_content_to_memory_for(process_context,selected_page,victim_page->frame);
 
     safe_mutex_unlock(&mutex_process);
-
+    wait_swap_delay_time();
     log_swap_procedure_was_successful(pid,victim_page->id,selected_page->id);
 
 }
