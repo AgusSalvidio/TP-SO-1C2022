@@ -31,10 +31,10 @@ void initialize_memory_table_manager(){
 void initialize_main_memory(){
 
     uint32_t frame_quantity = quantity_memory_frames();
-    uint32_t page_size = page_size_getter();
+    uint32_t memory_size = memory_size_getter();
 
     MAIN_MEMORY = safe_malloc(sizeof(t_main_memory));
-    MAIN_MEMORY->buffer = safe_malloc(page_size * frame_quantity);
+    MAIN_MEMORY->buffer = safe_malloc(memory_size);
     MAIN_MEMORY->available_frames = list_create();
 
     for (int i = 0; i < frame_quantity ; ++i)
@@ -207,8 +207,9 @@ uint32_t offset_parse_from(t_physical_address* physical_address){
 
 uint32_t read_value_at(uint32_t frame, uint32_t offset){
 
+    uint32_t page_size = page_size_getter();
     uint32_t value;
-    memcpy(&value,(MAIN_MEMORY->buffer) + frame + offset,sizeof(uint32_t));
+    memcpy(&value,(MAIN_MEMORY->buffer) + (frame * page_size) + offset,sizeof(uint32_t));
 
     log_memory_read_at(frame,offset);
 
@@ -219,7 +220,9 @@ uint32_t read_value_at(uint32_t frame, uint32_t offset){
 }
 void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
 
-    memcpy((MAIN_MEMORY->buffer) + frame,&value_to_write,offset);
+    uint32_t page_size = page_size_getter();
+
+    memcpy((MAIN_MEMORY->buffer) + (frame * page_size) + offset,&value_to_write, sizeof(uint32_t));
 
     log_memory_write_at(frame,offset,value_to_write);
 
