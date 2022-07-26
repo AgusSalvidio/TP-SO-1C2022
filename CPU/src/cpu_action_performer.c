@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "../../Utils/include/common_structures.h"
 #include "cpu_manager.h"
+#include "cpu_logs_manager.h"
 
 t_list* action_performers;
 
@@ -46,6 +47,8 @@ void initialize_action_performers(){
     initialize_and_load_write_action_performer();
     initialize_and_load_copy_action_performer();
     initialize_and_load_no_op_action_performer();
+
+    log_cpu_action_performers_loaded_succesfully();
 }
 
 t_action_performer* action_performer_with_code(uint32_t operation_code){

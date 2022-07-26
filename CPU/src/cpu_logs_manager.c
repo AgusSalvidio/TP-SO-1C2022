@@ -25,6 +25,21 @@ void log_query_performer_not_found_error_from_cpu(uint32_t operation){
     log_errorful_message(process_execution_logger(), message);
     free(message);
 }
+void log_cpu_action_performers_loaded_succesfully(){
+    char* message = string_from_format("Los action performers fueron cargados exitosamente.\n");
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+void log_handshake_received_succesfully(){
+    char* message = string_from_format("El handshake fue recibido correctamente.\n");
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+void log_tlb_succesfully_created(){
+    char* message = string_from_format("La TLB fue creada correctamente.\n");
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
 
 void free_cpu_logs_manager(){
     free_loggers();

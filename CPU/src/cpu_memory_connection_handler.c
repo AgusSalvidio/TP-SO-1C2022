@@ -43,6 +43,8 @@ void send_handshake_to_memory(){
     handshake_information = safe_malloc(sizeof (t_handshake));
     handshake_information = (t_handshake*) response -> structure;
 
+    log_handshake_received_succesfully();
+
     free_request(response);
 
     free_and_close_connection_information(memory_conn);
