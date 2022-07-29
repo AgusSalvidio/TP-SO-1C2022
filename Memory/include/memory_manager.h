@@ -27,11 +27,11 @@ typedef struct {
     uint32_t pid;
     uint32_t id;
     t_list* second_level_table_id_collection;
+    uint32_t next_page_id_to_assign;
 }t_first_level_table;
 
 typedef struct {
     uint32_t id;
-    uint32_t next_page_id_to_assign;
     t_list* pages_per_row;
 }t_second_level_table;
 

@@ -91,7 +91,9 @@ uint32_t loaded_page_quantity_of(uint32_t pid){
 }
 
 bool can_swap_page_for(uint32_t pid){
-    return !list_is_empty(process_context_for(pid)->frame_related_to_page_id_collection);
+    if(list_is_empty(process_context_for(pid)->frame_related_to_page_id_collection))
+        return 0;
+    return 1;
 }
 
 bool has_to_restart_clock_position(t_process_context* process_context){

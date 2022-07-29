@@ -250,6 +250,7 @@ void initialize_first_level_table_for(uint32_t pid){
     first_level_table->id = MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign;
     increment_value(&(MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign));
     first_level_table->second_level_table_id_collection = list_create();
+    first_level_table->next_page_id_to_assign = 0;
     list_add(MEMORY_TABLE_MANAGER->first_level_table_collection,first_level_table);
 
     log_first_level_table_for_process_was_successfully_initialized(pid);
@@ -268,11 +269,11 @@ t_page* new_page_identified_by(uint32_t page_id){
     return page;
 }
 
-void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount){
+void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount, t_first_level_table* first_level_table){
 
     for (uint32_t i = 0; i < page_amount ; ++i){
-        list_add(second_level_table->pages_per_row, new_page_identified_by(second_level_table->next_page_id_to_assign));
-        increment_value(&(second_level_table->next_page_id_to_assign));
+        list_add(second_level_table->pages_per_row, new_page_identified_by(first_level_table->next_page_id_to_assign));
+        increment_value(&(first_level_table->next_page_id_to_assign));
     }
 
 }
@@ -282,10 +283,9 @@ void register_second_level_table_using(t_first_level_table* first_level_table,ui
     t_second_level_table* second_level_table = safe_malloc(sizeof(t_second_level_table));
     second_level_table->id = MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign;
     increment_value(&(MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign));
-    second_level_table->next_page_id_to_assign = 0;
     second_level_table->pages_per_row = list_create();
 
-    add_pages_to(second_level_table,page_amount);
+    add_pages_to(second_level_table,page_amount,first_level_table);
 
     list_add(first_level_table->second_level_table_id_collection, second_level_table->id);
     list_add(MEMORY_TABLE_MANAGER->second_level_table_collection,second_level_table);

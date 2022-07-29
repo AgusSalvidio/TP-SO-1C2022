@@ -74,8 +74,10 @@ bool could_page_be_loaded_in_main_memory(t_page* selected_page, uint32_t pid){
         return true;
     }
     else
-    if(can_swap_page_for(pid))
+    if(can_swap_page_for(pid)){
         swap_page_procedure(selected_page, pid);
+        return true;
+    }
     else
         return false;
 }
