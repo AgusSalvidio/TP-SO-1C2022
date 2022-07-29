@@ -105,7 +105,11 @@ bool can_page_be_swapped_at(t_process_context* process_context, uint32_t step){
     t_page* selected_page_to_swap = page_in_pid(process_context->pid,frame_related_to_page->page_id);
 
     if(strcmp(PROCESS_CONTEXT_MANAGER->algorithm,"CLOCK") == 0){
-        return !selected_page_to_swap->use_bit;
+        uint32_t use_bit = selected_page_to_swap->use_bit;
+        if (use_bit == 0)
+            return 1;
+        else
+            return 0;
     }
     else
     {
@@ -193,12 +197,13 @@ void initialize_swap_page_procedure(t_page* selected_page, t_process_context* pr
     t_page* victim_page = page_in_pid(pid, frame_related_to_victim_page->page_id);
 
     safe_mutex_lock(&mutex_process);
-
     save_content_to_file_for(process_context,victim_page);
+    safe_mutex_unlock(&mutex_process);
+
     list_replace(process_context_for(pid)->frame_related_to_page_id_collection, last_page_index , frame_related_to_page_using(frame_related_to_victim_page->frame,selected_page->id));
     load_content_to_memory_for(process_context,selected_page,victim_page->frame);
 
-    safe_mutex_unlock(&mutex_process);
+
     wait_swap_delay_time();
     log_swap_procedure_was_successful(pid,victim_page->id,selected_page->id);
 

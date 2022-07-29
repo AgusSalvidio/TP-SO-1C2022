@@ -22,8 +22,8 @@ void initialize_memory_table_manager(){
     MEMORY_TABLE_MANAGER = safe_malloc(sizeof(t_memory_table_manager));
     MEMORY_TABLE_MANAGER->first_level_table_collection  = list_create();
     MEMORY_TABLE_MANAGER->second_level_table_collection = list_create();
-    MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned  = 0;
-    MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned = 0;
+    MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign  = 0;
+    MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign = 0;
 
     log_memory_table_manager_was_successfully_initialized();
 }
@@ -54,7 +54,7 @@ void increase_value_by(uint32_t *value,uint32_t increase_value){
     (*value) += increase_value;
 }
 void increment_value(uint32_t *value){
-    increase_value_by(value,7);
+    increase_value_by(value,1);
 }
 t_first_level_table* first_level_table_for(uint32_t pid){
 
@@ -188,10 +188,9 @@ void load_page_in_memory(t_page* page, uint32_t pid) {
 
     uint32_t content = read_from_file(swap_file_path_for(pid),page->id);
 
-    add_frame_related_to_page_to(process_context_for(pid),page);
-    write_value_at(frame, sizeof(uint32_t),content);
     update_page_bits_when_loaded_in_main_memory(page, frame);
-
+    add_frame_related_to_page_to(process_context_for(pid),page);
+    write_value_at(frame, 0,content);
 
     safe_mutex_unlock(&mutex);
 
@@ -248,8 +247,8 @@ void initialize_first_level_table_for(uint32_t pid){
 
     t_first_level_table* first_level_table = safe_malloc(sizeof(t_first_level_table));
     first_level_table->pid = pid;
-    first_level_table->id = MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned;
-    increment_value(&(MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned));
+    first_level_table->id = MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign;
+    increment_value(&(MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign));
     first_level_table->second_level_table_id_collection = list_create();
     list_add(MEMORY_TABLE_MANAGER->first_level_table_collection,first_level_table);
 
@@ -265,13 +264,15 @@ t_page* new_page_identified_by(uint32_t page_id){
     page->presence_bit = 0;
     page->use_bit = 0;
     page->modified_bit = 0;
+
+    return page;
 }
 
 void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount){
 
     for (uint32_t i = 0; i < page_amount ; ++i){
-        list_add(second_level_table->pages_per_row, new_page_identified_by(second_level_table->last_page_id_assigned));
-        increment_value(&(second_level_table->last_page_id_assigned));
+        list_add(second_level_table->pages_per_row, new_page_identified_by(second_level_table->next_page_id_to_assign));
+        increment_value(&(second_level_table->next_page_id_to_assign));
     }
 
 }
@@ -279,9 +280,9 @@ void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount)
 void register_second_level_table_using(t_first_level_table* first_level_table,uint32_t page_amount){
 
     t_second_level_table* second_level_table = safe_malloc(sizeof(t_second_level_table));
-    second_level_table->id = MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned;
-    increment_value(&(MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned));
-    second_level_table->last_page_id_assigned = 0;
+    second_level_table->id = MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign;
+    increment_value(&(MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign));
+    second_level_table->next_page_id_to_assign = 0;
     second_level_table->pages_per_row = list_create();
 
     add_pages_to(second_level_table,page_amount);

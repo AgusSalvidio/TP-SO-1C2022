@@ -19,8 +19,8 @@
 typedef struct {
     t_list* first_level_table_collection;
     t_list* second_level_table_collection;
-    uint32_t last_first_level_table_id_assigned;
-    uint32_t last_second_level_table_id_assigned;
+    uint32_t next_first_level_table_id_to_assign;
+    uint32_t next_second_level_table_id_to_assign;
 }t_memory_table_manager;
 
 typedef struct {
@@ -31,7 +31,7 @@ typedef struct {
 
 typedef struct {
     uint32_t id;
-    uint32_t last_page_id_assigned;
+    uint32_t next_page_id_to_assign;
     t_list* pages_per_row;
 }t_second_level_table;
 
@@ -69,4 +69,5 @@ void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write);
 void load_page_in_memory(t_page* page, uint32_t pid);
 bool can_memory_load_another_page_for(uint32_t pid);
 void free_main_memory_frames(t_list* frame_related_to_page_id_collection);
+t_first_level_table* first_level_table_for(uint32_t pid);
 #endif //KISS_MEMORY_MANAGER_H
