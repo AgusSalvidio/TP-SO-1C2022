@@ -89,7 +89,7 @@ void initialize_and_load_serializable_io_pcb(){
 void initialize_and_load_serializable_first_access(){
     t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
     serializable_object -> code = FIRST_ACCESS;
-    serializable_object -> serialize_function = serialize_mmu_access;
+    serializable_object -> serialize_function = serialize_first_access;
     serializable_object -> deserialize_function = deserialize_first_access;
     list_add(all_serializables, (void*) serializable_object);
 }
@@ -97,7 +97,7 @@ void initialize_and_load_serializable_first_access(){
 void initialize_and_load_serializable_second_access(){
     t_serializable_object* serializable_object = safe_malloc(sizeof(t_serializable_object));
     serializable_object -> code = SECOND_ACCESS;
-    serializable_object -> serialize_function = serialize_mmu_access;
+    serializable_object -> serialize_function = serialize_second_access;
     serializable_object -> deserialize_function = deserialize_second_access;
    list_add(all_serializables, (void*) serializable_object);
 }
@@ -166,6 +166,12 @@ t_serializable_object* serializable_write(){
 }
 t_serializable_object* serializable_copy(){
     return serializable_object_with_code(COPY);
+}
+t_serializable_object* serializable_first_access(){
+    return serializable_object_with_code(FIRST_ACCESS);
+}
+t_serializable_object* serializable_second_access(){
+    return serializable_object_with_code(SECOND_ACCESS);
 }
 
 t_serializable_object* serializable_object_with_code(uint32_t operation_code){

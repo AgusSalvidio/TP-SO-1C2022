@@ -6,11 +6,13 @@
 #include "memory_file_management.h"
 #include "memory_logs_manager.h"
 #include "../../Utils/include/pthread_wrapper.h"
+#include "../../Utils/include/garbage_collector.h"
 
 t_main_memory* MAIN_MEMORY;
 t_memory_table_manager* MEMORY_TABLE_MANAGER;
-
 pthread_mutex_t mutex;
+
+#define MAIN_MEMORY_BUFFER (MAIN_MEMORY->buffer)
 
 uint32_t frame_available(){
     uint32_t frame = list_get(MAIN_MEMORY->available_frames,0);
@@ -22,21 +24,19 @@ void initialize_memory_table_manager(){
     MEMORY_TABLE_MANAGER = safe_malloc(sizeof(t_memory_table_manager));
     MEMORY_TABLE_MANAGER->first_level_table_collection  = list_create();
     MEMORY_TABLE_MANAGER->second_level_table_collection = list_create();
-    MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned  = 0;
-    MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned = 0;
+    MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign  = 0;
+    MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign = 0;
 
     log_memory_table_manager_was_successfully_initialized();
 }
 
 void initialize_main_memory(){
 
-    uint32_t frame_quantity = quantity_memory_frames();
-
     MAIN_MEMORY = safe_malloc(sizeof(t_main_memory));
-    MAIN_MEMORY->buffer = safe_malloc(sizeof(uint32_t)*frame_quantity);
+    MAIN_MEMORY->buffer = safe_malloc(MEMORY_SIZE);
     MAIN_MEMORY->available_frames = list_create();
 
-    for (int i = 0; i < frame_quantity ; ++i)
+    for (int i = 0; i < MEMORY_FRAME_QUANTITY ; ++i)
         list_add(MAIN_MEMORY->available_frames,i);
 
     safe_mutex_initialize(&mutex);
@@ -53,7 +53,7 @@ void increase_value_by(uint32_t *value,uint32_t increase_value){
     (*value) += increase_value;
 }
 void increment_value(uint32_t *value){
-    increase_value_by(value,7);
+    increase_value_by(value,1);
 }
 t_first_level_table* first_level_table_for(uint32_t pid){
 
@@ -102,8 +102,10 @@ uint32_t second_level_table_index_at(uint32_t index, uint32_t entry){
 }
 
 bool are_available_frames_in_memory(){
-
-   return list_is_empty(MAIN_MEMORY->available_frames);
+   if(list_is_empty(MAIN_MEMORY->available_frames))
+       return false;
+   else
+       return true;
 }
 
 bool can_memory_load_another_page_for(uint32_t pid){
@@ -180,54 +182,61 @@ void free_main_memory_frames(t_list* frame_related_to_page_id_collection){
 void load_page_in_memory(t_page* page, uint32_t pid) {
 
     uint32_t frame = frame_available();
+    uint32_t content;
 
     safe_mutex_lock(&mutex);
 
-    uint32_t content = read_from_file(swap_file_path_for(pid),page->id);
-
-    write_value_at(frame, sizeof(uint32_t),content);
-    update_page_bits_when_loaded_in_main_memory(page, frame);
+    page->frame = frame;                            //Update frame here because the process_context, copies the frame from the page and if it was suspended, it will have the old one
     add_frame_related_to_page_to(process_context_for(pid),page);
 
-    safe_mutex_unlock(&mutex);
+    FILE* file_pointer = fopen(swap_file_path_for(pid), "r");
 
+    for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
+        content = read_from_file(file_pointer,page->id,offset);
+        write_value_at(frame, offset,content);
+    }
+
+    update_page_bits_when_loaded_in_main_memory(page,frame);
+
+    safe_mutex_unlock(&mutex);
+    fclose(file_pointer);
     log_page_was_loaded_in_memory_successfully(pid,page);
 }
 
 uint32_t frame_parse_from(t_physical_address* physical_address){
-    //Work in progress
+    return physical_address->frame;
 }
 uint32_t offset_parse_from(t_physical_address* physical_address){
-    //Work in progress
+    return physical_address->offset;
 }
 
 uint32_t read_value_at(uint32_t frame, uint32_t offset){
 
+    uint32_t page_size = page_size_getter();
     uint32_t value;
-    memcpy(&value,(MAIN_MEMORY->buffer) + frame,offset* sizeof(uint32_t));
+    memcpy(&value,MAIN_MEMORY_BUFFER + (frame * page_size) + offset,sizeof(uint32_t));
 
     log_memory_read_at(frame,offset);
-
-    update_page_bits_when_read(page_located_in(frame));
 
     return value;
 
 }
 void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
 
-    memcpy((MAIN_MEMORY->buffer) + frame,&value_to_write,offset);
+    memcpy(MAIN_MEMORY_BUFFER + (frame * PAGE_SIZE) + offset,&value_to_write, sizeof(uint32_t));
 
     log_memory_write_at(frame,offset,value_to_write);
 
-    update_page_bits_when_written(page_located_in(frame));
 
 }
 uint32_t read_value_from(t_physical_address* physical_address){
 
     uint32_t frame = frame_parse_from(physical_address);
     uint32_t offset = offset_parse_from(physical_address);
+    uint32_t value = read_value_at(frame,offset);
+    update_page_bits_when_read(page_located_in(frame));
 
-    return read_value_at(frame,offset);
+    return value;
 }
 void write_value_on(t_physical_address* physical_address,uint32_t value_to_write){
 
@@ -235,15 +244,19 @@ void write_value_on(t_physical_address* physical_address,uint32_t value_to_write
     uint32_t offset = offset_parse_from(physical_address);
 
     write_value_at(frame,offset,value_to_write);
+
+    update_page_bits_when_written(page_located_in(frame));
+
 }
 
 void initialize_first_level_table_for(uint32_t pid){
 
     t_first_level_table* first_level_table = safe_malloc(sizeof(t_first_level_table));
     first_level_table->pid = pid;
-    first_level_table->id = MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned;
-    increment_value(&(MEMORY_TABLE_MANAGER->last_first_level_table_id_assigned));
+    first_level_table->id = MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign;
+    increment_value(&(MEMORY_TABLE_MANAGER->next_first_level_table_id_to_assign));
     first_level_table->second_level_table_id_collection = list_create();
+    first_level_table->next_page_id_to_assign = 0;
     list_add(MEMORY_TABLE_MANAGER->first_level_table_collection,first_level_table);
 
     log_first_level_table_for_process_was_successfully_initialized(pid);
@@ -258,13 +271,15 @@ t_page* new_page_identified_by(uint32_t page_id){
     page->presence_bit = 0;
     page->use_bit = 0;
     page->modified_bit = 0;
+
+    return page;
 }
 
-void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount){
+void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount, t_first_level_table* first_level_table){
 
     for (uint32_t i = 0; i < page_amount ; ++i){
-        list_add(second_level_table->pages_per_row, new_page_identified_by(second_level_table->last_page_id_assigned));
-        increment_value(&(second_level_table->last_page_id_assigned));
+        list_add(second_level_table->pages_per_row, new_page_identified_by(first_level_table->next_page_id_to_assign));
+        increment_value(&(first_level_table->next_page_id_to_assign));
     }
 
 }
@@ -272,12 +287,11 @@ void add_pages_to(t_second_level_table* second_level_table,uint32_t page_amount)
 void register_second_level_table_using(t_first_level_table* first_level_table,uint32_t page_amount){
 
     t_second_level_table* second_level_table = safe_malloc(sizeof(t_second_level_table));
-    second_level_table->id = MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned;
-    increment_value(&(MEMORY_TABLE_MANAGER->last_second_level_table_id_assigned));
-    second_level_table->last_page_id_assigned = 0;
+    second_level_table->id = MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign;
+    increment_value(&(MEMORY_TABLE_MANAGER->next_second_level_table_id_to_assign));
     second_level_table->pages_per_row = list_create();
 
-    add_pages_to(second_level_table,page_amount);
+    add_pages_to(second_level_table,page_amount,first_level_table);
 
     list_add(first_level_table->second_level_table_id_collection, second_level_table->id);
     list_add(MEMORY_TABLE_MANAGER->second_level_table_collection,second_level_table);
@@ -309,7 +323,6 @@ void initialize_second_level_table_for(uint32_t pid,uint32_t page_quantity){
     }
 
     log_second_level_table_for_process_was_successfully_initialized(pid);
-
 }
 
 void initialize_new_process(uint32_t pid, uint32_t process_page_quantity,uint32_t process_size){

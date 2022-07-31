@@ -5,9 +5,16 @@
 #include "memory_file_management.h"
 #include "../../Utils/include/pthread_wrapper.h"
 #include "memory_logs_manager.h"
+#include "../../Utils/include/garbage_collector.h"
 
 t_process_context_manager* PROCESS_CONTEXT_MANAGER;
 pthread_mutex_t mutex_process;
+
+void wait_swap_delay_time(){
+    uint32_t delay_time_in_seconds = swap_time()/1000;
+    sleep(delay_time_in_seconds);
+}
+
 void initialize_process_context_manager(){
     PROCESS_CONTEXT_MANAGER = safe_malloc(sizeof(t_process_context_manager));
     PROCESS_CONTEXT_MANAGER->algorithm = algorithm();
@@ -61,7 +68,7 @@ void update_page_bits_when_written(t_page* page){
 void new_process_context_for(uint32_t pid){
     t_process_context* process_context = safe_malloc(sizeof(t_process_context));
     process_context->pid = pid;
-    process_context->last_page_index_swapped = 0;
+    process_context->clock_pointer = 0;
     process_context->swap_file_path = swap_file_path_for(pid);
     process_context->frame_related_to_page_id_collection = list_create();
 
@@ -85,21 +92,27 @@ uint32_t loaded_page_quantity_of(uint32_t pid){
 }
 
 bool can_swap_page_for(uint32_t pid){
-    return !list_is_empty(process_context_for(pid)->frame_related_to_page_id_collection);
+    if(list_is_empty(process_context_for(pid)->frame_related_to_page_id_collection))
+        return 0;
+    return 1;
 }
 
 bool has_to_restart_clock_position(t_process_context* process_context){
-    return (list_size(process_context->frame_related_to_page_id_collection) == (process_context->last_page_index_swapped + 1));
+    return (list_size(process_context->frame_related_to_page_id_collection) == (process_context->clock_pointer + 1));
 }
 
 bool can_page_be_swapped_at(t_process_context* process_context, uint32_t step){
 
-    t_frame_related_to_page_id*  frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->last_page_index_swapped);
+    t_frame_related_to_page_id*  frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->clock_pointer);
 
     t_page* selected_page_to_swap = page_in_pid(process_context->pid,frame_related_to_page->page_id);
 
     if(strcmp(PROCESS_CONTEXT_MANAGER->algorithm,"CLOCK") == 0){
-        return !selected_page_to_swap->use_bit;
+        uint32_t use_bit = selected_page_to_swap->use_bit;
+        if (use_bit == 0)
+            return 1;
+        else
+            return 0;
     }
     else
     {
@@ -113,7 +126,7 @@ bool can_page_be_swapped_at(t_process_context* process_context, uint32_t step){
 
 void update_use_bit_from_page_in(t_process_context *process_context){
 
-    t_frame_related_to_page_id* frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->last_page_index_swapped);
+    t_frame_related_to_page_id* frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->clock_pointer);
 
     t_page* selected_page_to_swap = page_in_pid(process_context->pid,frame_related_to_page->page_id);
 
@@ -124,11 +137,17 @@ void update_use_bit_from_page_in(t_process_context *process_context){
 void save_content_to_file_for(t_process_context* process_context,t_page* victim_page){
 
     uint32_t victim_frame = victim_page->frame;
-    uint32_t page_size = page_size_getter();
-    uint32_t victim_page_content = read_value_at(victim_frame,page_size);
+    uint32_t victim_page_number = victim_page->id;
+    uint32_t victim_page_content;
 
-    write_in_file(process_context->swap_file_path,victim_frame,victim_page_content);
+    FILE* file_pointer = fopen(process_context->swap_file_path, "r+");
 
+    for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
+        victim_page_content = read_value_at(victim_frame,offset);
+        write_in_file(file_pointer,victim_page_number,victim_page_content,offset);
+    }
+    fclose(file_pointer);
+    update_page_presence_bit_when_unload(victim_page);
 }
 
 void update_page_bits_when_loaded_in_main_memory(t_page* page, uint32_t frame){
@@ -159,11 +178,21 @@ t_page* page_located_in(uint32_t frame){
 
 void load_content_to_memory_for(t_process_context* process_context,t_page* selected_page, uint32_t frame){
 
+    uint32_t content_to_load;
     safe_mutex_lock(&mutex_process);
-    uint32_t content_to_load = read_from_file(process_context->swap_file_path,selected_page->id);
-    write_value_at(frame, sizeof(uint32_t),content_to_load);
+
+    FILE* file_pointer = fopen(process_context->swap_file_path, "r");
+
+    for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
+        content_to_load = read_from_file(file_pointer,selected_page->id,offset);
+        write_value_at(frame, offset,content_to_load);
+    }
+
     update_page_bits_when_loaded_in_main_memory(selected_page, frame);               //Update bits and frame for pages_per_row
+    fclose(file_pointer);
     safe_mutex_unlock(&mutex_process);
+
+
 }
 
 t_frame_related_to_page_id* frame_related_to_page_using(uint32_t frame, uint32_t page_id){
@@ -180,20 +209,25 @@ t_frame_related_to_page_id* frame_related_to_page_using(uint32_t frame, uint32_t
 void initialize_swap_page_procedure(t_page* selected_page, t_process_context* process_context){
 
     uint32_t pid = process_context->pid;
-    uint32_t last_page_index = process_context->last_page_index_swapped;
+    uint32_t last_page_index = process_context->clock_pointer;
 
     t_frame_related_to_page_id* frame_related_to_victim_page = list_get(process_context->frame_related_to_page_id_collection, last_page_index);
 
     t_page* victim_page = page_in_pid(pid, frame_related_to_victim_page->page_id);
 
     safe_mutex_lock(&mutex_process);
+    //Improve performance by saving content to files only for pages that were modified.
+    if(victim_page->modified_bit == 1)
+        save_content_to_file_for(process_context,victim_page);
+    else
+        update_page_presence_bit_when_unload(victim_page);
+    safe_mutex_unlock(&mutex_process);
 
-    save_content_to_file_for(process_context,victim_page);
     list_replace(process_context_for(pid)->frame_related_to_page_id_collection, last_page_index , frame_related_to_page_using(frame_related_to_victim_page->frame,selected_page->id));
     load_content_to_memory_for(process_context,selected_page,victim_page->frame);
 
-    safe_mutex_unlock(&mutex_process);
 
+    wait_swap_delay_time();
     log_swap_procedure_was_successful(pid,victim_page->id,selected_page->id);
 
 }
@@ -207,17 +241,17 @@ void clock_algorithm(t_process_context* process_context,t_page* page_requested){
         if(can_page_be_swapped_at(process_context, step)){
             initialize_swap_page_procedure(page_requested, process_context);
             if(has_to_restart_clock_position(process_context))
-                process_context->last_page_index_swapped = 0;
+                process_context->clock_pointer = 0;
             else
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
             end_search = true;
         }
         else{
             update_use_bit_from_page_in(process_context);
             if(has_to_restart_clock_position(process_context))
-                process_context->last_page_index_swapped = 0;
+                process_context->clock_pointer = 0;
             else
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
         }
     }
 }
@@ -233,24 +267,25 @@ void enhanced_clock_algorithm(t_process_context* process_context,t_page* page_re
         if(can_page_be_swapped_at(process_context, step)){
             initialize_swap_page_procedure(page_requested, process_context);
             if(has_to_restart_clock_position(process_context)) {
-                process_context->last_page_index_swapped = 0;
+                process_context->clock_pointer = 0;
             }
             else
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
             end_search = true;
         }
         else{
             if(has_to_restart_clock_position(process_context)){
-                process_context->last_page_index_swapped = 0;
                 if(step == 1)
                     step = 2;
-                else
+                else{
                     step = 1;
+                    update_use_bit_from_page_in(process_context);}
+                process_context->clock_pointer = 0;
             }
             else{
-                if(step != 1)
+                if(step == 2)
                     update_use_bit_from_page_in(process_context);
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
             }
         }
 
@@ -277,16 +312,17 @@ void suspend_process(uint32_t pid){
 
     t_list* frame_related_to_page_id_collection = process_context->frame_related_to_page_id_collection;
 
-    //Enhance to make in the future: only save pages to files when they were used or modified to improve performance
     for (int i = 0; i < list_size(frame_related_to_page_id_collection) ; ++i) {
 
         t_frame_related_to_page_id* frame_related_to_page_id =  list_get(frame_related_to_page_id_collection, i);
 
         t_page* page = page_in_pid(pid,frame_related_to_page_id->page_id);
 
-        save_content_to_file_for(process_context,page);
-        update_page_presence_bit_when_unload(page);
-
+        //To improve performance, when a page was not modified, then dont save content, because this will waste I/O time
+        if(page->modified_bit == 1)
+            save_content_to_file_for(process_context,page);
+        else
+            update_page_presence_bit_when_unload(page);
     }
 
     free_main_memory_frames(frame_related_to_page_id_collection);

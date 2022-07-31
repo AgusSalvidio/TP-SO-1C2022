@@ -13,6 +13,8 @@ t_serializable_object* serializable_request_response();
 t_serializable_object* serializable_read();
 t_serializable_object* serializable_write();
 t_serializable_object* serializable_copy();
+t_serializable_object* serializable_first_access();
+t_serializable_object* serializable_second_access();
 
 void free_serializable_objects();
 

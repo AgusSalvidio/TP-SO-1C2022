@@ -12,12 +12,6 @@
 #include "../../Utils/include/t_list_extension.h"
 #include "memory_replacement_algorithms.h"
 
-void wait_swap_delay_time(){
-    uint32_t delay_time_in_seconds = swap_time()/1000;
-    sleep(delay_time_in_seconds);
-
-}
-
 void wait_cpu_response_delay_time(){
     uint32_t delay_time_in_seconds = memory_time()/1000;
     sleep(delay_time_in_seconds);
@@ -80,8 +74,10 @@ bool could_page_be_loaded_in_main_memory(t_page* selected_page, uint32_t pid){
         return true;
     }
     else
-    if(can_swap_page_for(pid))
+    if(can_swap_page_for(pid)){
         swap_page_procedure(selected_page, pid);
+        return true;
+    }
     else
         return false;
 }
@@ -103,11 +99,11 @@ void* handle_cpu_second_access_request_procedure(t_mmu_access *second_access){
     t_request_response *frame_request_to_send;
 
     if(could_memory_handle_second_access_request(second_access)){
-        request_response_using(frame_at(second_access->index, second_access->entry), "SUCCESS");
+        frame_request_to_send = request_response_using(frame_at(second_access->index, second_access->entry), "SUCCESS");
         log_cpu_second_access_was_handled_successfully(second_access->index,second_access->entry);
     }
     else{
-        request_response_using(0, "ERROR");
+        frame_request_to_send = request_response_using(0, "ERROR");
         log_cpu_second_access_cannot_be_handled(second_access->index,second_access->entry);
     }
 

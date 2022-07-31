@@ -12,8 +12,8 @@
 #include<fcntl.h>
 #include<unistd.h>
 
-void write_in_file(char* swap_file_path, uint32_t frame_number,uint32_t content);
-uint32_t read_from_file(char* swap_file_path,uint32_t page_id);
+void write_in_file(FILE* file_pointer, uint32_t page_id, uint32_t content,uint32_t offset);
+uint32_t read_from_file(FILE* file_pointer,uint32_t page_id,uint32_t offset);
 void create_swap_file(char* file_path,uint32_t process_size);
 void delete_file_from(char* swap_file_path);
 void initialize_swap_file_for(uint32_t pid,uint32_t process_size);
