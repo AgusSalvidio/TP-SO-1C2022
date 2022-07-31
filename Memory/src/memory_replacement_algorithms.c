@@ -271,14 +271,15 @@ void enhanced_clock_algorithm(t_process_context* process_context,t_page* page_re
         }
         else{
             if(has_to_restart_clock_position(process_context)){
-                process_context->clock_pointer = 0;
                 if(step == 1)
                     step = 2;
-                else
+                else{
                     step = 1;
+                    update_use_bit_from_page_in(process_context);}
+                process_context->clock_pointer = 0;
             }
             else{
-                if(step != 1)
+                if(step == 2)
                     update_use_bit_from_page_in(process_context);
                 increment_value(&(process_context->clock_pointer));
             }
