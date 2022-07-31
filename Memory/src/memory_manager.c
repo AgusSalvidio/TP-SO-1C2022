@@ -6,11 +6,13 @@
 #include "memory_file_management.h"
 #include "memory_logs_manager.h"
 #include "../../Utils/include/pthread_wrapper.h"
+#include "../../Utils/include/garbage_collector.h"
 
 t_main_memory* MAIN_MEMORY;
 t_memory_table_manager* MEMORY_TABLE_MANAGER;
-
 pthread_mutex_t mutex;
+
+#define MAIN_MEMORY_BUFFER (MAIN_MEMORY->buffer)
 
 uint32_t frame_available(){
     uint32_t frame = list_get(MAIN_MEMORY->available_frames,0);
@@ -30,14 +32,11 @@ void initialize_memory_table_manager(){
 
 void initialize_main_memory(){
 
-    uint32_t frame_quantity = quantity_memory_frames();
-    uint32_t memory_size = memory_size_getter();
-
     MAIN_MEMORY = safe_malloc(sizeof(t_main_memory));
-    MAIN_MEMORY->buffer = safe_malloc(memory_size);
+    MAIN_MEMORY->buffer = safe_malloc(MEMORY_SIZE);
     MAIN_MEMORY->available_frames = list_create();
 
-    for (int i = 0; i < frame_quantity ; ++i)
+    for (int i = 0; i < MEMORY_FRAME_QUANTITY ; ++i)
         list_add(MAIN_MEMORY->available_frames,i);
 
     safe_mutex_initialize(&mutex);
@@ -183,14 +182,20 @@ void free_main_memory_frames(t_list* frame_related_to_page_id_collection){
 void load_page_in_memory(t_page* page, uint32_t pid) {
 
     uint32_t frame = frame_available();
+    uint32_t content;
 
     safe_mutex_lock(&mutex);
 
-    uint32_t content = read_from_file(swap_file_path_for(pid),page->id);
-
-    update_page_bits_when_loaded_in_main_memory(page, frame);
+    page->frame = frame;                            //Update frame here because the process_context, copies the frame from the page and if it was suspended, it will have the old one
     add_frame_related_to_page_to(process_context_for(pid),page);
-    write_value_at(frame, 0,content);
+
+    for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
+        content = read_from_file(swap_file_path_for(pid),page->id,offset);
+        write_value_at(frame, offset,content);
+    }
+
+    update_page_bits_when_loaded_in_main_memory(page,frame);
+
 
     safe_mutex_unlock(&mutex);
 
@@ -208,7 +213,7 @@ uint32_t read_value_at(uint32_t frame, uint32_t offset){
 
     uint32_t page_size = page_size_getter();
     uint32_t value;
-    memcpy(&value,(MAIN_MEMORY->buffer) + (frame * page_size) + offset,sizeof(uint32_t));
+    memcpy(&value,MAIN_MEMORY_BUFFER + (frame * page_size) + offset,sizeof(uint32_t));
 
     log_memory_read_at(frame,offset);
 
@@ -219,9 +224,7 @@ uint32_t read_value_at(uint32_t frame, uint32_t offset){
 }
 void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
 
-    uint32_t page_size = page_size_getter();
-
-    memcpy((MAIN_MEMORY->buffer) + (frame * page_size) + offset,&value_to_write, sizeof(uint32_t));
+    memcpy(MAIN_MEMORY_BUFFER + (frame * PAGE_SIZE) + offset,&value_to_write, sizeof(uint32_t));
 
     log_memory_write_at(frame,offset,value_to_write);
 
@@ -317,7 +320,6 @@ void initialize_second_level_table_for(uint32_t pid,uint32_t page_quantity){
     }
 
     log_second_level_table_for_process_was_successfully_initialized(pid);
-
 }
 
 void initialize_new_process(uint32_t pid, uint32_t process_page_quantity,uint32_t process_size){

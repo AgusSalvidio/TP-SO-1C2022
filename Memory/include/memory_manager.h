@@ -16,6 +16,11 @@
 #include "../../Utils/include/common_structures.h"
 #include "memory_configuration_manager.h"
 
+#define MEMORY_SIZE memory_size_getter()
+#define MEMORY_FRAME_QUANTITY quantity_memory_frames()
+#define PAGE_SIZE page_size_getter()
+
+
 typedef struct {
     t_list* first_level_table_collection;
     t_list* second_level_table_collection;
@@ -44,7 +49,7 @@ typedef struct {
 }t_page;
 
 typedef struct {
-    uint32_t * buffer;
+    char * buffer;
     t_list* available_frames;
 }t_main_memory;
 
@@ -70,4 +75,5 @@ void load_page_in_memory(t_page* page, uint32_t pid);
 bool can_memory_load_another_page_for(uint32_t pid);
 void free_main_memory_frames(t_list* frame_related_to_page_id_collection);
 t_first_level_table* first_level_table_for(uint32_t pid);
+char* read_content_at(uint32_t frame);
 #endif //KISS_MEMORY_MANAGER_H

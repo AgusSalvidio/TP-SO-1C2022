@@ -5,6 +5,7 @@
 #include "memory_file_management.h"
 #include "../../Utils/include/pthread_wrapper.h"
 #include "memory_logs_manager.h"
+#include "../../Utils/include/garbage_collector.h"
 
 t_process_context_manager* PROCESS_CONTEXT_MANAGER;
 pthread_mutex_t mutex_process;
@@ -136,10 +137,13 @@ void update_use_bit_from_page_in(t_process_context *process_context){
 void save_content_to_file_for(t_process_context* process_context,t_page* victim_page){
 
     uint32_t victim_frame = victim_page->frame;
-    uint32_t page_size = page_size_getter();
-    uint32_t victim_page_content = read_value_at(victim_frame,page_size);
+    uint32_t victim_page_number = victim_page->id;
+    uint32_t victim_page_content;
 
-    write_in_file(process_context->swap_file_path,victim_frame,victim_page_content);
+    for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
+        victim_page_content = read_value_at(victim_frame,offset);
+        write_in_file(process_context->swap_file_path,victim_page_number,victim_page_content,offset);
+    }
 
 }
 
@@ -171,9 +175,15 @@ t_page* page_located_in(uint32_t frame){
 
 void load_content_to_memory_for(t_process_context* process_context,t_page* selected_page, uint32_t frame){
 
+    uint32_t content_to_load;
+
     safe_mutex_lock(&mutex_process);
-    uint32_t content_to_load = read_from_file(process_context->swap_file_path,selected_page->id);
-    write_value_at(frame, sizeof(uint32_t),content_to_load);
+
+    for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
+        content_to_load = read_from_file(process_context->swap_file_path,selected_page->id,offset);
+        write_value_at(frame, offset,content_to_load);
+    }
+
     update_page_bits_when_loaded_in_main_memory(selected_page, frame);               //Update bits and frame for pages_per_row
     safe_mutex_unlock(&mutex_process);
 }

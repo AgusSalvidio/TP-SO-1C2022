@@ -21,13 +21,14 @@ void initialize_swap_file_for(uint32_t pid, uint32_t process_size){
 
 }
 
-void write_in_file(char* swap_file_path, uint32_t frame_number,uint32_t content){
+void write_in_file(char* swap_file_path, uint32_t page_id, uint32_t content, uint32_t offset){
 
     FILE* file_pointer = fopen(swap_file_path, "r+");
-    uint32_t offset_position = frame_number * page_size_getter();
     char* transformed_content = string_itoa(content);
 
-    fseek(file_pointer, sizeof(uint32_t)*offset_position, SEEK_SET);
+    uint32_t initial_position = page_id * PAGE_SIZE + offset;
+
+    fseek(file_pointer, sizeof(char)*initial_position , SEEK_SET);
 
     fprintf(file_pointer, transformed_content);
 
@@ -35,17 +36,16 @@ void write_in_file(char* swap_file_path, uint32_t frame_number,uint32_t content)
     fclose(file_pointer);
 }
 
-uint32_t read_from_file(char* swap_file_path,uint32_t page_id){
+uint32_t read_from_file(char* swap_file_path,uint32_t page_id,uint32_t offset){
 
     FILE* file_pointer = fopen(swap_file_path, "r");
 
-    uint32_t initial_position = page_id * page_size_getter();
-    uint32_t displacement = page_size_getter();
+    uint32_t initial_position = page_id * PAGE_SIZE + offset;
 
-    char* content_to_return = safe_malloc(displacement);
+    char* content_to_return = safe_malloc(PAGE_SIZE);
 
-    fseek(file_pointer, sizeof(char)*initial_position, SEEK_SET);
-    fgets(content_to_return, displacement+1, file_pointer);
+    fseek(file_pointer, initial_position, SEEK_SET);
+    fgets(content_to_return, sizeof(uint32_t) + 1, file_pointer);
 
     consider_as_garbage(content_to_return, free);
     fclose(file_pointer);
