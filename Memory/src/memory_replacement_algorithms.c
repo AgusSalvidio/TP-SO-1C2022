@@ -216,7 +216,11 @@ void initialize_swap_page_procedure(t_page* selected_page, t_process_context* pr
     t_page* victim_page = page_in_pid(pid, frame_related_to_victim_page->page_id);
 
     safe_mutex_lock(&mutex_process);
-    save_content_to_file_for(process_context,victim_page);
+    //Improve performance by saving content to files only for pages that were modified.
+    if(victim_page->modified_bit == 1)
+        save_content_to_file_for(process_context,victim_page);
+    else
+        update_page_presence_bit_when_unload(victim_page);
     safe_mutex_unlock(&mutex_process);
 
     list_replace(process_context_for(pid)->frame_related_to_page_id_collection, last_page_index , frame_related_to_page_using(frame_related_to_victim_page->frame,selected_page->id));
@@ -308,16 +312,17 @@ void suspend_process(uint32_t pid){
 
     t_list* frame_related_to_page_id_collection = process_context->frame_related_to_page_id_collection;
 
-    //Enhance to make in the future: only save pages to files when they were used or modified to improve performance
     for (int i = 0; i < list_size(frame_related_to_page_id_collection) ; ++i) {
 
         t_frame_related_to_page_id* frame_related_to_page_id =  list_get(frame_related_to_page_id_collection, i);
 
         t_page* page = page_in_pid(pid,frame_related_to_page_id->page_id);
 
-        save_content_to_file_for(process_context,page);
-        update_page_presence_bit_when_unload(page);
-
+        //To improve performance, when a page was not modified, then dont save content, because this will waste I/O time
+        if(page->modified_bit == 1)
+            save_content_to_file_for(process_context,page);
+        else
+            update_page_presence_bit_when_unload(page);
     }
 
     free_main_memory_frames(frame_related_to_page_id_collection);
