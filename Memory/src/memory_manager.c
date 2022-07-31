@@ -189,16 +189,17 @@ void load_page_in_memory(t_page* page, uint32_t pid) {
     page->frame = frame;                            //Update frame here because the process_context, copies the frame from the page and if it was suspended, it will have the old one
     add_frame_related_to_page_to(process_context_for(pid),page);
 
+    FILE* file_pointer = fopen(swap_file_path_for(pid), "r");
+
     for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
-        content = read_from_file(swap_file_path_for(pid),page->id,offset);
+        content = read_from_file(file_pointer,page->id,offset);
         write_value_at(frame, offset,content);
     }
 
     update_page_bits_when_loaded_in_main_memory(page,frame);
 
-
     safe_mutex_unlock(&mutex);
-
+    fclose(file_pointer);
     log_page_was_loaded_in_memory_successfully(pid,page);
 }
 

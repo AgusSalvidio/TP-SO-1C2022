@@ -140,11 +140,13 @@ void save_content_to_file_for(t_process_context* process_context,t_page* victim_
     uint32_t victim_page_number = victim_page->id;
     uint32_t victim_page_content;
 
+    FILE* file_pointer = fopen(process_context->swap_file_path, "r+");
+
     for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
         victim_page_content = read_value_at(victim_frame,offset);
-        write_in_file(process_context->swap_file_path,victim_page_number,victim_page_content,offset);
+        write_in_file(file_pointer,victim_page_number,victim_page_content,offset);
     }
-
+    fclose(file_pointer);
 }
 
 void update_page_bits_when_loaded_in_main_memory(t_page* page, uint32_t frame){
@@ -176,16 +178,20 @@ t_page* page_located_in(uint32_t frame){
 void load_content_to_memory_for(t_process_context* process_context,t_page* selected_page, uint32_t frame){
 
     uint32_t content_to_load;
-
     safe_mutex_lock(&mutex_process);
 
+    FILE* file_pointer = fopen(process_context->swap_file_path, "r");
+
     for (int offset = 0; offset < PAGE_SIZE; offset += sizeof(uint32_t)) {
-        content_to_load = read_from_file(process_context->swap_file_path,selected_page->id,offset);
+        content_to_load = read_from_file(file_pointer,selected_page->id,offset);
         write_value_at(frame, offset,content_to_load);
     }
 
     update_page_bits_when_loaded_in_main_memory(selected_page, frame);               //Update bits and frame for pages_per_row
+    fclose(file_pointer);
     safe_mutex_unlock(&mutex_process);
+
+
 }
 
 t_frame_related_to_page_id* frame_related_to_page_using(uint32_t frame, uint32_t page_id){
