@@ -68,7 +68,7 @@ void update_page_bits_when_written(t_page* page){
 void new_process_context_for(uint32_t pid){
     t_process_context* process_context = safe_malloc(sizeof(t_process_context));
     process_context->pid = pid;
-    process_context->last_page_index_swapped = 0;
+    process_context->clock_pointer = 0;
     process_context->swap_file_path = swap_file_path_for(pid);
     process_context->frame_related_to_page_id_collection = list_create();
 
@@ -98,12 +98,12 @@ bool can_swap_page_for(uint32_t pid){
 }
 
 bool has_to_restart_clock_position(t_process_context* process_context){
-    return (list_size(process_context->frame_related_to_page_id_collection) == (process_context->last_page_index_swapped + 1));
+    return (list_size(process_context->frame_related_to_page_id_collection) == (process_context->clock_pointer + 1));
 }
 
 bool can_page_be_swapped_at(t_process_context* process_context, uint32_t step){
 
-    t_frame_related_to_page_id*  frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->last_page_index_swapped);
+    t_frame_related_to_page_id*  frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->clock_pointer);
 
     t_page* selected_page_to_swap = page_in_pid(process_context->pid,frame_related_to_page->page_id);
 
@@ -126,7 +126,7 @@ bool can_page_be_swapped_at(t_process_context* process_context, uint32_t step){
 
 void update_use_bit_from_page_in(t_process_context *process_context){
 
-    t_frame_related_to_page_id* frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->last_page_index_swapped);
+    t_frame_related_to_page_id* frame_related_to_page = list_get(process_context->frame_related_to_page_id_collection, process_context->clock_pointer);
 
     t_page* selected_page_to_swap = page_in_pid(process_context->pid,frame_related_to_page->page_id);
 
@@ -147,6 +147,7 @@ void save_content_to_file_for(t_process_context* process_context,t_page* victim_
         write_in_file(file_pointer,victim_page_number,victim_page_content,offset);
     }
     fclose(file_pointer);
+    update_page_presence_bit_when_unload(victim_page);
 }
 
 void update_page_bits_when_loaded_in_main_memory(t_page* page, uint32_t frame){
@@ -208,7 +209,7 @@ t_frame_related_to_page_id* frame_related_to_page_using(uint32_t frame, uint32_t
 void initialize_swap_page_procedure(t_page* selected_page, t_process_context* process_context){
 
     uint32_t pid = process_context->pid;
-    uint32_t last_page_index = process_context->last_page_index_swapped;
+    uint32_t last_page_index = process_context->clock_pointer;
 
     t_frame_related_to_page_id* frame_related_to_victim_page = list_get(process_context->frame_related_to_page_id_collection, last_page_index);
 
@@ -236,17 +237,17 @@ void clock_algorithm(t_process_context* process_context,t_page* page_requested){
         if(can_page_be_swapped_at(process_context, step)){
             initialize_swap_page_procedure(page_requested, process_context);
             if(has_to_restart_clock_position(process_context))
-                process_context->last_page_index_swapped = 0;
+                process_context->clock_pointer = 0;
             else
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
             end_search = true;
         }
         else{
             update_use_bit_from_page_in(process_context);
             if(has_to_restart_clock_position(process_context))
-                process_context->last_page_index_swapped = 0;
+                process_context->clock_pointer = 0;
             else
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
         }
     }
 }
@@ -262,15 +263,15 @@ void enhanced_clock_algorithm(t_process_context* process_context,t_page* page_re
         if(can_page_be_swapped_at(process_context, step)){
             initialize_swap_page_procedure(page_requested, process_context);
             if(has_to_restart_clock_position(process_context)) {
-                process_context->last_page_index_swapped = 0;
+                process_context->clock_pointer = 0;
             }
             else
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
             end_search = true;
         }
         else{
             if(has_to_restart_clock_position(process_context)){
-                process_context->last_page_index_swapped = 0;
+                process_context->clock_pointer = 0;
                 if(step == 1)
                     step = 2;
                 else
@@ -279,7 +280,7 @@ void enhanced_clock_algorithm(t_process_context* process_context,t_page* page_re
             else{
                 if(step != 1)
                     update_use_bit_from_page_in(process_context);
-                increment_value(&(process_context->last_page_index_swapped));
+                increment_value(&(process_context->clock_pointer));
             }
         }
 

@@ -21,7 +21,7 @@ typedef struct {
 typedef struct {
     uint32_t pid;
     char* swap_file_path;
-    uint32_t last_page_index_swapped;
+    uint32_t clock_pointer;
     t_list* frame_related_to_page_id_collection;
 }t_process_context;
 

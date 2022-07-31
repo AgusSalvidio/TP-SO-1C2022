@@ -218,8 +218,6 @@ uint32_t read_value_at(uint32_t frame, uint32_t offset){
 
     log_memory_read_at(frame,offset);
 
-    update_page_bits_when_read(page_located_in(frame));
-
     return value;
 
 }
@@ -229,15 +227,16 @@ void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
 
     log_memory_write_at(frame,offset,value_to_write);
 
-    update_page_bits_when_written(page_located_in(frame));
 
 }
 uint32_t read_value_from(t_physical_address* physical_address){
 
     uint32_t frame = frame_parse_from(physical_address);
     uint32_t offset = offset_parse_from(physical_address);
+    uint32_t value = read_value_at(frame,offset);
+    update_page_bits_when_read(page_located_in(frame));
 
-    return read_value_at(frame,offset);
+    return value;
 }
 void write_value_on(t_physical_address* physical_address,uint32_t value_to_write){
 
@@ -245,6 +244,9 @@ void write_value_on(t_physical_address* physical_address,uint32_t value_to_write
     uint32_t offset = offset_parse_from(physical_address);
 
     write_value_at(frame,offset,value_to_write);
+
+    update_page_bits_when_written(page_located_in(frame));
+
 }
 
 void initialize_first_level_table_for(uint32_t pid){
