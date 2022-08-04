@@ -4,9 +4,21 @@
 #include "../../Utils/include/socket.h"
 #include "../../Utils/include/configuration_manager.h"
 #include "cpu_logs_manager.h"
+#include "../../Utils/include/general_logs.h"
+#include "cpu_query_performer.h"
 
 
 t_handshake* handshake_information;
+
+uint32_t receive_content_from_memory(uint32_t socket){
+    t_request* response = receive_and_deserialize_structure(socket);
+
+    t_request_response* content = (t_request_response*) response -> structure;
+    uint32_t read_content = content -> content;
+
+    free_request(response);
+    return read_content;
+}
 
 t_connection_information* connect_to_memory() {
 
@@ -50,7 +62,7 @@ void send_handshake_to_memory(){
     free_and_close_connection_information(memory_conn);
 }
 
-void send_read_to_memory(t_physical_address* physical_address){
+uint32_t send_read_to_memory(t_physical_address* physical_address){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_read* read = safe_malloc(sizeof(t_read));
@@ -62,9 +74,12 @@ void send_read_to_memory(t_physical_address* physical_address){
     request -> sanitizer_function = free;
 
     serialize_and_send_structure(request, memory_conn -> socket_fd);
-    free_request(request);
 
+    uint32_t response = receive_content_from_memory(memory_conn -> socket_fd);
+
+    free_request(request);
     free_and_close_connection_information(memory_conn);
+    return response;
 }
 
 void send_write_to_memory(t_physical_address* physical_address, uint32_t value){
@@ -103,7 +118,7 @@ void send_copy_to_memory(t_physical_address* physical_address, uint32_t value){
     free_and_close_connection_information(memory_conn);
 }
 
-void send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
+uint32_t send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
     t_connection_information *memory_conn = connect_to_memory();
 
     t_mmu_access* mmu_access = safe_malloc(sizeof(t_mmu_access));
@@ -117,20 +132,9 @@ void send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry){
 
     serialize_and_send_structure(request, memory_conn -> socket_fd);
 
+    uint32_t response = receive_content_from_memory(memory_conn -> socket_fd);
+
     free_request(request);
     free_and_close_connection_information(memory_conn);
-}
-
-uint32_t receive_content_from_memory(){
-    t_connection_information *memory_conn = connect_to_memory();
-
-    t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
-
-    t_request_response* content = safe_malloc(sizeof (t_request_response));
-    content = (t_request_response*) response -> structure;
-    uint32_t read_content = content -> content;
-
-    free_request(response);
-    free_and_close_connection_information(memory_conn);
-    return read_content;
+    return response;
 }

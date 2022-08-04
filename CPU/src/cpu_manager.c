@@ -6,6 +6,7 @@
 #include "cpu_instruction_cycle.h"
 #include "cpu_mmu.h"
 #include "../../Utils/include/logger.h"
+#include "cpu_tlb.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <commons/log.h>
@@ -27,8 +28,7 @@ t_request* request_to_send_using(void* received_structure, uint32_t operation){
 void* handle_read_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
-    send_read_to_memory(physical_address);
-    log_read_content(receive_content_from_memory());
+    log_read_content(send_read_to_memory(physical_address));
 }
 
 void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
@@ -55,6 +55,8 @@ void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* 
         t_io_pcb* io_pcb = safe_malloc(sizeof(t_io_pcb));
         io_pcb -> pcb = current_pcb;
         io_pcb -> blocked_time = (uint32_t)list_get(instruction->operands, 0);
+
+        list_clean(tlb());
 
         return request_to_send_using(io_pcb, IO_PCB);
     }

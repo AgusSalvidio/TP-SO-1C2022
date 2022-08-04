@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "cpu_manager.h"
 
+t_list* tlb();
 uint32_t tlb_hit(uint32_t page_number);
 bool page_number_contained_in_tlb(uint32_t page_number);
 void add_new_element_to_tlb(uint32_t page_number, uint32_t frame_number);

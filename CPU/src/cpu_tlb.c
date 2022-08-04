@@ -6,7 +6,10 @@
 #include "cpu_logs_manager.h"
 
 t_list* tlb_elements;
-uint32_t tlb_order = 1;
+
+t_list* tlb(){
+    return tlb_elements;
+}
 
 uint32_t tlb_hit(uint32_t page_number){
     t_tlb_element* tlb_element = safe_malloc(sizeof(t_tlb_element));
@@ -94,7 +97,7 @@ void add_new_element_to_tlb(uint32_t page_number, uint32_t frame_number){
 
 
 void initialize_tlb(){
-    tlb_elements = safe_malloc(sizeof(t_tlb_element)*get_tlb_entries());
+    tlb_elements = list_create();
 
     log_tlb_succesfully_created();
 }
