@@ -53,13 +53,11 @@ void update_page_presence_bit_when_unload(t_page* page){
 }
 
 void update_page_bits_when_read(t_page* page){
-
     update_page_use_bit(page,1);
 
 }
 
 void update_page_bits_when_written(t_page* page){
-
     update_page_use_bit(page,1);
     update_page_modified_bit(page,1);
 
@@ -155,7 +153,6 @@ void update_page_bits_when_loaded_in_main_memory(t_page* page, uint32_t frame){
     page->presence_bit = 1;
     page->use_bit = 0;                  //Only used when read or write/copy are called
     page->modified_bit = 0;
-
 }
 
 t_page* page_located_in(uint32_t frame){

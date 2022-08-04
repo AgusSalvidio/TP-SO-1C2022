@@ -44,6 +44,8 @@ void write_in_file(FILE* file_pointer, uint32_t page_id, uint32_t content,uint32
     fprintf(file_pointer, parsed_content);
     consider_as_garbage(transformed_content, free);
     consider_as_garbage(parsed_content, free);
+    consider_as_garbage(char_prefix,free);
+
 
 }
 
