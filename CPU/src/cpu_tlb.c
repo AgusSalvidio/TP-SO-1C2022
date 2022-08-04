@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "cpu_manager.h"
 #include "cpu_configuration_manager.h"
+#include "cpu_logs_manager.h"
 
 t_list* tlb_elements;
 uint32_t tlb_order = 1;
@@ -94,6 +95,8 @@ void add_new_element_to_tlb(uint32_t page_number, uint32_t frame_number){
 
 void initialize_tlb(){
     tlb_elements = safe_malloc(sizeof(t_tlb_element)*get_tlb_entries());
+
+    log_tlb_succesfully_created();
 }
 
 
