@@ -15,10 +15,7 @@ t_instruction* fetch_instruction(t_pcb* current_pcb){
 
 uint32_t fetch_operands(uint32_t table_index, uint32_t logical_address){
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
-    send_read_to_memory(physical_address);
-    uint32_t converted_content = receive_content_from_memory();
-
-    return converted_content;
+    return send_read_to_memory(physical_address);
 }
 
 t_instruction* decode_instruction(uint32_t table_index, t_instruction* current_instruction){

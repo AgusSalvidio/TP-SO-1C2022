@@ -28,11 +28,9 @@ t_physical_address * physical_address_translator(uint32_t first_level_index, uin
 
     t_level_paging* level_paging = level_paging_information(logical_address);
 
-    send_mmu_access_to_memory(FIRST_ACCESS, first_level_index, level_paging->first_level_entry);
-    uint32_t second_level_index = receive_content_from_memory();
+    uint32_t second_level_index = send_mmu_access_to_memory(FIRST_ACCESS, first_level_index, level_paging->first_level_entry);
 
-    send_mmu_access_to_memory(SECOND_ACCESS, second_level_index, level_paging->second_level_entry);
-    uint32_t frame = receive_content_from_memory();
+    uint32_t frame = send_mmu_access_to_memory(SECOND_ACCESS, second_level_index, level_paging->second_level_entry);
 
     t_physical_address* physical_address = safe_malloc(sizeof(t_physical_address));
     physical_address -> frame = frame;
