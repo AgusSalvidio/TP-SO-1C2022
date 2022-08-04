@@ -305,7 +305,6 @@ void swap_page_procedure(t_page* selected_page, uint32_t pid){
         enhanced_clock_algorithm(process_context,selected_page);
 }
 
-
 void suspend_process(uint32_t pid){
 
     t_process_context * process_context = process_context_for(pid);
@@ -332,4 +331,11 @@ void suspend_process(uint32_t pid){
 void finalize_process(uint32_t pid){
     suspend_process(pid);
     delete_file_from(swap_file_path_for(pid));
+}
+
+void free_memory_replacement_algorithms(){
+
+    list_destroy_and_destroy_elements(PROCESS_CONTEXT_MANAGER->process_context_collection,free);
+    free(PROCESS_CONTEXT_MANAGER);
+
 }

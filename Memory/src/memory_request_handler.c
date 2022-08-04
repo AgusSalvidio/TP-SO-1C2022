@@ -134,10 +134,6 @@ uint32_t converted_page_quantity_based_on(uint32_t process_size, uint32_t page_s
     integer_division(process_size,page_size);
 }
 
-uint32_t converted_table_quantity_based_on(uint32_t page_quantity, uint32_t frames_per_table){
-    integer_division(page_quantity,frames_per_table);
-}
-
 void* handle_new_process_request_procedure(t_initialize_process* new_process_received){
 
     t_initialize_process* new_process = new_process_received;
@@ -231,5 +227,3 @@ void* handle_write_request_procedure(t_write* write_request){
 
 }
 
-
-void free_memory_manager(){}

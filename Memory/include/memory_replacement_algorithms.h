@@ -45,7 +45,7 @@ t_page* page_located_in(uint32_t frame);
 void update_page_bits_when_loaded_in_main_memory(t_page* page, uint32_t frame);
 void add_frame_related_to_page_to(t_process_context* process_context,t_page* page);
 t_process_context* process_context_for(uint32_t pid);
-
+void free_memory_replacement_algorithms();
 
 
 
