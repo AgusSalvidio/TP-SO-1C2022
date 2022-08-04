@@ -60,8 +60,10 @@ void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* 
 
         return request_to_send_using(io_pcb, IO_PCB);
     }
-    if(instruction -> type == EXIT)
+    if(instruction -> type == EXIT) {
+        list_clean(tlb());
         return request_to_send_using(current_pcb, PCB);
+    }
     else
         return NULL;
 }
