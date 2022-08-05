@@ -41,6 +41,18 @@ void log_tlb_succesfully_created(){
     free(message);
 }
 
+void log_current_instruction_running(char* instruction){
+    char* message = string_from_format("Se esta ejecutando la operación %s.\n", instruction);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
+void log_return_pcb_to_kernel(){
+    char* message = string_from_format("Se devuelve el PCB a Kernel.\n");
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
 void free_cpu_logs_manager(){
     free_loggers();
 }
