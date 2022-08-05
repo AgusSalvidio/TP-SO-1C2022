@@ -3,6 +3,7 @@
 #include "kernel_state_transitions.h"
 #include "kernel_long_term_scheduler.h"
 #include "kernel_configuration.h"
+#include "kernel_sanitizer.h"
 
 t_list* processes;
 uint32_t process_counter;
@@ -34,19 +35,18 @@ t_process_image *find_process_image_by_pid(uint32_t pid) {
     return list_find(processes, _find_by_pid);
 }
 
-void free_instructions(t_list *instructions) {
-    void _destroy_operands(t_instruction* instruction) {
-        list_destroy(instruction->operands);
-        free(instruction);
-    };
+void free_process_image_pcb(t_pcb* pcb) {
+    bool _find_by_pid(t_process_image* process) {
+        return process -> pcb -> pid == pcb->pid;
+    }
 
-    list_destroy_and_destroy_elements(instructions, _destroy_operands);
-
+    t_process_image * process_image = list_remove_by_condition(processes, _find_by_pid);
+    free_pcb(process_image->pcb);
+    free(process_image);
 }
 
 void free_process_image(t_process_image *process_image){
-    free_instructions(process_image->pcb->instructions);
-    free(process_image->pcb);
+    free_pcb(process_image->pcb);
     free(process_image);
 }
 

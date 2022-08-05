@@ -13,7 +13,6 @@
 
 t_list *state_transitions;
 
-
 void new_to_ready_transition(t_pcb *pcb) {
     move_to(pcb, READY);
     log_pcb_new_to_ready_transition(pcb->pid, get_current_available_slots(), get_multiprogramming_degree());
@@ -80,6 +79,7 @@ void exec_to_exit_transition(t_pcb *pcb) {
     finalize_process->pid = pcb->pid;
     connect_and_send_finalize_to_memory(finalize_process);
     request_process_remove_from_schedule();
+    free_process_image_pcb(pcb);
 }
 
 void initialize_and_load_state_transition(uint32_t from_state, uint32_t to_state, void (*function)(void *)) {

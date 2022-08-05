@@ -6,7 +6,8 @@
 
 typedef struct IO_Object {
     uint32_t pid;
-    uint32_t block_time;
+    uint32_t blocked_time;
+    bool finished;
 } t_io_object;
 
 void initialize_io_routine();

@@ -49,9 +49,9 @@ void log_io_finished_execution(uint32_t pid);
 
 void log_current_available_slots(uint32_t available, uint32_t max);
 
-void log_estimation_list();
+void log_estimation_list(t_list* pcb_list);
 
-void log_ready_list();
+void log_ready_list(t_list* pcb_list);
 
 void log_update_current_estimation(t_pcb* pcb, double previous, double actual);
 

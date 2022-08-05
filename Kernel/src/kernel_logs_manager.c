@@ -92,7 +92,7 @@ void log_invalid_state_error() {
 }
 
 void log_pcb_not_found_error(uint32_t pid) {
-    char *error_message = string_from_format("El pcb con pid %d no fue encontrado.", pid);
+    char *error_message = string_from_format("El io_pcb con pid %d no fue encontrado.", pid);
     log_errorful_message(process_execution_logger(), error_message);
     free(error_message);
 }
@@ -123,7 +123,7 @@ void log_io_finished_execution(uint32_t pid) {
     free(message);
 }
 
-void log_estimation_list(t_list* list_of_pcbs) {
+void log_estimation_list(t_list* pcb_list) {
     char* to_log = string_new();
     void _print_estimation(t_pcb* pcb) {
         char *to_append = string_from_format("(pid: %d, est: %f),", pcb->pid, pcb->next_burst);
@@ -131,7 +131,7 @@ void log_estimation_list(t_list* list_of_pcbs) {
         free(to_append);
     };
 
-    list_iterate(list_of_pcbs, (void (*)(t_pcb *))_print_estimation);
+    list_iterate(pcb_list, (void (*)(t_pcb *))_print_estimation);
     log_debug(process_execution_logger(), to_log);
     free(to_log);
 }

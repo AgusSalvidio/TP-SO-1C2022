@@ -17,4 +17,6 @@ t_process_image *find_process_image_by_pid(uint32_t pid);
 
 void free_kernel_process_image();
 
+void free_process_image_pcb(t_pcb* pcb);
+
 #endif //KISS_KERNEL_PROCESS_IMAGE_H
