@@ -138,7 +138,6 @@ t_request* deserialize_handshake(void* serialized_structure) {
     request -> structure = (void*) handshake;
     request -> sanitizer_function = free;
 
-    consider_as_garbage(handshake, free);
     return request;
 }
 

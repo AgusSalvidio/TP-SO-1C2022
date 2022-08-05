@@ -26,12 +26,14 @@ t_request* request_to_send_using(void* received_structure, uint32_t operation){
 }
 
 void* handle_read_request_procedure(uint32_t table_index, t_list* operands){
+    log_current_instruction_running("Read");
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
     log_read_content(send_read_to_memory(physical_address));
 }
 
 void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
+    log_current_instruction_running("Write");
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
@@ -39,6 +41,7 @@ void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
 }
 
 void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
+    log_current_instruction_running("Copy");
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
@@ -47,21 +50,27 @@ void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
 
 
 void* handle_no_op_request_procedure(uint32_t pid, t_list* operands){
+    log_current_instruction_running("No op");
     wait_delay_time();
 }
 
 void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* current_pcb){
     if(instruction -> type == IO){
+        log_current_instruction_running("I/O");
         t_io_pcb* io_pcb = safe_malloc(sizeof(t_io_pcb));
         io_pcb -> pcb = current_pcb;
         io_pcb -> blocked_time = (uint32_t)list_get(instruction->operands, 0);
 
         list_clean(tlb());
 
+        log_return_pcb_to_kernel();
         return request_to_send_using(io_pcb, IO_PCB);
     }
     if(instruction -> type == EXIT) {
+        log_current_instruction_running("Exit");
         list_clean(tlb());
+
+        log_return_pcb_to_kernel();
         return request_to_send_using(current_pcb, PCB);
     }
     else
