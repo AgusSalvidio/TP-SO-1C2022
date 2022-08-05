@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "../include/planification.h"
-#include "../../Utils/include/configuration_manager.h"
 #include "../../Utils/include/pretty_printer.h"
 #include "../../Utils/include/garbage_collector.h"
 #include "../../Utils/include/serializable_objects.h"
@@ -11,6 +10,7 @@
 #include "kernel_event.h"
 #include "kernel_io_routine.h"
 #include "kernel_cpu_message_handler.h"
+#include "../../Utils/include/configuration_manager.h"
 
 int main(int argc, char** argv) {
 

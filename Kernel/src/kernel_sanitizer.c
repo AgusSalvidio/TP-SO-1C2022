@@ -14,6 +14,7 @@
 #include "kernel_io_routine.h"
 #include "kernel_mid_term_scheduler.h"
 #include "kernel_cpu_message_handler.h"
+#include "kernel_configuration.h"
 
 void free_pcb (t_pcb * pcb) {
     void _destroy_operands(t_instruction* instruction) {
@@ -35,9 +36,6 @@ void free_io_pcb (t_io_pcb * io_pcb) {
 void free_system() {
 
     free_planificacion_threads();
-    free_long_term_scheduler();
-    free_mid_term_scheduler();
-    free_short_term_scheduler();
     free_cpu_message_handler();
     free_scheduler_queues();
     free_state_transitions();
@@ -48,8 +46,9 @@ void free_system() {
     free_serializable_objects();
     free_garbage_collector();
     free_configuration_manager();
-
-
+    free_long_term_scheduler();
+    free_mid_term_scheduler();
+    free_short_term_scheduler();
     log_successful_clean_up();
     free_kernel_logs_manager();
 }

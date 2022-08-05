@@ -9,7 +9,6 @@
 
 t_list* scheduling_algorithms;
 t_scheduling_algorithm* scheduling_algorithm;
-char *algorithm;
 
 void initialize_scheduling_algorithms(){
     initialize_fifo_algorithm();
@@ -21,7 +20,7 @@ void initialize_scheduling_algorithms(){
 }
 
 bool can_handle(t_scheduling_algorithm* scheduling_algorithm){
-    return string_equals_ignore_case(scheduling_algorithm -> algorithm_name, algorithm);
+    return string_equals_ignore_case(scheduling_algorithm -> algorithm_name, get_scheduling_algorithm());
 }
 
 void free_scheduling_algorithms(){
@@ -29,7 +28,6 @@ void free_scheduling_algorithms(){
 }
 
 t_scheduling_algorithm* chosen_scheduling_algorithm(){
-    algorithm = get_scheduling_algorithm();
 
     initialize_scheduling_algorithms();
 
@@ -37,7 +35,7 @@ t_scheduling_algorithm* chosen_scheduling_algorithm(){
             list_remove_by_condition(scheduling_algorithms, (bool (*)(void *)) can_handle);
 
     if(!scheduling_algorithm_found){
-        log_scheduling_algorithm_not_found_error_for(algorithm);
+        log_scheduling_algorithm_not_found_error_for(get_scheduling_algorithm());
         free_system();
     }
 

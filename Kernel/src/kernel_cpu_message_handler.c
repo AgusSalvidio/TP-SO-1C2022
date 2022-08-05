@@ -11,6 +11,7 @@
 #include "../../Utils/include/logger.h"
 #include "../../Utils/include/garbage_collector.h"
 #include "kernel_sanitizer.h"
+#include "kernel_srt_algorithm.h"
 
 
 t_list *handlers;
@@ -26,8 +27,10 @@ void next_transition(t_pcb *returned_pcb, t_burst *burst) {
         notify_with_argument(UPDATE_CURRENT_PROCESS_ESTIMATION, burst);
         safe_sem_post(&sem_preempt);
     } else {
+        notify_with_argument(FREE_PROCESS_ESTIMATION, burst->pcb);
         transition = state_transition_for(burst->pcb, Q_EXIT);
         transition->function(burst->pcb);
+
     }
   //  free_pcb(returned_pcb);
 

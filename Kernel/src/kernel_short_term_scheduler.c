@@ -11,7 +11,6 @@ sem_t sem_processes_ready_to_exec;
 void execute_pcb(t_pcb *pcb) {
 
     t_burst *burst = connect_and_send_pcb_to_cpu(pcb);
-    //Notifico al algoritmo para que reorganice la lista de ready segun su criterio (paso el burst para srt)
     free(burst);
 }
 
@@ -26,7 +25,6 @@ void algoritmo_planificador_corto_plazo() {
     subscribe_to_event_doing(PROCESS_READY_TO_EXECUTE, process_added_to_ready);
     while (1) {
         safe_sem_wait(&sem_processes_ready_to_exec);
-        //log_estimation_list(scheduler_queue_of(READY)->pcb_list);
         log_scheduling_list(scheduler_queue_of(READY)->pcb_list);
         t_pcb *pcb = list_first(scheduler_queue_of(READY)->pcb_list);
         t_state_transition *state_transition = state_transition_for(pcb, EXEC);

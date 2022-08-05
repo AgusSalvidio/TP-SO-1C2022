@@ -79,11 +79,24 @@ void calculate_estimation(t_pcb *pcb) { //est * α + real * (1 - α)
     srt_update_ready_queue_when_adding_function();
 }
 
+void free_burst_estimation_of_process(t_pcb* pcb) {
+    t_burst_estimation* estimator = burst_estimation_of_process(pcb);
+    bool _is_for(t_burst_estimation *burst_estimation_to_compare) {
+        return burst_estimation_to_compare->pcb == pcb;
+    }
+
+    list_remove_and_destroy_by_condition(pcbs_burst_estimations, (bool (*)(void *)) _is_for, free);
+
+}
+
 void srt_resolve_dependencies_function() {
     subscribe_to_event_doing(UPDATE_CURRENT_PROCESS_ESTIMATION, (void (*)(void *)) update_current);
     subscribe_to_event_doing(SEND_INTERRUPTION_SIGNAL, send_interruption_signal);
     subscribe_to_event_doing(CALCULATE_ESTIMATION_OF_PROCESS, (void (*)(void *)) calculate_estimation);
+    subscribe_to_event_doing(FREE_PROCESS_ESTIMATION, (void (*)(void *)) free_burst_estimation_of_process);
 }
+
+
 
 void free_burst_estimations() {
     list_destroy_and_destroy_elements(pcbs_burst_estimations, free);

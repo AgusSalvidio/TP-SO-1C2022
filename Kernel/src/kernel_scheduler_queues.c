@@ -48,50 +48,10 @@ t_scheduler_queue *scheduler_queue_of(uint32_t state) {
     return scheduler_queue_found;
 }
 
-t_list *pcbs_in(uint32_t state) {
-    return scheduler_queue_of(state) -> pcb_list;
-}
-
-uint32_t amount_of_pcbs_in(uint32_t state) {
-    return list_size(pcbs_in(state));
-}
-
 void handling_concurrency_do(t_scheduler_queue *queue, void (*function)()) {
     safe_mutex_lock(&queue -> mutex);
     function();
     safe_mutex_unlock(&queue -> mutex);
-}
-
-
-char *name_of_state(uint32_t to_state) {
-    switch (to_state) {
-        case NEW:
-            return "NEW";
-        case READY:
-            return "READY";
-        case EXEC:
-            return "EXEC";
-        case BLOCKED:
-            return "BLOCKED";
-        case SUSPENDED_BLOCKED:
-            return "SUSPENDED_BLOCKED";
-        case SUSPENDED_READY:
-            return "SUSPENDED_READY";
-        case Q_EXIT:
-            return "EXIT";
-    }
-}
-
-void move_to_execute() {
-    t_scheduler_queue * scheduler_queue = scheduler_queue_of(READY);
-    t_pcb *pcb;
-
-    void _remove(){
-        pcb = list_remove_first(scheduler_queue -> pcb_list);
-    }
-
-    handling_concurrency_do(scheduler_queue, _remove);
-    add_to_scheduler_queue(pcb, EXEC);
 }
 
 void move_to(t_pcb *pcb, uint32_t to_state) {

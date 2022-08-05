@@ -13,4 +13,6 @@ void initialize_srt_algorithm();
 
 t_scheduling_algorithm* get_srt_algorithm();
 
+void free_burst_estimation_of_process(t_pcb * pcb);
+
 #endif //KISS_KERNEL_SRT_ALGORITHM_H
