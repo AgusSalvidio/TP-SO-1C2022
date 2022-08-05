@@ -4,6 +4,7 @@
 #include "../../Utils/include/common_structures.h"
 #include "console_sanitizer.h"
 #include "console_logs_manager.h"
+#include "../../Utils/include/garbage_collector.h"
 #include <commons/string.h>
 
 t_list* instruction_creators;
@@ -17,6 +18,7 @@ t_list *create_no_op_instruction (char** instruction_array) {
             instruction -> operands = list_create();
             list_add(instructions, instruction);
         }
+        consider_as_garbage(instructions, list_destroy);
         return instructions;
     } else {
         log_invalid_number_of_params(instruction_array[0], 0, string_array_size(instruction_array));
@@ -35,6 +37,7 @@ t_list *create_io_instruction (char** instruction_array) {
         }
         instruction -> operands = operands;
         list_add(instructions, instruction);
+        consider_as_garbage(instructions, list_destroy);
         return instructions;
     } else {
         log_invalid_number_of_params(instruction_array[0], 1, string_array_size(instruction_array) - 1);
@@ -53,6 +56,7 @@ t_list *create_write_instruction (char** instruction_array) {
         }
         instruction -> operands = operands;
         list_add(instructions, instruction);
+        consider_as_garbage(instructions, list_destroy);
         return instructions;
     } else {
         log_invalid_number_of_params(instruction_array[0], 2, string_array_size(instruction_array) - 1);
@@ -71,6 +75,7 @@ t_list *create_read_instruction (char** instruction_array) {
         }
         instruction -> operands = operands;
         list_add(instructions, instruction);
+        consider_as_garbage(instructions, list_destroy);
         return instructions;
     } else {
         log_invalid_number_of_params(instruction_array[0], 1, string_array_size(instruction_array) - 1);
@@ -89,6 +94,7 @@ t_list *create_copy_instruction (char** instruction_array) {
         }
         instruction -> operands = operands;
         list_add(instructions, instruction);
+        consider_as_garbage(instructions, list_destroy);
         return instructions;
     } else {
         log_invalid_number_of_params(instruction_array[0], 2, string_array_size(instruction_array) - 1);
@@ -107,6 +113,7 @@ t_list *create_exit_instruction (char** instruction_array) {
         }
         instruction -> operands = operands;
         list_add(instructions, instruction);
+        consider_as_garbage(instructions, list_destroy);
         return instructions;
     } else {
         log_invalid_number_of_params(instruction_array[0], 0, string_array_size(instruction_array));

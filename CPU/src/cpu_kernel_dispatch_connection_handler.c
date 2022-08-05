@@ -1,4 +1,5 @@
 #include <cpu_kernel_dispatch_connection_handler.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu_configuration_manager.h>
@@ -10,8 +11,12 @@
 
 pthread_t dispatch_thread;
 
-void dispatch_connection_handler(int server_socket_fd){
+void commit_suicide(){
+    pthread_exit(NULL);
+}
 
+void dispatch_connection_handler(int server_socket_fd){
+    handle_signal(SIGUSR1, commit_suicide);
     for ever{
         int connection_fd = accept_incoming_connections_on(server_socket_fd);
         t_receive_information *receive_information = receive_structure(connection_fd);
@@ -40,4 +45,8 @@ void dispatch_connection_handler(int server_socket_fd){
 void initialize_cpu_dispatch_threads(){
     uint32_t dispatch_socket = listen_at(get_dispatch_port());
     dispatch_thread = default_safe_thread_create(dispatch_connection_handler, dispatch_socket);
+}
+
+void free_dispatch_thread(){
+    pthread_kill(dispatch_thread, SIGUSR1);
 }

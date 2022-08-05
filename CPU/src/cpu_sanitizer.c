@@ -8,6 +8,8 @@
 #include "../../Utils/include/garbage_collector.h"
 #include "../../Utils/include/general_logs.h"
 #include "cpu_tlb.h"
+#include "cpu_kernel_dispatch_connection_handler.h"
+#include "cpu_kernel_interrupt_connection_handler.h"
 
 void free_system(){
 
@@ -21,4 +23,7 @@ void free_system(){
     free_cpu_configuration_manager();
     log_successful_clean_up();
     free_cpu_logs_manager();
+
+    free_dispatch_thread();
+    free_interrupt_thread();
 }
