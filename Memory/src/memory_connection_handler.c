@@ -37,6 +37,7 @@ void connection_handler(int server_socket_fd){
                 serialize_and_send_structure(request_to_send, connection_fd);
                 free_request(resendable_request);
             }
+            free_request(deserialized_request);
             free_serialization_information(serialization_information);
         }
         free(receive_information);

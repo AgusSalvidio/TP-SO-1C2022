@@ -36,6 +36,8 @@ void add_frame_related_to_page_to(t_process_context* process_context,t_page* pag
     list_add(process_context->frame_related_to_page_id_collection,frame_related_to_page);
 
     log_frame_related_to_page_was_added_to_process_context_successfully(frame_related_to_page->frame, frame_related_to_page->page_id);
+
+    consider_as_garbage(frame_related_to_page, free);
 }
 
 void update_page_modified_bit(t_page* page,uint32_t bit){
@@ -222,10 +224,11 @@ void initialize_swap_page_procedure(t_page* selected_page, t_process_context* pr
         update_page_presence_bit_when_unload(victim_page);
     safe_mutex_unlock(&mutex_process);
 
-    list_replace(process_context_for(pid)->frame_related_to_page_id_collection, last_page_index , frame_related_to_page_using(frame_related_to_victim_page->frame,selected_page->id));
+    t_frame_related_to_page_id* frame_related_to_page = frame_related_to_page_using(frame_related_to_victim_page->frame,selected_page->id);
+    list_replace(process_context_for(pid)->frame_related_to_page_id_collection, last_page_index , frame_related_to_page);
     load_content_to_memory_for(process_context,selected_page,victim_page->frame);
 
-
+    consider_as_garbage(frame_related_to_page, free);
     wait_swap_delay_time();
     log_swap_procedure_was_successful(pid,victim_page->id,selected_page->id);
 
@@ -329,7 +332,9 @@ void suspend_process(uint32_t pid){
 }
 void finalize_process(uint32_t pid){
     suspend_process(pid);
-    delete_file_from(swap_file_path_for(pid));
+    char* swap_file_path = swap_file_path_for(pid);
+    delete_file_from(swap_file_path);
+    consider_as_garbage(swap_file_path, free);
 }
 
 void free_memory_replacement_algorithms(){
