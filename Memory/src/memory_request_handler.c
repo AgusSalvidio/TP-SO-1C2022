@@ -13,9 +13,9 @@
 #include "memory_replacement_algorithms.h"
 
 void wait_cpu_response_delay_time(){
-    uint32_t delay_time_in_seconds = memory_time()/1000;
+    uint32_t delay_time_in_microseconds = memory_time()*1000;
     log_memory_delay_time_has_started(memory_time());
-    sleep(delay_time_in_seconds);
+    usleep(delay_time_in_microseconds);
     log_memory_delay_time_has_ended();
 }
 

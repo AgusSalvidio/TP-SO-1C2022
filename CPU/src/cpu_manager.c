@@ -14,8 +14,8 @@
 
 
 void wait_delay_time(){
-    uint32_t delay_time_in_seconds = get_noop_delay()/1000;
-    sleep(delay_time_in_seconds);
+    uint32_t delay_time_in_microseconds = get_noop_delay()*1000;
+    usleep(delay_time_in_microseconds);
 }
 
 t_request* request_to_send_using(void* received_structure, uint32_t operation){

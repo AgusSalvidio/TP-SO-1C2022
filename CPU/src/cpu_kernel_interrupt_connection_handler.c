@@ -1,6 +1,5 @@
 #include <cpu_kernel_interrupt_connection_handler.h>
 #include <signal.h>
-#include <unistring/stdint.h>
 #include <stdlib.h>
 #include "../../Utils/include/pthread_wrapper.h"
 #include "../../Utils/include/socket.h"
