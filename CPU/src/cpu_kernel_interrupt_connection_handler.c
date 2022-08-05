@@ -1,4 +1,5 @@
 #include <cpu_kernel_interrupt_connection_handler.h>
+#include <signal.h>
 #include <unistring/stdint.h>
 #include <stdlib.h>
 #include "../../Utils/include/pthread_wrapper.h"
@@ -6,6 +7,7 @@
 #include "cpu_configuration_manager.h"
 #include "cpu_query_performer.h"
 #include "../../Utils/include/general_logs.h"
+#include "cpu_kernel_dispatch_connection_handler.h"
 
 
 pthread_t interrupt_thread;
@@ -20,7 +22,7 @@ void modify_interruption_status(){
 }
 
 void interrupt_connection_handler(int server_socket_fd){
-
+    handle_signal(SIGUSR1, commit_suicide);
     for ever{
         int connection_fd = accept_incoming_connections_on(server_socket_fd);
         uint32_t *ack = receive_ack_with_timeout_in_seconds(connection_fd, 60000);
@@ -45,4 +47,8 @@ void initialize_cpu_interrupt_threads(){
     uint32_t interrupt_socket = listen_at(get_interrupt_port());
     interrupt_thread = default_safe_thread_create(interrupt_connection_handler, interrupt_socket);
     safe_thread_join(interrupt_thread);
+}
+
+void free_interrupt_thread(){
+    pthread_kill(interrupt_thread, SIGUSR1);
 }
