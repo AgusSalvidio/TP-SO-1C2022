@@ -12,7 +12,9 @@ pthread_mutex_t mutex_process;
 
 void wait_swap_delay_time(){
     uint32_t delay_time_in_seconds = swap_time()/1000;
+    log_swap_delay_time_has_started(swap_time());
     sleep(delay_time_in_seconds);
+    log_swap_delay_time_has_ended();
 }
 
 void initialize_process_context_manager(){

@@ -32,6 +32,9 @@ void log_cpu_second_access_cannot_be_handled(uint32_t index, uint32_t entry);
 void log_page_was_loaded_in_memory_successfully(uint32_t pid, t_page* page);
 void log_frame_related_to_page_was_added_to_process_context_successfully(uint32_t frame, uint32_t page_id);
 void log_swap_procedure_was_successful(uint32_t pid,uint32_t victim_page_id,uint32_t selected_page_id);
-
+void log_swap_delay_time_has_started(uint32_t time_in_miliseconds);
+void log_swap_delay_time_has_ended();
+void log_memory_delay_time_has_started(uint32_t time_in_miliseconds);
+void log_memory_delay_time_has_ended();
 
 #endif //KISS_MEMORY_LOGS_MANAGER_H

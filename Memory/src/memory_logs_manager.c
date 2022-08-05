@@ -192,6 +192,27 @@ void log_swap_procedure_was_successful(uint32_t pid,uint32_t victim_page_id,uint
     free(message);
 }
 
+void log_swap_delay_time_has_started(uint32_t time_in_miliseconds){
+    char* message = string_from_format("Comienzo de delay por swap: %d ms.\n",time_in_miliseconds);
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+void log_swap_delay_time_has_ended(){
+    char* message = string_from_format("Finalizó el delay por swap.\n");
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+void log_memory_delay_time_has_started(uint32_t time_in_miliseconds){
+    char* message = string_from_format("Comienzo de delay por respuesta de memoria a CPU: %d ms.\n",time_in_miliseconds);
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+void log_memory_delay_time_has_ended(){
+    char* message = string_from_format("Finalizó el delay por respuesta de memoria a CPU.\n");
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+
 void free_memory_logs_manager(){
     free_loggers();
 }

@@ -14,8 +14,9 @@
 
 void wait_cpu_response_delay_time(){
     uint32_t delay_time_in_seconds = memory_time()/1000;
+    log_memory_delay_time_has_started(memory_time());
     sleep(delay_time_in_seconds);
-
+    log_memory_delay_time_has_ended();
 }
 
 t_request_response* request_response_using(uint32_t content,char* type_description){
