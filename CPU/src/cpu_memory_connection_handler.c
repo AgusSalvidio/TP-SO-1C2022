@@ -17,6 +17,7 @@ uint32_t receive_content_from_memory(uint32_t socket){
     t_request_response* content = (t_request_response*) response -> structure;
     uint32_t read_content = content -> content;
 
+    consider_as_garbage(response, free);
     return read_content;
 }
 
@@ -57,7 +58,8 @@ void send_handshake_to_memory(){
 
     log_handshake_received_succesfully();
 
-    consider_as_garbage(response, free_request);
+    //consider_as_garbage(response, free_request);
+    free(response);
 
     free_and_close_connection_information(memory_conn);
 }
@@ -137,4 +139,8 @@ uint32_t send_mmu_access_to_memory(uint32_t type, uint32_t index, uint32_t entry
     free_request(request);
     free_and_close_connection_information(memory_conn);
     return response;
+}
+
+void free_memory_connection_handler(){
+    free(handshake_information);
 }

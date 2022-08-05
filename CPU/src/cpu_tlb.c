@@ -4,6 +4,7 @@
 #include "cpu_manager.h"
 #include "cpu_configuration_manager.h"
 #include "cpu_logs_manager.h"
+#include "../../Utils/include/garbage_collector.h"
 
 t_list* tlb_elements;
 
@@ -19,6 +20,9 @@ uint32_t tlb_hit(uint32_t page_number){
     }
 
     tlb_element = list_find(tlb_elements, _list_contains_element);
+    log_tlb_hit();
+
+    consider_as_garbage(tlb_element, free);
     return tlb_element -> frame_number;
 }
 
@@ -87,6 +91,8 @@ void add_new_element_to_tlb(uint32_t page_number, uint32_t frame_number){
     t_tlb_element* tlb_element = safe_malloc(sizeof(t_tlb_element));
     tlb_element -> page_number = page_number;
     tlb_element -> frame_number = frame_number;
+
+    consider_as_garbage(tlb_element, free);
 
     if(strcmp(get_tlb_replacement(), "FIFO") == 0){
         fifo_tlb_replacement(tlb_element);

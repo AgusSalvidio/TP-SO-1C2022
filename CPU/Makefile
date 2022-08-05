@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -Wall -Wextra
-LIBS = -lcommons -pthread -lutils
+LIBS = -lcommons -pthread -lutils -lm
 
 SOURCE_DIR = src
 INCLUDE_DIR = include

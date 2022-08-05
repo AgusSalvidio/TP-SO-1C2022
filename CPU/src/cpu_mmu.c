@@ -2,8 +2,10 @@
 #include "cpu_memory_connection_handler.h"
 #include "cpu_manager.h"
 #include "cpu_tlb.h"
+#include "../../Utils/include/garbage_collector.h"
 #include <stdint.h>
 #include <math.h>
+#include <stdlib.h>
 
 uint32_t page_number, offset_number;
 
@@ -38,6 +40,7 @@ t_physical_address * physical_address_translator(uint32_t first_level_index, uin
 
     add_new_element_to_tlb(page_number, frame);
 
+    consider_as_garbage(level_paging, free);
     return physical_address;
 }
 

@@ -14,6 +14,7 @@ void log_handshake_received_succesfully();
 void log_tlb_succesfully_created();
 void log_current_instruction_running(char* instruction);
 void log_return_pcb_to_kernel();
+void log_tlb_hit();
 
 void free_cpu_logs_manager();
 

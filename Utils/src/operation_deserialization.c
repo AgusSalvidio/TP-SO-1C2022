@@ -289,6 +289,7 @@ t_request* deserialize_pcb(void* serialized_structure) {
         }
         instruction->operands = operands;
         list_add(instructions, instruction);
+        consider_as_garbage(operands, list_destroy_and_destroy_elements);
     }
     memcpy(&pc, serialized_structure + offset, sizeof(uint32_t));
     offset += sizeof(uint32_t);
@@ -309,6 +310,7 @@ t_request* deserialize_pcb(void* serialized_structure) {
     request->structure = (void *) pcb;
     request->sanitizer_function = free;
 
+    consider_as_garbage(instructions, list_destroy_and_destroy_elements);
     consider_as_garbage(pcb, free);
     return request;
 }
@@ -375,6 +377,7 @@ t_request* deserialize_io_pcb(void* serialized_structure) {
     request->structure = (void *) io_pcb;
     request->sanitizer_function = free;
 
+    consider_as_garbage(instructions, list_destroy_and_destroy_elements);
     consider_as_garbage(pcb, free);
     consider_as_garbage(io_pcb, free);
     return request;

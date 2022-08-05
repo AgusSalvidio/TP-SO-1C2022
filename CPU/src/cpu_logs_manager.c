@@ -53,6 +53,12 @@ void log_return_pcb_to_kernel(){
     free(message);
 }
 
+void log_tlb_hit(){
+    char* message = string_from_format("La página se encuentra en la TLB.\n");
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
 void free_cpu_logs_manager(){
     free_loggers();
 }

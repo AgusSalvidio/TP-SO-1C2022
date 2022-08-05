@@ -7,6 +7,7 @@
 #include "cpu_mmu.h"
 #include "../../Utils/include/logger.h"
 #include "cpu_tlb.h"
+#include "../../Utils/include/garbage_collector.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <commons/log.h>
@@ -29,6 +30,8 @@ void* handle_read_request_procedure(uint32_t table_index, t_list* operands){
     log_current_instruction_running("Read");
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
+
+    consider_as_garbage(physical_address, free);
     log_read_content(send_read_to_memory(physical_address));
 }
 
@@ -37,6 +40,8 @@ void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
+
+    consider_as_garbage(physical_address, free);
     send_write_to_memory(physical_address, value);
 }
 
@@ -45,6 +50,8 @@ void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
+
+    consider_as_garbage(physical_address, free);
     send_copy_to_memory(physical_address, value);
 }
 
@@ -64,6 +71,7 @@ void* request_reponse_of_instruction_for_pcb(t_instruction* instruction, t_pcb* 
         list_clean(tlb());
 
         log_return_pcb_to_kernel();
+        consider_as_garbage(io_pcb, free);
         return request_to_send_using(io_pcb, IO_PCB);
     }
     if(instruction -> type == EXIT) {
