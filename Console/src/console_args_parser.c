@@ -1,4 +1,3 @@
-#include <bits/types/FILE.h>
 #include "console_args_parser.h"
 #include <stdio.h>
 #include <stdint.h>
