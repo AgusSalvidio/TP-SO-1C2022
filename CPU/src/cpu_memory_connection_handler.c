@@ -6,6 +6,7 @@
 #include "cpu_logs_manager.h"
 #include "../../Utils/include/general_logs.h"
 #include "cpu_query_performer.h"
+#include "../../Utils/include/garbage_collector.h"
 
 
 t_handshake* handshake_information;
@@ -16,7 +17,6 @@ uint32_t receive_content_from_memory(uint32_t socket){
     t_request_response* content = (t_request_response*) response -> structure;
     uint32_t read_content = content -> content;
 
-    free_request(response);
     return read_content;
 }
 
@@ -57,7 +57,7 @@ void send_handshake_to_memory(){
 
     log_handshake_received_succesfully();
 
-    free_request(response);
+    consider_as_garbage(response, free_request);
 
     free_and_close_connection_information(memory_conn);
 }

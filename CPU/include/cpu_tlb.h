@@ -9,5 +9,6 @@ uint32_t tlb_hit(uint32_t page_number);
 bool page_number_contained_in_tlb(uint32_t page_number);
 void add_new_element_to_tlb(uint32_t page_number, uint32_t frame_number);
 void initialize_tlb();
+void free_tlb();
 
 #endif //KISS_CPU_TLB_H

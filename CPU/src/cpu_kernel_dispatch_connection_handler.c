@@ -29,7 +29,7 @@ void dispatch_connection_handler(int server_socket_fd){
             if(resendable_request){//if not null, send message back to whoever called us
                 t_request* request_to_send = (t_request*) resendable_request;
                 serialize_and_send_structure(request_to_send, connection_fd);
-                free_request(resendable_request);
+                free(resendable_request);
             }
             free_serialization_information(serialization_information);
         }

@@ -7,6 +7,7 @@
 #include "../../Utils/include/pretty_printer.h"
 #include "../../Utils/include/garbage_collector.h"
 #include "../../Utils/include/general_logs.h"
+#include "cpu_tlb.h"
 
 void free_system(){
 
@@ -15,6 +16,7 @@ void free_system(){
     free_cpu_serializable_objects();
     free_cpu_query_performers();
     free_cpu_manager();
+    free_tlb();
     free_garbage_collector();
     free_cpu_configuration_manager();
     log_successful_clean_up();
