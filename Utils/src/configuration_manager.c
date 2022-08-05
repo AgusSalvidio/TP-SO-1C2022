@@ -17,7 +17,7 @@ void initialize_configuration_manager(){
 
 void initialize_configuration_manager_from_file(char* config_file) {
     config = config_create(config_file);
-    free(config_file);
+    //free(config_file);
 }
 
 int config_get_int_at(char* key){

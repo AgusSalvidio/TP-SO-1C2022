@@ -8,6 +8,7 @@
 #include "kernel_configuration.h"
 #include "../../Utils/include/pthread_wrapper.h"
 #include "kernel_console_connection.h"
+#include "../../Utils/include/socket.h"
 
 //HILOS
 pthread_t connection_thread;
@@ -26,7 +27,8 @@ void iniciar_planificador_mediano_plazo() {
 }
 
 void iniciar_planificador_largo_plazo() {
-    connection_thread = default_safe_thread_create((void *) execute_connection_handler, NULL);
+    uint32_t socket = listen_at(get_listening_port());
+    connection_thread = default_safe_thread_create((void *) connection_controller, socket);
     planificador_largo_plazo = default_safe_thread_create((void*) algoritmo_planificador_largo_plazo, NULL);
     log_info(process_execution_logger(), "Planificador de largo plazo creado correctamente.\n");
     safe_thread_join(connection_thread);
@@ -36,7 +38,7 @@ void free_planificacion_threads() {
     safe_thread_cancel(planificador_corto_plazo);
     safe_thread_cancel(planificador_mediano_plazo);
     safe_thread_cancel(planificador_largo_plazo);
-    //safe_thread_cancel(connection_thread);
-    pthread_kill(connection_thread, SIGUSR1);
-    free_console_connection();
+    safe_thread_cancel(connection_thread);
+   // pthread_kill(connection_thread, SIGUSR1);
+   // free_console_connection();
 }

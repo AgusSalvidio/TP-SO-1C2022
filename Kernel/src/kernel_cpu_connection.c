@@ -21,7 +21,6 @@ t_burst *connect_and_send_pcb_to_cpu(t_pcb *pcb) {
     serialize_and_send_structure(request, connection_information->socket_fd);
     t_receive_information *receive_information = receive_structure(connection_information->socket_fd);
     burst->finished = current_time_in_milliseconds();
-    t_pcb *returned_pcb;
     if (receive_information->receive_was_successful) {
 
         t_serialization_information *serialization_information = receive_information->serialization_information;

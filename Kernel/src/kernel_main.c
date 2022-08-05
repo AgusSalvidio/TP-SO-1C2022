@@ -12,9 +12,9 @@
 #include "kernel_io_routine.h"
 #include "kernel_cpu_message_handler.h"
 
-int main(void) {
+int main(int argc, char** argv) {
 
-    initialize_configuration_manager();
+    initialize_configuration_manager_from_file(argv[1]);
     initialize_kernel_logs_manager();
     initialize_pretty_printer();
     initialize_garbage_collector();

@@ -15,6 +15,23 @@
 #include "kernel_mid_term_scheduler.h"
 #include "kernel_cpu_message_handler.h"
 
+void free_pcb (t_pcb * pcb) {
+    void _destroy_operands(t_instruction* instruction) {
+        list_destroy(instruction->operands);
+        free(instruction);
+    };
+
+    list_destroy_and_destroy_elements(pcb->instructions, _destroy_operands);
+    //stop_considering_garbage(pcb);
+    free(pcb);
+}
+
+void free_io_pcb (t_io_pcb * io_pcb) {
+    free_pcb(io_pcb -> pcb);
+    //stop_considering_garbage(io_pcb);
+    free(io_pcb);
+}
+
 void free_system() {
 
     free_planificacion_threads();
