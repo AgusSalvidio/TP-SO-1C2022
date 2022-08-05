@@ -4,8 +4,11 @@
 #include "../../Utils/include/socket.h"
 #include "kernel_configuration.h"
 #include "kernel_cpu_message_handler.h"
+#include "../../Utils/include/general_logs.h"
+#include "kernel_scheduler_queues.h"
 
 sem_t sem_preempt;
+bool interrupted;
 
 t_burst *connect_and_send_pcb_to_cpu(t_pcb *pcb) {
 
@@ -25,7 +28,7 @@ t_burst *connect_and_send_pcb_to_cpu(t_pcb *pcb) {
 
         t_serialization_information *serialization_information = receive_information->serialization_information;
         t_request *deserialized_request = deserialize(serialization_information->serialized_request);
-
+        log_debug(process_execution_logger(), "OPERATION: %d", deserialized_request->operation);
         t_message_handler *message_handler = message_handler_for_operation(deserialized_request->operation);
         message_handler->perform_function(deserialized_request->structure, burst);
 
@@ -48,15 +51,17 @@ void connect_and_send_interruption_to_cpu() {
     send_ack_message(1, connection_information->socket_fd);
     void *ack = receive_ack_with_timeout_in_seconds(connection_information->socket_fd, 60000);
 
-    log_info(process_execution_logger(), "CPU Interrupted");
-
     free(ack);
     free_and_close_connection_information(connection_information);
-    safe_sem_wait(&sem_preempt);
+    log_info(process_execution_logger(), "CPU Interrupted");
+    if (!list_is_empty(scheduler_queue_of(EXEC)->pcb_list))
+        interrupted = true;
+        safe_sem_wait(&sem_preempt);
 }
 
 void initialize_cpu_structures() {
     safe_sem_initialize(&sem_preempt);
+    interrupted = false;
 }
 
 void free_cpu_structures() {

@@ -10,9 +10,11 @@
 #include "kernel_console_message_handler.h"
 #include "../../Utils/include/logger.h"
 #include "../../Utils/include/pthread_wrapper.h"
+#include "planification.h"
+
 
 void connection_controller(int socket_fd) {
-
+    handle_signal(SIGUSR1, commit_suicide);
     for ever {
         int connection_fd = accept_incoming_connections_on(socket_fd);
 

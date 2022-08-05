@@ -16,6 +16,7 @@
 
 t_list *handlers;
 extern sem_t sem_preempt;
+extern bool interrupted;
 
 void next_transition(t_pcb *returned_pcb, t_burst *burst) {
     t_state_transition *transition;
@@ -25,25 +26,28 @@ void next_transition(t_pcb *returned_pcb, t_burst *burst) {
         transition = state_transition_for(burst->pcb, READY);
         transition->function(burst->pcb);
         notify_with_argument(UPDATE_CURRENT_PROCESS_ESTIMATION, burst);
+        if (interrupted)
         safe_sem_post(&sem_preempt);
     } else {
         notify_with_argument(FREE_PROCESS_ESTIMATION, burst->pcb);
         transition = state_transition_for(burst->pcb, Q_EXIT);
         transition->function(burst->pcb);
-
+        if (interrupted)
+            safe_sem_post(&sem_preempt);
     }
-  //  free_pcb(returned_pcb);
+    stop_considering_garbage(returned_pcb);
+    free_pcb(returned_pcb);
 
 }
 
 void block_process(t_io_pcb *returned_io_pcb, t_burst *burst) {
     burst->pcb->page_table = returned_io_pcb->pcb->page_table;
     burst->pcb->pc = returned_io_pcb->pcb->pc;
+    notify_with_argument(UPDATE_CURRENT_PROCESS_ESTIMATION, burst);
 
     t_state_transition *transition;
     transition = state_transition_for(burst->pcb, BLOCKED);
     transition->function(burst->pcb);
-    notify_with_argument(UPDATE_CURRENT_PROCESS_ESTIMATION, burst);
 
     t_io_object *io_object = safe_malloc(sizeof(t_io_object));
     io_object->pid = returned_io_pcb->pcb->pid;
@@ -53,7 +57,11 @@ void block_process(t_io_pcb *returned_io_pcb, t_burst *burst) {
 
     pthread_t io_thread = default_safe_thread_create((void *(*)(void *)) execute_io_routine, io_object);
     pthread_detach(io_thread);
+    if (interrupted)
+        safe_sem_post(&sem_preempt);
 
+    stop_considering_garbage(returned_io_pcb->pcb);
+    stop_considering_garbage(returned_io_pcb);
     free_io_pcb(returned_io_pcb);
 }
 

@@ -31,4 +31,6 @@ t_pcb* algoritmo_SRT();
 
 void free_planificacion_threads();
 
+void commit_suicide();
+
 #endif //KISS_PLANIFICATION_H
