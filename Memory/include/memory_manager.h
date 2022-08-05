@@ -76,4 +76,5 @@ bool can_memory_load_another_page_for(uint32_t pid);
 void free_main_memory_frames(t_list* frame_related_to_page_id_collection);
 t_first_level_table* first_level_table_for(uint32_t pid);
 char* read_content_at(uint32_t frame);
+void free_memory_manager();
 #endif //KISS_MEMORY_MANAGER_H

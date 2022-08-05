@@ -12,7 +12,9 @@ pthread_mutex_t mutex_process;
 
 void wait_swap_delay_time(){
     uint32_t delay_time_in_seconds = swap_time()/1000;
+    log_swap_delay_time_has_started(swap_time());
     sleep(delay_time_in_seconds);
+    log_swap_delay_time_has_ended();
 }
 
 void initialize_process_context_manager(){
@@ -53,13 +55,11 @@ void update_page_presence_bit_when_unload(t_page* page){
 }
 
 void update_page_bits_when_read(t_page* page){
-
     update_page_use_bit(page,1);
 
 }
 
 void update_page_bits_when_written(t_page* page){
-
     update_page_use_bit(page,1);
     update_page_modified_bit(page,1);
 
@@ -155,7 +155,6 @@ void update_page_bits_when_loaded_in_main_memory(t_page* page, uint32_t frame){
     page->presence_bit = 1;
     page->use_bit = 0;                  //Only used when read or write/copy are called
     page->modified_bit = 0;
-
 }
 
 t_page* page_located_in(uint32_t frame){
@@ -305,7 +304,6 @@ void swap_page_procedure(t_page* selected_page, uint32_t pid){
         enhanced_clock_algorithm(process_context,selected_page);
 }
 
-
 void suspend_process(uint32_t pid){
 
     t_process_context * process_context = process_context_for(pid);
@@ -332,4 +330,11 @@ void suspend_process(uint32_t pid){
 void finalize_process(uint32_t pid){
     suspend_process(pid);
     delete_file_from(swap_file_path_for(pid));
+}
+
+void free_memory_replacement_algorithms(){
+
+    list_destroy_and_destroy_elements(PROCESS_CONTEXT_MANAGER->process_context_collection,free);
+    free(PROCESS_CONTEXT_MANAGER);
+
 }

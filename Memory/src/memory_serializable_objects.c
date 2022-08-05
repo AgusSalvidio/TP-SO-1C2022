@@ -15,7 +15,6 @@ void initialize_memory_serializable_objects(){
 }
 void free_memory_serializable_objects(){
 
-    //list_destroy_and_destroy_elements(memory_operations_information, free);
     list_destroy(memory_operations_information);
     free_serializable_objects();
 }

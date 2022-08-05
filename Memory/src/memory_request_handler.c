@@ -14,8 +14,9 @@
 
 void wait_cpu_response_delay_time(){
     uint32_t delay_time_in_seconds = memory_time()/1000;
+    log_memory_delay_time_has_started(memory_time());
     sleep(delay_time_in_seconds);
-
+    log_memory_delay_time_has_ended();
 }
 
 t_request_response* request_response_using(uint32_t content,char* type_description){
@@ -134,10 +135,6 @@ uint32_t converted_page_quantity_based_on(uint32_t process_size, uint32_t page_s
     integer_division(process_size,page_size);
 }
 
-uint32_t converted_table_quantity_based_on(uint32_t page_quantity, uint32_t frames_per_table){
-    integer_division(page_quantity,frames_per_table);
-}
-
 void* handle_new_process_request_procedure(t_initialize_process* new_process_received){
 
     t_initialize_process* new_process = new_process_received;
@@ -231,5 +228,3 @@ void* handle_write_request_procedure(t_write* write_request){
 
 }
 
-
-void free_memory_manager(){}

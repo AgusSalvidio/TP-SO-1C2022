@@ -334,3 +334,10 @@ void initialize_new_process(uint32_t pid, uint32_t process_page_quantity,uint32_
 
 }
 
+void free_memory_manager(){
+    list_destroy_and_destroy_elements(MAIN_MEMORY->available_frames,free);
+    free(MAIN_MEMORY);
+    list_destroy_and_destroy_elements(MEMORY_TABLE_MANAGER->first_level_table_collection,free);
+    list_destroy_and_destroy_elements(MEMORY_TABLE_MANAGER->second_level_table_collection,free);
+    free(MEMORY_TABLE_MANAGER);
+}
