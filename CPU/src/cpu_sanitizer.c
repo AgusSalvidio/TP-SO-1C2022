@@ -18,14 +18,14 @@ void free_system(){
 
     free_cpu_serializable_objects();
     free_cpu_query_performers();
-    free_action_performers();
     free_cpu_manager();
     free_tlb();
     free_garbage_collector();
     free_cpu_configuration_manager();
+    free_action_performers();
+
+    free_interrupt_thread();
+    free_dispatch_thread();
     log_successful_clean_up();
     free_cpu_logs_manager();
-
-    free_dispatch_thread();
-    free_interrupt_thread();
 }

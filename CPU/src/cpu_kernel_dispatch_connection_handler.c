@@ -11,12 +11,8 @@
 
 pthread_t dispatch_thread;
 
-void commit_suicide(){
-    pthread_exit(NULL);
-}
 
 void dispatch_connection_handler(int server_socket_fd){
-    handle_signal(SIGUSR1, commit_suicide);
     for ever{
         int connection_fd = accept_incoming_connections_on(server_socket_fd);
         t_receive_information *receive_information = receive_structure(connection_fd);
@@ -49,5 +45,5 @@ void initialize_cpu_dispatch_threads(){
 }
 
 void free_dispatch_thread(){
-    pthread_kill(dispatch_thread, SIGUSR1);
+    safe_thread_cancel(dispatch_thread);
 }

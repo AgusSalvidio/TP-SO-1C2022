@@ -12,6 +12,10 @@
 pthread_t interrupt_thread;
 bool interruption_status = false;
 
+void commit_suicide(){
+    pthread_exit(NULL);
+}
+
 bool current_interruption_status(){
     return interruption_status;
 }
