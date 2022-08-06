@@ -215,6 +215,7 @@ void* handle_write_request_procedure(t_write* write_request){
     uint32_t value_to_write = write_request->value;
 
     write_value_on(physical_address,value_to_write);
+    printf("Write Value On: %d", value_to_write);
 
     t_request_response* write_value_request_to_send = request_response_using(value_to_write, "SUCCESS");
 
