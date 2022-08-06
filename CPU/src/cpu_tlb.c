@@ -13,16 +13,14 @@ t_list* tlb(){
 }
 
 uint32_t tlb_hit(uint32_t page_number){
-    t_tlb_element* tlb_element = safe_malloc(sizeof(t_tlb_element));
 
     bool _list_contains_element(void* tlb_element) {
         return ((t_tlb_element *) tlb_element)->page_number == page_number;
     }
 
-    tlb_element = list_find(tlb_elements, _list_contains_element);
+    t_tlb_element* tlb_element = list_find(tlb_elements, _list_contains_element);
     log_tlb_hit();
 
-    consider_as_garbage(tlb_element, free);
     return tlb_element -> frame_number;
 }
 

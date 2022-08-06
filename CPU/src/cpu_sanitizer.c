@@ -10,6 +10,7 @@
 #include "cpu_tlb.h"
 #include "cpu_kernel_dispatch_connection_handler.h"
 #include "cpu_kernel_interrupt_connection_handler.h"
+#include "cpu_action_performer.h"
 
 void free_system(){
 
@@ -17,6 +18,7 @@ void free_system(){
 
     free_cpu_serializable_objects();
     free_cpu_query_performers();
+    free_action_performers();
     free_cpu_manager();
     free_tlb();
     free_garbage_collector();
