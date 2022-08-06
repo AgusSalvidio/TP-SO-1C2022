@@ -31,7 +31,7 @@ t_burst *connect_and_send_pcb_to_cpu(t_pcb *pcb) {
         message_handler->perform_function(deserialized_request->structure, burst);
 
         free_serialization_information(serialization_information);
-        free(deserialized_request);
+        free_request(deserialized_request);
     }
 
     free(receive_information);

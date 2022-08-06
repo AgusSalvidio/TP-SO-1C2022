@@ -24,7 +24,7 @@ uint32_t receive_content_from_memory(uint32_t socket){
         log_request_received_basic();
 
         free_serialization_information(serialization_information);
-        free(deserialized_request);
+        free_request(deserialized_request);
     }
     free(receive_information);
 

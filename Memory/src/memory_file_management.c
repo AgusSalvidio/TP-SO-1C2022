@@ -52,7 +52,7 @@ void write_in_file(FILE* file_pointer, uint32_t page_id, uint32_t content,uint32
 uint32_t read_from_file(FILE* file_pointer,uint32_t page_id,uint32_t offset){
 
     uint32_t initial_position;
-    char* content_to_return = safe_malloc(sizeof(char)*10);
+    char * content_to_return = calloc(11, sizeof(char));
 
     if (offset == 0)
     {

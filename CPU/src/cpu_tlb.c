@@ -59,6 +59,11 @@ void fifo_tlb_replacement(t_tlb_element* element){
     }
 }
 
+void free_tlb_element(t_tlb_element* tlb_element) {
+    stop_considering_garbage(tlb_element);
+    free(tlb_element);
+}
+
 void lru_tlb_replacement(t_tlb_element* element){
 
     bool _page_already_in_tlb(void* tlb_element){
@@ -77,7 +82,7 @@ void lru_tlb_replacement(t_tlb_element* element){
 
             element -> reference = current_time_in_milliseconds();
 
-            list_replace_and_destroy_element(tlb_elements, 0, element, free);
+            list_replace_and_destroy_element(tlb_elements, 0, element, free_tlb_element);
         }
     }else{
         t_tlb_element* referenced_element = list_find(tlb_elements, _page_already_in_tlb);

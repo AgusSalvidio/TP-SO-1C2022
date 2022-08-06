@@ -142,6 +142,11 @@ t_request* deserialize_handshake(void* serialized_structure) {
     return request;
 }
 
+void free_request_response(t_request_response* request_response){
+    free(request_response->type_description);
+    free(request_response);
+}
+
 t_request* deserialize_request_response(void* serialized_structure){
 
     char* type_description;
@@ -165,9 +170,9 @@ t_request* deserialize_request_response(void* serialized_structure){
     t_request* request = safe_malloc(sizeof(t_request));
     request -> operation = REQUEST_RESPONSE;
     request -> structure = (void*) request_response;
-    request -> sanitizer_function = free;
+    request -> sanitizer_function = free_request_response;
 
-    consider_as_garbage(request_response, free);
+    //consider_as_garbage(request_response, free);
     return request;
 }
 t_request *deserialize_read(void *serialized_structure) {
@@ -257,6 +262,23 @@ t_request* deserialize_copy(void* serialized_structure) {
     return request;
 }
 
+void free_pcb (t_pcb * pcb) {
+    void _destroy_operands(t_instruction* instruction) {
+        list_destroy(instruction->operands);
+        free(instruction);
+    };
+
+    list_destroy_and_destroy_elements(pcb->instructions, _destroy_operands);
+    //stop_considering_garbage(pcb);
+    free(pcb);
+}
+
+void free_io_pcb (t_io_pcb * io_pcb) {
+    free_pcb(io_pcb -> pcb);
+    //stop_considering_garbage(io_pcb);
+    free(io_pcb);
+}
+
 t_request* deserialize_pcb(void* serialized_structure) {
 
     uint32_t pid;
@@ -290,7 +312,7 @@ t_request* deserialize_pcb(void* serialized_structure) {
         }
         instruction->operands = operands;
         list_add(instructions, instruction);
-        consider_as_garbage(operands, list_destroy_and_destroy_elements);
+       // consider_as_garbage(operands, list_destroy);
     }
     memcpy(&pc, serialized_structure + offset, sizeof(uint32_t));
     offset += sizeof(uint32_t);
@@ -309,10 +331,10 @@ t_request* deserialize_pcb(void* serialized_structure) {
     t_request *request = safe_malloc(sizeof(t_request));
     request->operation = PCB;
     request->structure = (void *) pcb;
-    request->sanitizer_function = free;
+    request->sanitizer_function = free_pcb;
 
-    consider_as_garbage(instructions, list_destroy_and_destroy_elements);
-    consider_as_garbage(pcb, free);
+  /*  consider_as_garbage(instructions, list_destroy);
+    consider_as_garbage(pcb, free);*/
     return request;
 }
 
@@ -352,6 +374,7 @@ t_request* deserialize_io_pcb(void* serialized_structure) {
         }
         instruction->operands = operands;
         list_add(instructions, instruction);
+   //     consider_as_garbage(operands, list_destroy);
     }
     memcpy(&pc, serialized_structure + offset, sizeof(uint32_t));
     offset += sizeof(uint32_t);
@@ -376,11 +399,11 @@ t_request* deserialize_io_pcb(void* serialized_structure) {
     t_request *request = safe_malloc(sizeof(t_request));
     request->operation = IO_PCB;
     request->structure = (void *) io_pcb;
-    request->sanitizer_function = free;
+    request->sanitizer_function = free_io_pcb;
 
-    consider_as_garbage(instructions, list_destroy_and_destroy_elements);
+   /* consider_as_garbage(instructions, list_destroy);
     consider_as_garbage(pcb, free);
-    consider_as_garbage(io_pcb, free);
+    consider_as_garbage(io_pcb, free);*/
     return request;
 }
 

@@ -1,5 +1,4 @@
 #include <cpu_kernel_dispatch_connection_handler.h>
-#include <signal.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu_configuration_manager.h>

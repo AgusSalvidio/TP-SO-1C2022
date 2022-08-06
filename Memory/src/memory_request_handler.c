@@ -1,16 +1,12 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <memory_request_handler.h>
-#include <commons/collections/list.h>
 #include <memory_configuration_manager.h>
 #include <memory_manager.h>
 #include <commons/string.h>
 #include <unistd.h>
-#include "../../Utils/include/common_structures.h"
 #include "../include/memory_logs_manager.h"
-#include "../../Utils/include/t_list_extension.h"
 #include "memory_replacement_algorithms.h"
+#include "../../Utils/include/garbage_collector.h"
 
 void wait_cpu_response_delay_time(){
     uint32_t delay_time_in_microseconds = memory_time()*1000;
@@ -51,7 +47,9 @@ void* handle_handshake_request_procedure(t_handshake * received_handshake){
     request_to_send = request_to_send_using(handshake_to_send, HANDSHAKE);
 
     log_handshake_was_sent_succesfully();
-    //wait_swap_delay_time();
+
+    stop_considering_garbage(received_handshake);
+
     return request_to_send;
 }
 
@@ -137,9 +135,8 @@ uint32_t converted_page_quantity_based_on(uint32_t process_size, uint32_t page_s
 
 void* handle_new_process_request_procedure(t_initialize_process* new_process_received){
 
-    t_initialize_process* new_process = new_process_received;
-    uint32_t pid = new_process->pid;
-    uint32_t process_size = new_process->process_size;
+    uint32_t pid = new_process_received->pid;
+    uint32_t process_size = new_process_received->process_size;
     t_request *request_to_send;
     uint32_t process_page_quantity = converted_page_quantity_based_on(process_size,page_size_getter());
 
@@ -156,6 +153,7 @@ void* handle_new_process_request_procedure(t_initialize_process* new_process_rec
         log_cannot_initialize_new_process_because(string_from_format("El proceso %d no pudo ser inicializado debido a que la cantidad de paginas excede el maximo permitido.", pid));
     }
 
+    stop_considering_garbage(new_process_received);
     return request_to_send;
 }
 
@@ -171,7 +169,7 @@ void* handle_suspend_process_request_procedure(t_suspend_process* process_to_sus
     request_to_send = request_to_send_using(suspended_process_request_response, REQUEST_RESPONSE);
 
     log_process_suspension_was_successful(pid);
-
+    stop_considering_garbage(process_to_suspend);
     return request_to_send;
 
 }
@@ -188,7 +186,7 @@ void* handle_finalize_process_request_procedure(t_finalize_process * process_to_
     request_to_send = request_to_send_using(finalized_process_request_response, REQUEST_RESPONSE);
 
     log_process_finalization_was_successful(pid);
-
+    stop_considering_garbage(process_to_finalize);
     return request_to_send;
 
 
@@ -205,7 +203,9 @@ void* handle_read_request_procedure(t_read *read_request){
     wait_cpu_response_delay_time();
 
     log_read_request_was_handled_successfully();
-
+    stop_considering_garbage(read_request->physical_address);
+    free(read_request->physical_address);
+    stop_considering_garbage(read_request);
     return request_to_send;
 }
 
@@ -224,6 +224,9 @@ void* handle_write_request_procedure(t_write* write_request){
     wait_cpu_response_delay_time();
 
     log_write_request_was_handled_successfully();
+    stop_considering_garbage(write_request->physical_address);
+    free(write_request->physical_address);
+    stop_considering_garbage(write_request);
     return request_to_send;
 
 }

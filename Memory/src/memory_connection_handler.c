@@ -9,6 +9,7 @@
 #include "../../Utils/include/operation_deserialization.h"
 #include "../../Utils/include/general_logs.h"
 #include "../../Utils/include/configuration_manager.h"
+#include "../../Utils/include/garbage_collector.h"
 #include <memory_configuration_manager.h>
 #include <memory_logs_manager.h>
 #include <memory_query_performers.h>
@@ -44,7 +45,13 @@ void connection_handler(int server_socket_fd){
     }
 }
 
+
+
 void execute_main_thread(){
     int server_socket_fd = listen_at(port_getter());
     connection_handler(server_socket_fd);
+}
+
+void free_main_thread() {
+    pthread_exit(NULL);
 }

@@ -27,8 +27,6 @@ int main (void) {
     initialize_memory_manager();
     execute_main_thread();
 
-    free_system();
-
     return EXIT_SUCCESS;
 }
 

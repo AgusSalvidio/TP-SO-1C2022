@@ -14,18 +14,29 @@
 
 void free_system(){
 
-    free_pretty_printer();
-
-    free_cpu_serializable_objects();
-    free_cpu_query_performers();
-    free_cpu_manager();
-    free_tlb();
-    free_garbage_collector();
-    free_cpu_configuration_manager();
-    free_action_performers();
-
+    printf("1-");
     free_interrupt_thread();
+    printf("2-");
     free_dispatch_thread();
+    printf("3-");
+    free_pretty_printer();
+    printf("4-");
+    free_cpu_serializable_objects();
+    printf("5-");
+    free_cpu_query_performers();
+    printf("6-");
+    free_cpu_manager();
+    printf("7-");
+    free_tlb();
+    printf("8-");
+    free_cpu_configuration_manager();
+    printf("9-");
+    free_action_performers();
+    printf("10-");
+    free_garbage_collector();
+    printf("11-");
     log_successful_clean_up();
+    printf("12-");
     free_cpu_logs_manager();
+    printf("13-");
 }

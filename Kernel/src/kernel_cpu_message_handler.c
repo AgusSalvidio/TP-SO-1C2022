@@ -35,8 +35,8 @@ void next_transition(t_pcb *returned_pcb, t_burst *burst) {
         if (interrupted)
             safe_sem_post(&sem_preempt);
     }
-    stop_considering_garbage(returned_pcb);
-    free_pcb(returned_pcb);
+    //stop_considering_garbage(returned_pcb);
+  //  free_pcb(returned_pcb);
 
 }
 
@@ -60,9 +60,9 @@ void block_process(t_io_pcb *returned_io_pcb, t_burst *burst) {
     if (interrupted)
         safe_sem_post(&sem_preempt);
 
-    stop_considering_garbage(returned_io_pcb->pcb);
+/*    stop_considering_garbage(returned_io_pcb->pcb);
     stop_considering_garbage(returned_io_pcb);
-    free_io_pcb(returned_io_pcb);
+    free_io_pcb(returned_io_pcb);*/
 }
 
 void initialize_and_load_pcb_action_performer() {

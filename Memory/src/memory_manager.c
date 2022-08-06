@@ -336,10 +336,21 @@ void initialize_new_process(uint32_t pid, uint32_t process_page_quantity,uint32_
 
 }
 
+void free_first_level_table(t_first_level_table* first_level_table) {
+    list_destroy(first_level_table->second_level_table_id_collection);
+    free(first_level_table);
+}
+
+void free_second_level_table(t_second_level_table * second_level_table) {
+    list_destroy_and_destroy_elements(second_level_table->pages_per_row, free);
+    free(second_level_table);
+}
+
 void free_memory_manager(){
-    list_destroy_and_destroy_elements(MAIN_MEMORY->available_frames,free);
+    list_destroy(MAIN_MEMORY->available_frames);
+    free(MAIN_MEMORY->buffer);
     free(MAIN_MEMORY);
-    list_destroy_and_destroy_elements(MEMORY_TABLE_MANAGER->first_level_table_collection,free);
-    list_destroy_and_destroy_elements(MEMORY_TABLE_MANAGER->second_level_table_collection,free);
+    list_destroy_and_destroy_elements(MEMORY_TABLE_MANAGER->first_level_table_collection,free_first_level_table);
+    list_destroy_and_destroy_elements(MEMORY_TABLE_MANAGER->second_level_table_collection,free_second_level_table);
     free(MEMORY_TABLE_MANAGER);
 }

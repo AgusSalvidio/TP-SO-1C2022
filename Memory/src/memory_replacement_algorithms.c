@@ -345,9 +345,15 @@ void finalize_process(uint32_t pid){
     consider_as_garbage(swap_file_path, free);
 }
 
+void free_process_context(t_process_context* context) {
+    list_destroy(context->frame_related_to_page_id_collection);
+    free(context->swap_file_path);
+    free(context);
+}
+
 void free_memory_replacement_algorithms(){
 
-    list_destroy_and_destroy_elements(PROCESS_CONTEXT_MANAGER->process_context_collection,free);
+    list_destroy_and_destroy_elements(PROCESS_CONTEXT_MANAGER->process_context_collection,free_process_context);
     free(PROCESS_CONTEXT_MANAGER);
 
 }

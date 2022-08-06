@@ -8,12 +8,6 @@
 #include "../../Utils/include/garbage_collector.h"
 #include "../../Utils/include/general_logs.h"
 
-void free_request_response(t_request_response* request_response) {
-    free(request_response->type_description);
-    stop_considering_garbage(request_response);
-    free(request_response);
-}
-
 uint32_t connect_and_send_initialize_to_memory(void *structure_to_send) {
 
     t_request* request = safe_malloc(sizeof(t_request));
@@ -37,9 +31,8 @@ uint32_t connect_and_send_initialize_to_memory(void *structure_to_send) {
             free_system();
         }
 
-        free_request_response(request_response);
         free_serialization_information(serialization_information);
-        free(deserialized_request);
+        free_request(deserialized_request);
     }
 
     free(receive_information);
