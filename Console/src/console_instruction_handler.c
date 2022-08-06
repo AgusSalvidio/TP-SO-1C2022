@@ -87,7 +87,7 @@ t_list *create_copy_instruction (char** instruction_array) {
     t_list *instructions = list_create();
     if (string_array_size(instruction_array) == 3) {
         t_instruction *instruction = safe_malloc(sizeof (t_instruction));
-        instruction -> type = NO_OP;
+        instruction -> type = COPY;
         t_list *operands = list_create();
         for (int i = 1; instruction_array[i] ; ++i) {
             list_add(operands, atoi(instruction_array[i]));

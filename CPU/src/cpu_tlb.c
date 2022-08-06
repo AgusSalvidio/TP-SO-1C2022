@@ -19,6 +19,7 @@ uint32_t tlb_hit(uint32_t page_number){
     }
 
     t_tlb_element* tlb_element = list_find(tlb_elements, _list_contains_element);
+    tlb_element -> reference = current_time_in_milliseconds();
     log_tlb_hit(page_number);
 
     return tlb_element -> frame_number;

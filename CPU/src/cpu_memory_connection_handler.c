@@ -123,13 +123,13 @@ void send_write_to_memory(t_physical_address* physical_address, uint32_t value){
 void send_copy_to_memory(t_physical_address* physical_address, uint32_t value){
     t_connection_information *memory_conn = connect_to_memory();
 
-    t_copy* copy = safe_malloc(sizeof(t_copy));
-    copy -> physical_address = physical_address;
-    copy -> value = value;
+    t_write* write = safe_malloc(sizeof(t_write));
+    write -> physical_address = physical_address;
+    write -> value = value;
 
     t_request* request = safe_malloc(sizeof(t_request));
-    request -> operation = COPY;
-    request -> structure = copy;
+    request -> operation = WRITE;
+    request -> structure = write;
     request -> sanitizer_function = free;
 
     serialize_and_send_structure(request, memory_conn -> socket_fd);
