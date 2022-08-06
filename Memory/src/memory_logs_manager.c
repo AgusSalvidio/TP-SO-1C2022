@@ -213,6 +213,41 @@ void log_memory_delay_time_has_ended(){
     free(message);
 }
 
+void log_content_was_succesfully_saved_for(uint32_t pid){
+    char* message = string_from_format("El guardado del contenido del proceso %d fue exitoso.\n",pid);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
+void log_content_was_successfully_loaded_in_memory_for(uint32_t pid,uint32_t page_id){
+
+    char* message = string_from_format("La carga del contenido en memoria de la pagina %d del proceso %d fue exitosa.\n",pid,page_id);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+
+void log_clock_algorithm_started_executing(){
+    char* message = string_from_format("Comenzó a ejecutar el algoritmo de CLOCK.\n");
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+void log_enhanced_clock_algorithm_started_executing(){
+    char* message = string_from_format("Comenzó a ejecutar el algoritmo de CLOCK MEJORADO.\n");
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+void log_clock_algorithm_stopped_executing(){
+    char* message = string_from_format("Terminó de ejecutar el algoritmo de CLOCK.\n");
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+void log_enhanced_clock_algorithm_stopped_executing(){
+    char* message = string_from_format("Terminó a ejecutar el algoritmo de CLOCK MEJORADO.\n");
+    log_info(process_execution_logger(), message);
+    free(message);
+}
+
+
 void free_memory_logs_manager(){
     free_loggers();
 }

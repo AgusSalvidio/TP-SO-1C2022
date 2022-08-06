@@ -218,7 +218,7 @@ uint32_t read_value_at(uint32_t frame, uint32_t offset){
     uint32_t value;
     memcpy(&value,MAIN_MEMORY_BUFFER + (frame * page_size) + offset,sizeof(uint32_t));
 
-    log_memory_read_at(frame,offset);
+    //log_memory_read_at(frame,offset);
 
     return value;
 
@@ -227,7 +227,7 @@ void write_value_at(uint32_t frame,uint32_t offset,uint32_t value_to_write){
 
     memcpy(MAIN_MEMORY_BUFFER + (frame * PAGE_SIZE) + offset,&value_to_write, sizeof(uint32_t));
 
-    log_memory_write_at(frame,offset,value_to_write);
+    //log_memory_write_at(frame,offset,value_to_write);
 
 
 }

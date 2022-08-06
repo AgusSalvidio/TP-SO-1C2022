@@ -36,5 +36,11 @@ void log_swap_delay_time_has_started(uint32_t time_in_miliseconds);
 void log_swap_delay_time_has_ended();
 void log_memory_delay_time_has_started(uint32_t time_in_miliseconds);
 void log_memory_delay_time_has_ended();
+void log_content_was_succesfully_saved_for(uint32_t pid);
+void log_content_was_successfully_loaded_in_memory_for(uint32_t pid,uint32_t page_id);
+void log_clock_algorithm_started_executing();
+void log_enhanced_clock_algorithm_started_executing();
+void log_clock_algorithm_stopped_executing();
+void log_enhanced_clock_algorithm_stopped_executing();
 
 #endif //KISS_MEMORY_LOGS_MANAGER_H
