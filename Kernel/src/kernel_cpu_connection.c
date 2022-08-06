@@ -4,7 +4,6 @@
 #include "../../Utils/include/socket.h"
 #include "kernel_configuration.h"
 #include "kernel_cpu_message_handler.h"
-#include "../../Utils/include/general_logs.h"
 #include "kernel_scheduler_queues.h"
 
 sem_t sem_preempt;
@@ -28,7 +27,6 @@ t_burst *connect_and_send_pcb_to_cpu(t_pcb *pcb) {
 
         t_serialization_information *serialization_information = receive_information->serialization_information;
         t_request *deserialized_request = deserialize(serialization_information->serialized_request);
-        log_debug(process_execution_logger(), "OPERATION: %d", deserialized_request->operation);
         t_message_handler *message_handler = message_handler_for_operation(deserialized_request->operation);
         message_handler->perform_function(deserialized_request->structure, burst);
 
