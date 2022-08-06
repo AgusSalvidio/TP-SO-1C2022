@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <commons/log.h>
+#include <math.h>
 
 
 void wait_delay_time(){
@@ -39,6 +40,9 @@ void* handle_write_request_procedure(uint32_t table_index, t_list* operands){
     log_current_instruction_running("Write");
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
+    uint32_t page_number = floor(logical_address / get_handshake_information()->page_size);
+    log_written_content(value);
+    log_new_page_in_tlb(page_number);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
 
     consider_as_garbage(physical_address, free);
@@ -49,6 +53,9 @@ void* handle_copy_request_procedure(uint32_t table_index, t_list* operands){
     log_current_instruction_running("Copy");
     uint32_t logical_address = (uint32_t) list_get(operands, 0);
     uint32_t value = (uint32_t) list_get(operands, 1);
+    uint32_t page_number = floor(logical_address / get_handshake_information()->page_size);
+    log_written_content(value);
+    log_new_page_in_tlb(page_number);
     t_physical_address* physical_address = address_translator_management(table_index, logical_address);
 
     consider_as_garbage(physical_address, free);

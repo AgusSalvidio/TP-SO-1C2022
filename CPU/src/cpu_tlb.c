@@ -19,7 +19,7 @@ uint32_t tlb_hit(uint32_t page_number){
     }
 
     t_tlb_element* tlb_element = list_find(tlb_elements, _list_contains_element);
-    log_tlb_hit();
+    log_tlb_hit(page_number);
 
     return tlb_element -> frame_number;
 }
@@ -45,6 +45,7 @@ void fifo_tlb_replacement(t_tlb_element* element){
     if(!list_any_satisfy(tlb_elements, _page_already_in_tlb)){
         if(list_size(tlb_elements) < get_tlb_entries()){
             element -> reference = current_time_in_milliseconds();
+            log_new_page_in_tlb(element->page_number);
             list_add(tlb_elements, element);
         }else{
             bool _same_reference(void* tlb_element, void* other_element){
@@ -53,7 +54,8 @@ void fifo_tlb_replacement(t_tlb_element* element){
             list_sort(tlb_elements, _same_reference);
 
             element -> reference = current_time_in_milliseconds();
-
+            
+            log_replaced_page(((t_tlb_element*)(list_get(tlb_elements, 0)))->page_number);
             list_replace_and_destroy_element(tlb_elements, 0, element, free);
         }
     }
@@ -73,6 +75,7 @@ void lru_tlb_replacement(t_tlb_element* element){
     if(!list_any_satisfy(tlb_elements, _page_already_in_tlb)){
         if(list_size(tlb_elements) < get_tlb_entries()){
             element -> reference = current_time_in_milliseconds();
+            log_new_page_in_tlb(element->page_number);
             list_add(tlb_elements, element);
         }else{
             bool _same_reference(void* tlb_element, void* other_element){
@@ -81,7 +84,8 @@ void lru_tlb_replacement(t_tlb_element* element){
             list_sort(tlb_elements, _same_reference);
 
             element -> reference = current_time_in_milliseconds();
-
+            
+            log_replaced_page(((t_tlb_element*)(list_get(tlb_elements, 0)))->page_number);
             list_replace_and_destroy_element(tlb_elements, 0, element, free_tlb_element);
         }
     }else{

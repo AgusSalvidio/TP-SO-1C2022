@@ -9,6 +9,10 @@
 
 uint32_t page_number, offset_number;
 
+uint32_t get_page_number(){
+    return page_number;
+}
+
 t_level_paging* level_paging_information(uint32_t logical_address){
     uint32_t first_level_entry, second_level_entry;
     t_handshake* handshake_information = get_handshake_information();

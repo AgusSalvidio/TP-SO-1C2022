@@ -10,8 +10,23 @@ void initialize_cpu_logs_manager(){
     create_process_execution_logger();
 }
 
+void log_new_page_in_tlb(uint32_t page){
+    char* message = string_from_format("Se carga la pagina: %d.\n", page);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
 void log_read_content(uint32_t content){
     char* message = string_from_format("El contenido leido es: %d.\n", content);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+void log_written_content(uint32_t content){
+    char* message = string_from_format("El contenido escrito es: %d.\n", content);
+    log_succesful_message(process_execution_logger(), message);
+    free(message);
+}
+void log_replaced_page(uint32_t page_number){
+    char* message = string_from_format("Se reemplaza la pagina: %d.\n", page_number);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 }
@@ -53,8 +68,8 @@ void log_return_pcb_to_kernel(){
     free(message);
 }
 
-void log_tlb_hit(){
-    char* message = string_from_format("La página se encuentra en la TLB.\n");
+void log_tlb_hit(uint32_t page_number){
+    char* message = string_from_format("La página %d se encuentra en la TLB.\n", page_number);
     log_succesful_message(process_execution_logger(), message);
     free(message);
 }
