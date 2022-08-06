@@ -12,12 +12,22 @@
 t_handshake* handshake_information;
 
 uint32_t receive_content_from_memory(uint32_t socket){
-    t_request* response = receive_and_deserialize_structure(socket);
+    uint32_t read_content;
 
-    t_request_response* content = (t_request_response*) response -> structure;
-    uint32_t read_content = content -> content;
+    t_receive_information* receive_information = receive_structure(socket);
+    if(receive_information -> receive_was_successful){
+        t_serialization_information* serialization_information = receive_information -> serialization_information;
+        t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
 
-    consider_as_garbage(response, free);
+        t_request_response* content = (t_request_response*) deserialized_request -> structure;
+        read_content = content -> content;
+        log_request_received_basic();
+
+        free_serialization_information(serialization_information);
+        free(deserialized_request);
+    }
+    free(receive_information);
+
     return read_content;
 }
 
@@ -51,15 +61,23 @@ void send_handshake_to_memory(){
     serialize_and_send_structure(request, memory_conn -> socket_fd);
     free_request(request);
 
-    t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
+    //t_request* response = receive_and_deserialize_structure(memory_conn -> socket_fd);
 
-    handshake_information = safe_malloc(sizeof (t_handshake));
-    handshake_information = (t_handshake*) response -> structure;
+    t_receive_information* receive_information = receive_structure(memory_conn -> socket_fd);
+    if(receive_information -> receive_was_successful){
+        t_serialization_information* serialization_information = receive_information -> serialization_information;
+        t_request* deserialized_request = deserialize(serialization_information -> serialized_request);
+
+        handshake_information = (t_handshake*) deserialized_request -> structure;
+
+        log_request_received_basic();
+
+        free_serialization_information(serialization_information);
+        free(deserialized_request);
+    }
+    free(receive_information);
 
     log_handshake_received_succesfully();
-
-    //consider_as_garbage(response, free_request);
-    free(response);
 
     free_and_close_connection_information(memory_conn);
 }
