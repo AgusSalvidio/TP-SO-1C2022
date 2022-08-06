@@ -150,6 +150,8 @@ void save_content_to_file_for(t_process_context* process_context,t_page* victim_
     }
     fclose(file_pointer);
     update_page_presence_bit_when_unload(victim_page);
+
+    log_content_was_succesfully_saved_for(process_context->pid);
 }
 
 void update_page_bits_when_loaded_in_main_memory(t_page* page, uint32_t frame){
@@ -193,6 +195,7 @@ void load_content_to_memory_for(t_process_context* process_context,t_page* selec
     fclose(file_pointer);
     safe_mutex_unlock(&mutex_process);
 
+    log_content_was_successfully_loaded_in_memory_for(process_context->pid,selected_page->id);
 
 }
 
@@ -236,6 +239,8 @@ void initialize_swap_page_procedure(t_page* selected_page, t_process_context* pr
 
 void clock_algorithm(t_process_context* process_context,t_page* page_requested){
 
+    log_clock_algorithm_started_executing();
+
     bool end_search = false;
     uint32_t step = 1;
     while(!end_search){
@@ -256,10 +261,12 @@ void clock_algorithm(t_process_context* process_context,t_page* page_requested){
                 increment_value(&(process_context->clock_pointer));
         }
     }
+    log_clock_algorithm_stopped_executing();
 }
 void enhanced_clock_algorithm(t_process_context* process_context,t_page* page_requested){
 
     //Needs to be refactored to be more clean.
+    log_enhanced_clock_algorithm_started_executing();
 
     bool end_search = false;
     uint32_t step = 1;
@@ -294,6 +301,7 @@ void enhanced_clock_algorithm(t_process_context* process_context,t_page* page_re
 
     }
 
+    log_enhanced_clock_algorithm_stopped_executing();
 
 }
 
